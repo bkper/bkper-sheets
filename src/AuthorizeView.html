@@ -1,0 +1,44 @@
+<link rel="stylesheet"href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
+<style>
+.logo {
+}
+.right {
+  float: right;
+}
+.center { 
+  text-align: center;
+}
+.block {
+  padding-bottom: 30px;
+}
+.sidebar { 
+  padding: 30px;
+}
+</style>
+
+<div class="sidebar">
+
+
+<div class="block">
+  <img alt="bkper" class="logo" src="https://storage.googleapis.com/bkper-public/logo.svg"/>
+  <span class="right gray branding-text">Bookkeeping on G Suite</span>
+</div>
+  <div class="block center">
+  <a href='<?!= getAuthorizationURL(); ?>' target='_blank'>
+    <button class="create">Get Started</button>
+  </a>
+</div>
+    
+</div>
+
+
+
+
+<script>
+var i = 1
+var timer = setInterval(checkUserAuthorized, 3000)
+
+function checkUserAuthorized() {
+		google.script.run.checkUserAuthorized();
+}
+</script>

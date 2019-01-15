@@ -1,0 +1,15 @@
+{
+  "timeZone": "America/Sao_Paulo",
+  "dependencies": {
+    "libraries": [{
+      "userSymbol": "BkperUtils",
+      "libraryId": "1WALyd4X8KqsCqV5N8Mw0nIRIbXht18YWdGMmwWfepItZBAKev9AwMcZV",
+      "version": "21"
+    }, {
+      "userSymbol": "bkperSpreadsheetsAddonLib",
+      "libraryId": "1aDN6VadTgbbROGYSs6dcjxJ_AeTh0rBpZSqIsVn8gaDehgpGRvK3aWsD",
+      "version": "101"
+    }]
+  },
+  "exceptionLogging": "STACKDRIVER"
+}

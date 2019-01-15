@@ -4,9 +4,5 @@
   "description": "Bkper Sheets Add-on",
   "repository": "https://github.com/bkper/Bkper-Sheets.git",
   "author": "Bkper Inc.",
-  "private": true,
-  "devDependencies": {
-    "@types/google-apps-script": "^0.0.35",
-    "@types/node": "^10.12.18"
-  }
+  "private": true
 }
