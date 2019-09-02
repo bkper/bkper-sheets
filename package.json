@@ -4,5 +4,13 @@
   "description": "Bkper Sheets Add-on",
   "repository": "https://github.com/bkper/Bkper-Sheets.git",
   "author": "Bkper Inc.",
-  "private": true
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf ./dist",
+    "clasp": "./node_modules/.bin/clasp",
+    "push": "yarn run clasp push"
+  },  
+  "devDependencies": {
+    "@google/clasp": "^2.2.1"
+  }
 }
