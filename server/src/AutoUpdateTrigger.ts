@@ -14,7 +14,7 @@ var AutoUpdateTrigger = {
   },
   
   get: function() {
-    var triggers = BkperUtils.retry(function() {
+    var triggers = Utilities_.retry<GoogleAppsScript.Script.Trigger[]>(function() {
       return ScriptApp.getUserTriggers(getActiveSpreadsheet());
     });
     
@@ -52,7 +52,7 @@ function triggerBkperAutoUpdate() {
     
     lock.releaseLock();
   } catch (e) {
-    BkperUtils.logError(e);
+    Utilities_.logError(e);
   }
   
   triggerBkperAutoRecord()

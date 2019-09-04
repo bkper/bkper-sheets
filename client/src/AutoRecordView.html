@@ -1,0 +1,41 @@
+<link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
+
+<script src="https://bkper-cdn.appspot.com/polymer/bower_components/webcomponentsjs/webcomponents.js"></script>
+
+<link rel="import" href="https://bkper-cdn.appspot.com/polymer/bower_components/paper-toggle-button/paper-toggle-button.html">
+
+  <!-- JUST FOR DEVELOPMENT
+  <LINK rel="stylesheet" href="AutoRecordViewCSS.html" type="text/css">
+  -->
+
+<?!= include('AutoRecordViewCSS'); ?>
+
+<div class="block form-group center">
+  <div id="waiting">
+  </div>
+  <div id="onOffLabel">
+    OFF
+  </div>
+  <div id="onOffButtonPanel">
+    <paper-toggle-button id="onOffButton" checked="false" on-change="{{AutoRecordChanged}}" class="bluetooth" role="button" aria-pressed="true" tabindex="0" touch-action="pan-y"></paper-toggle-button>
+  </div>
+
+  <div class="bookPanel">
+  	<span id="bookName"></span>
+  </div>
+
+</div>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+<!-- JUST FOR DEVELOPTMEN
+<script src="AutoRecordActivityJS.html"></script>
+<script src="AutoRecordViewJS.html"></script>
+ -->
+
+<script>
+<?!= include('AutoRecordActivityJS'); ?>
+<?!= include('AutoRecordViewJS'); ?>
+</script>

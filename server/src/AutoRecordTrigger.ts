@@ -10,7 +10,7 @@ var AutoRecordTrigger = {
   },
   
   get_: function() {
-    var triggers = BkperUtils.retry(function() {
+    var triggers = Utilities_.retry<GoogleAppsScript.Script.Trigger[]>(function() {
       return ScriptApp.getUserTriggers(getActiveSpreadsheet());
     });
     
@@ -47,7 +47,7 @@ function triggerBkperAutoRecord() {
     Utilities.sleep(2000);
     lock.releaseLock();
   } catch (e) {
-    BkperUtils.logError(e);
+    Utilities_.logError(e);
   }
   
 }

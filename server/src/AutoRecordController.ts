@@ -1,5 +1,5 @@
 function showAutoRecordPopup() {
-  if (bkperSpreadsheetsAddonLib.isUserAuthorized()) {
+  if (BkperApp.isUserAuthorized()) {
     var bookId = loadLastSelectedLedger();
     bkperSpreadsheetsAddonLib.showAutoRecordPopup(bookId);
   } else {

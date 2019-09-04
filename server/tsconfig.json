@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "esnext"
+    ],
+    "target": "ES3",
+    "module": "system",
+    "noImplicitUseStrict": true,
+    "noImplicitAny": true,
+    "experimentalDecorators": true,
+  },
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts",
+    "@types/**/*.d.ts",
+  ],
+  "exclude": [
+    "node_modules/",
+    "dist/"
+  ]
+}

@@ -1,0 +1,165 @@
+<style>
+
+body {
+  margin: 0;
+}
+
+.sidebar {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding: 10px 10px 5px 10px;
+  position: absolute;
+  width: 100%;
+}
+
+.branding-below {
+  bottom: 100px;
+  top: 0;
+}
+
+.bottom {
+  background: #FFFFFF;
+}
+
+.hiddenContent {
+  display: none;
+}
+
+.loadPanel {
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 45px;
+  opacity: 0.2;
+  cursor: pointer;
+}
+
+.loadPanelLoading {
+  background-image: url("https://storage.googleapis.com/bkper-public/addons/loading-arrows.gif");
+  opacity: 0.8;
+  cursor: default;
+}
+
+.loadPanelLoadingLink {
+  background-image: url("https://storage.googleapis.com/bkper-public/addons/loading-arrows-fixed.gif");
+  opacity: 0.3;
+}
+
+
+.loadPanelLoadingLink:hover {
+  opacity: 0.8;
+  background-color: #F5F5F5;
+
+}
+
+.logo {
+  vertical-align: middle;
+  height: 55px;
+}
+
+
+.right {
+  float: right;
+}
+
+.branding-text {
+  left: 5px;
+  position: relative;
+  top: 18px;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.waiting {
+  background-position: center;
+  background-image: url("https://storage.googleapis.com/bkper-public/addons/waiting.gif");
+  background-repeat: no-repeat;
+}
+
+.col-contain {
+  overflow: hidden;
+}
+
+.col-one {
+  float: left;
+  width: 50%;
+}
+
+.radio-spacer {
+  height: 24px;
+}
+
+.width-100 {
+  width: 100%;
+}
+
+.ledgerSelect {
+  width: 195px;
+}
+
+
+#highlight {
+  margin-top: 45px;
+}
+
+#recordedStatus {
+  margin: 20px auto;
+  text-align: center;
+  padding: 2px;
+  font-weight: bolder;
+  color: #FFFFFF;
+  -webkit-transition: background-color 1s, color 1s;
+  transition: background-color 1s, color 1s;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.recordedStatusHighlighted {
+  background-color: #B0DDBC;
+  color: darkgreen !important;
+}
+
+.queryErrorPanel {
+ height: 16px;
+}
+
+#generalError, #queryError {
+ color: red;
+ display: none;
+}
+
+#tab-bar {
+  display: table;
+  width: 100%;
+}
+
+.tab-bar-item {
+  display: table-cell;
+  text-align: center;
+  width: 50%;
+  background: #EEEEEE;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #E4E4E4;
+  cursor: pointer;
+}
+
+.tab-bar-item-selected {
+  background: #FFFFFF;
+  border-top: 1px solid #E4E4E4;
+  border-left: 1px solid #E4E4E4;
+  border-right: 1px solid #E4E4E4;
+  border-bottom: 0px;
+}
+
+
+.tabContent {
+ height: 130px;
+}
+
+#contentWrapper {
+  padding-top: 25px;
+}
+</style>

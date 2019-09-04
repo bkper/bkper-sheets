@@ -1,0 +1,190 @@
+<link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
+<LINK rel="stylesheet"  href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css" type="text/css">
+
+<!-- JUST FOR DEVELOPMENT
+<LINK rel="stylesheet" href="SidebarViewCSS.html" type="text/css">
+
+  -->
+<?!= include('SidebarViewCSS'); ?>
+
+<style>
+.ui-autocomplete {
+  max-height: 300px;
+  overflow-y: auto;
+  /* prevent horizontal scrollbar */
+  overflow-x: hidden;
+  border: 1px solid #DCDCDC;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.ui-autocomplete-category {
+  font-weight: bold;
+  padding: .2em .4em;
+  margin: .8em 0 .2em;
+  line-height: 1.5;
+  font-size: 12px;
+}
+
+.ui-corner-all,.ui-corner-bottom,.ui-corner-right,.ui-corner-br {
+  border-bottom-right-radius: 0;
+}
+
+.ui-corner-all,.ui-corner-bottom,.ui-corner-left,.ui-corner-bl {
+  border-bottom-left-radius: 0;
+}
+
+.ui-corner-all,.ui-corner-top,.ui-corner-right,.ui-corner-tr {
+  border-top-right-radius: 0;
+}
+
+.ui-corner-all,.ui-corner-top,.ui-corner-left,.ui-corner-tl {
+  border-top-left-radius: 0;
+}
+
+.ui-menu .ui-menu-item {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.ui-menu .ui-menu-item a {
+  text-decoration: none;
+  display: block;
+  padding: .2em .4em;
+  line-height: 1.5;
+  zoom: 1;
+  cursor: default;
+  -moz-font-feature-settings: normal;
+  -moz-font-language-override: normal;
+  -x-system-font: none;
+  color: #222222;
+  font-family: arial, sans-serif;
+  font-size: 13px;
+  font-size-adjust: none;
+  font-stretch: normal;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: normal;
+}
+
+.ui-menu .ui-menu-item a:hover,.ui-menu .ui-menu-item a.ui-state-hover,.ui-menu .ui-menu-item a.ui-state-active,.ui-menu .ui-menu-item a.ui-state-focus
+  {
+  background: #F5F5F5;
+  border: 1px solid #F5F5F5;
+}
+</style>
+
+<div class="sidebar branding-below hiddenContent" id="sidebarWrapper">
+
+  <div class="block form-group">
+    <select id="ledgerSelect" class="ledgerSelect" disabled="disabled">
+      <option value="">Select a Book...</option>
+    </select>
+    <a id="createOpenLedgerLink" href="https://app.bkper.com/create" target="_blank">
+      <button class="create right newLedgerButton" tabindex="1">Create</button>
+    </a>
+  </div>
+
+  <div id="contentWrapper" class="hiddenContent">
+    <!-- TAB TITLE -->
+    <div class="block" id="tab-bar">
+      <div class="tab-bar-item tab-bar-item-1 tab-bar-item-selected" id="tabBarItem1">Record</div>
+      <div class="tab-bar-item tab-bar-item-2" id="tabBarItem2">Fetch</div>
+    </div>
+
+
+    <!-- RECORD TAB -->
+    <div class="block" id="tab2Content">
+      <div class="tabContent">
+        <input type="checkbox" id="highlight" checked="checked" tabindex="2" />Highlight
+      </div>
+      <button class="create" id="recordButton" disabled="disabled" tabindex="3">Record</button>
+      <div id="recordedStatus">Transaction(s) Recorded!</div>
+    </div>
+
+    <!--FETCH TAB -->
+    <div class="block hiddenContent" id="tab1Content">
+      <div class="block form-group tabContent">
+        <input placeholder='Query...' type="text" id="queryInput" class="width-100" disabled="disabled" tabindex="2">
+        <div class="queryErrorPanel">
+          <div id="queryError">*Invalid query</div>
+        </div>
+
+        <div class="block form-group" id='fetch-type-radio-group'>
+          <div>
+            <div class="inline">
+              <input type="radio" name="fetch-type-radio" id="fetch-type-radio-balances"  value="balances" disabled="disabled">
+              <label for="fetch-type-radio-balances" class="bold">Balances</label>
+            </div>
+            <div class="inline">
+              <input type="radio" name="fetch-type-radio" id="fetch-type-radio-transactions" value="transactions" disabled="disabled">
+              <label for="fetch-type-radio-transactions" class="bold">Transactions</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="block form-group" id='balance-type-radio-group'>
+          <div>
+            <div class="inline">
+              <input type="radio" name="balance-type-radio" id="balance-type-radio-total"  value="total" disabled="disabled">
+              <label for="balance-type-radio-total">Total</label>
+            </div>
+            <div class="inline">
+              <input type="radio" name="balance-type-radio" id="balance-type-radio-period" value="period" disabled="disabled">
+              <label for="balance-type-radio-period">Period</label>
+            </div>
+            <div class="inline">
+              <input type="radio" name="balance-type-radio" id="balance-type-radio-cumulative" value="cumulative"  disabled="disabled">
+              <label for="balance-type-radio-cumulative">Cumulative</label>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+      <button class="blue" id="fetchButton" disabled="disabled" tabindex="5">Fetch</button>
+    </div>
+
+
+
+  </div>
+
+
+</div>
+
+<div class="sidebar bottom">
+  <div id="generalError">Error. Refresh pressing button below.</div>
+  <div id="loadPanel" class="loadPanel loadPanelLoading"></div>
+  <div class="footer">
+    <a href="http://bkper.com" target="_blank"> <img alt="bkper" class="logo"
+      src="https://storage.googleapis.com/bkper-public/logo.svg" /> <span
+      class="gray branding-text">Bookkeeping on G Suite</span>
+    </a>
+  </div>
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+
+<!-- JUST FOR DEVELOPTMENT
+<script src="SidebarViewJS.html"></script>
+<script src="FetchTabViewJS.html"></script>
+<script src="RecordTabViewJS.html"></script>
+
+<script src="SidebarActivityJS.html"></script>
+<script src="FetchTabActivityJS.html"></script>
+<script src="RecordTabActivityJS.html"></script>
+
+ -->
+
+
+<script>
+  <?!= include('SidebarViewJS'); ?>
+  <?!= include('FetchTabViewJS'); ?>
+  <?!= include('RecordTabViewJS'); ?>
+
+  <?!= include('SidebarActivityJS'); ?>
+  <?!= include('FetchTabActivityJS'); ?>
+  <?!= include('RecordTabActivityJS'); ?>
+</script>

@@ -1,0 +1,13 @@
+{
+  "timeZone": "America/Sao_Paulo",
+  "dependencies": {
+    "libraries": [
+      {
+        "userSymbol": "BkperApp",
+        "libraryId": "1fSZnepYcDUjxCsrWYD3452UJ5nJiB4js0cD45WWOAjMcKJR_PKfLU60X",
+        "version": "223"
+      }
+    ]
+  },
+  "exceptionLogging": "STACKDRIVER"
+}

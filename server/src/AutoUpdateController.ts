@@ -1,7 +1,8 @@
 
 function showAutoUpdatePopup() {
-  if (bkperSpreadsheetsAddonLib.isUserAuthorized()) {
-    bkperSpreadsheetsAddonLib.showAutoUpdatePopup();
+  if (BkperApp.isUserAuthorized()) {
+    var ui = HtmlService.createTemplateFromFile('AutoUpdateView').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setWidth(550).setHeight(150);
+    SpreadsheetApp.getUi().showModalDialog(ui, 'Auto-update spreadsheet every hour?');
   } else {
     showAuthorizeView_();
   }  
@@ -13,12 +14,12 @@ function loadAutoUpdateConfig() {
   
   var config = {
     enabled: AutoUpdateTrigger.isEnabled(),
-    statusText: bkperSpreadsheetsAddonLib.getLastUpdate(spreadsheet, properties)
+    statusText: UpdateService_.getLastUpdate(spreadsheet, properties)
   }
   return config;
 }
 
-function enableAutoUpdate(enable) {
+function enableAutoUpdate(enable: boolean): { enabled: boolean, statusText: string}   {
   
   if (enable) {
     AutoUpdateTrigger.enableTrigger();
@@ -31,7 +32,7 @@ function enableAutoUpdate(enable) {
 
   var config = {
     enabled: enable,
-    statusText: bkperSpreadsheetsAddonLib.getLastUpdate(spreadsheet, properties)
+    statusText: UpdateService_.getLastUpdate(spreadsheet, properties)
   }  
   
   return config;
