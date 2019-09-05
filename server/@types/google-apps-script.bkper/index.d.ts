@@ -206,13 +206,21 @@ declare namespace GoogleAppsScript {
       getGroup(idOrName: string): Group
 
       /**
-       * Create a [[BalancesDataTableBuilder]] based on a query, to create two dimensional Array representation of balances of [[Account]], [[Group]] or **#hashtag**
+       * 
+       * Create a [[BalancesReport]] based on query
+       * 
+       * @param query The balances report query
+       */
+      getBalancesReport(query: string): BalancesReport;
+
+      /**
+       * Create a [[BalancesDataTableBuilder]] based on a query, to create two dimensional Array representation of balances of [[Account]], [[Group]] or #hashtag
        * 
        * See [Query Guide](https://help.bkper.com/en/articles/2569178-search-query-guide) to learn more
        * 
-       * @param query The report balance query
+       * @param query The balances report query
        * 
-       * @return The balance data table builder
+       * @return The balances data table builder
        * 
        * Example:
        * 
@@ -241,24 +249,25 @@ declare namespace GoogleAppsScript {
        * var transactionsDataTable = book.createTransactionsDataTable("acc:'Bank' after:8/2013 before:9/2013").build();
        * ```
        */
-      createTransactionsDataTable(query: string): TransactionsDataTableBuilder;
+      createTransactionsDataTable(query?: string): TransactionsDataTableBuilder;
+
 
 
       /**
-       * Search for transactions.
+       * Get Book transactions based on a query.
        * 
        * See [Query Guide](https://help.bkper.com/en/articles/2569178-search-query-guide) to learn more
        *  
        * @param query The query string.
        * 
-       * @return The search result as an iterator.
+       * @return The Transactions result as an iterator.
        * 
        * Example:
        * 
        * ```javascript
        * var book = BkperApp.loadBook("agtzfmJrcGVyLWhyZHITCxIGTGVkZ2VyGICAgIDggqALDA");
        *
-       * var transactions = book.search("acc:CreditCard after:28/01/2013 before:29/01/2013");
+       * var transactions = book.getTransactions("acc:CreditCard after:28/01/2013 before:29/01/2013");
        *
        * while (transactions.hasNext()) {
        *  var transaction = transactions.next();
@@ -266,7 +275,7 @@ declare namespace GoogleAppsScript {
        * }
        * ```
        */
-      search(query: string): TransactionIterator;
+      getTransactions(query?: string): TransactionIterator;      
 
 
     }
@@ -619,6 +628,199 @@ declare namespace GoogleAppsScript {
     }
 
     /**
+     * Class that represents an [[Account]], [[Group]] or #hashtag balance on a window of time (Day / Month / Year). 
+     */
+    export interface Balance {
+
+      /**
+       * The day of the balance. Days starts on 1 to 31. 
+       * 
+       * Day can be 0 (zero) in case of Monthly or Early [[Periodicity]] of the [[BalancesReport]]
+       */
+      getDay(): number;
+
+      /**
+       * The month of the balance. Months starts on 1 (January) to 12 (December)
+       * 
+       * Month can be 0 (zero) in case of Early [[Periodicity]] of the [[BalancesReport]]
+       */
+      getMonth(): number;
+
+
+      /**
+       * The year of the balance
+       */
+      getYear(): number;
+
+      /**
+       * The Fuzzy Date of the balance, based on [[Periodicity]] of the [[BalancesReport]] query, composed by Year, Month and Day.
+       * 
+       * The format is YYYYMMDD. Very usefull for ordering and indexing
+       * 
+       * Month and Day can be 0 (zero), depending on the granularity of the [[Periodicity]].
+       * 
+       * Example:
+       * 
+       * 20180125 - 25, January, 2018 - DAILY Periodicity
+       * 20180100 - January, 2018 - MONTHLY Periodicity
+       * 20180000 - 2018 - YEARLY Periodicity
+       * 
+       */
+      getFuzzyDate(): number;
+
+
+      /**
+       * Date object constructed based on [[Book]] time zone offset. Usefull for 
+       * 
+       * If Month or Day is zero, the date will be constructed with first Month (January) or Day (1).
+       */
+      getDate(): Date;
+
+
+      /**
+       * The cumulative balance to the date, since the first transaction posted.
+       */
+      getCumulativeBalance(): number;
+
+      /**
+       * The cumulative checked balance to the date, since the first transaction posted.
+       */
+      getCheckedCumulativeBalance(): number;
+
+      /**
+       * The cumulative unchecked balance to the date, since the first transaction posted.
+       */
+      getUncheckedCumulativeBalance(): number;
+
+      /**
+       * The balance on the date period.
+       */
+      getPeriodBalance(): number;
+
+      /**
+       * The checked balance on the date period.
+       */
+      getCheckedPeriodBalance(): number;
+
+      /**
+       * The unchecked balance on the date period.
+       */
+      getUncheckedPeriodBalance(): number;
+      
+    }
+
+    /**
+     * Class representing a Balance Report, generated when calling [Book.getBalanceReport](#book_getbalancesreport)
+     */
+    export interface BalancesReport {
+
+      /**
+       * The [[Book]] that generated the report.
+       */
+      getBook(): Book;
+
+      /**
+       * The [[Periodicity]] of the query used to generate the report.
+       */
+      getPeriodicity(): Periodicity;
+
+      /**
+       * Check if the report has only one Group specified on query
+       */
+      hasOnlyOneGroup(): boolean;
+
+      /**
+       * Gets all [[BalancesContainers]] of the report
+       */
+      getBalancesContainers(): BalancesContainer[]
+
+      /**
+       * Gets a specific [[BalancesContainers]]
+       * 
+       * @param name The [[Account]] name, [[Group]] name or #hashtag
+       */      
+      getBalancesContainer(name: string): BalancesContainer;
+
+      /**
+       * Creates a BalancesDataTableBuilder to generate a two-dimensional array with all [[BalancesContainers]]
+       */
+      createDataTable(): BalancesDataTableBuilder;
+    }
+
+    /**
+     * The container of balances of an [[Account]], [[Group]] or #hashtag
+     * 
+     * The container is composed of a list of [[Balances]] for a window of time, as well as its period and cumulative totals.
+     */
+    export interface BalancesContainer {
+
+      /**
+       * The parent BalancesReport of the container
+       */
+      getBalancesReport(): BalancesReport;
+
+      /**
+       * The [[Account]] name, [[Group]] name or #hashtag
+       */
+      getName(): string;
+
+      /**
+       * All [[Balances]] of the container
+       */
+      getBalances(): Balance[];
+
+      /**
+       * Gets the credit nature of the BalancesContainer, based on [[Account]], [[Group]] or #hashtag this container represents.
+       * 
+       * For [[Account]], the credit nature will be the same as the one from the Account
+       * 
+       * For [[Group]], the credit nature will be the same, if all accounts containing on it has the same credit nature. False if mixed.
+       * 
+       * For #hashtag, the credit nature will be true.
+       */
+      isCredit(): boolean;
+
+      /**
+       * The cumulative balance to the date, since the first transaction posted.
+       */
+      getCumulativeBalance(): number;
+
+      /**
+       * The cumulative balance formatted according to [[Book]] decimal format and fraction digits.
+       */
+      getCumulativeBalanceText(): string;
+
+      /**
+       * The balance on the date period.
+       */
+      getPeriodBalance(): number;
+
+      /**
+       * The balance on the date period formatted according to [[Book]] decimal format and fraction digits
+       */
+      getPeriodBalanceText(): string;
+
+      /**
+       * Gets all child [[BalancesContainers]].
+       * 
+       * **NOTE**: Only for Groups balance containers. Accounts and hashtags return empty.
+       */
+      getBalancesContainers(): BalancesContainer[]
+
+      /**
+       * Gets a specific [[BalancesContainer]].
+       * 
+       * **NOTE**: Only for Groups balance containers. Accounts and hashtags return null.
+       */
+      getBalancesContainer(name: string): BalancesContainer;
+      
+      /**
+       * Creates a BalancesDataTableBuilder to generate a two-dimensional array with all [[BalancesContainers]]
+       */      
+      createDataTable(): BalancesDataTableBuilder;
+    }
+
+    /**
      * A BalancesDataTableBuilder is used to setup and build two-dimensional arrays containing balance information.
      */
     export interface BalancesDataTableBuilder {
@@ -638,9 +840,19 @@ declare namespace GoogleAppsScript {
       formatValue(): BalancesDataTableBuilder;
 
       /**
-       * Fluent method to set the [[BalanceType]]
+       * Fluent method to set the [[BalanceType]] for the builder.
        * 
-       * For **TOTAL** balance type, the table format looks like:
+       * @param balanceType The type of balance for this data table
+       * 
+       * @returns This builder with respective balance type.
+       */
+      setBalanceType(balanceType: BalanceType): BalancesDataTableBuilder;
+
+      /**
+       * 
+       * Gets an two-dimensional array with the balances.
+       * 
+       * For **TOTAL** [[BalanceType]], the table format looks like:
        * 
        * ```
        *   _____________________
@@ -651,9 +863,9 @@ declare namespace GoogleAppsScript {
        *  |___________|_________|
        * 
        * ```
-       * Two columns, and Each Group | Account | Tag per line.
+       * Two columns, and each [[Group]] | [[Account]] | #hashtag per line.
        * 
-       * For **PERIOD** or **CUMULATIVE**, the table will be a time table, and the format looks like:
+       * For **PERIOD** or **CUMULATIVE** [[BalanceType]], the table will be a time table, and the format looks like:
        * 
        * ```
        *  _____________________________________________
@@ -666,18 +878,7 @@ declare namespace GoogleAppsScript {
        * 
        * ```
        * 
-       * First column will be the Date column, and one column for each [[Group]], [[Account]] or Hashtag.
-       * 
-       * 
-       * @param balanceType The type of balance for this data table
-       * 
-       * @returns This builder with respective balance type.
-       */
-      setBalanceType(balanceType: BalanceType): BalancesDataTableBuilder;
-
-      /**
-       * 
-       * Gets an two-dimensional array with the balances.
+       * First column will be the Date column, and one column for each [[Group]], [[Account]] or #hashtag.
        * 
        */
       build(): any[][];
@@ -686,7 +887,7 @@ declare namespace GoogleAppsScript {
 
 
     /**
-     * The Periodicity of the query. It may depend on the way you write the range params.
+     * The Periodicity of the query. It may depend on the level of granularity you write the range params.
      */
     export enum Periodicity {
 
@@ -703,7 +904,7 @@ declare namespace GoogleAppsScript {
       /**
        * Example: on:2013, after:2013, $y
        */
-      YARLY = "YARLY"
+      YEARLY = "YEARLY"
     }
 
     /**

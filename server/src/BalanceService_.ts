@@ -1,30 +1,12 @@
 namespace BalanceService_ {
 
 
-  function getBalancesDataTable_(balanceReport, balanceType): any[][] {
-    var tableBuilder = null;
-    if (balanceType == BALANCE_TYPE_TOTAL_) {
-      if (balanceReport.hasOnlyOneGroupBalance()) {
-        tableBuilder = balanceReport.getGroupBalanceReports()[0].createDataTable();
-      } else {
-        tableBuilder = balanceReport.createDataTable();
-      }
-    } else if (balanceType == BALANCE_TYPE_CUMULATIVE_) {
-      tableBuilder = balanceReport.createDataTable();
-      tableBuilder.setBalanceType(BkperApp.BalanceType.CUMULATIVE);
-    } else if (balanceType == BALANCE_TYPE_PERIOD_) {
-      tableBuilder = balanceReport.createDataTable();
-      tableBuilder.setBalanceType(BkperApp.BalanceType.PERIOD);
-    }
-    return tableBuilder.build();
-  }
-
   //insert on spreadsheet
-  function insert(spreadsheet, properties, fetchStatement, range, saveStatement) {  
+  export function insert(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, properties: GoogleAppsScript.Properties.Properties, fetchStatement: Statement, range: GoogleAppsScript.Spreadsheet.Range, saveStatement: boolean): void {  
     var ledger = LedgerService_.loadLedger(fetchStatement.ledgerId);
     
-	var balances = ledger.getBalanceReport(fetchStatement.query);
-    var table = BalanceService_.getBalancesDataTable_(balances, fetchStatement.balanceType);
+	var balances = ledger.getBalancesReport(fetchStatement.query);
+    var table = getBalancesDataTable_(balances, fetchStatement.balanceType);
     if (table.length > 0 ) {
       var newRange = Utilities_.getRangeForTable(spreadsheet, table, range);
       var fetchStatementDAO = new FetchStatementDAO(spreadsheet, properties);
@@ -40,6 +22,24 @@ namespace BalanceService_ {
       newRange.setNumberFormats(numberFormats);      
     }
   }
+
+  function getBalancesDataTable_(balanceReport: GoogleAppsScript.Bkper.BalancesReport, balanceType: GoogleAppsScript.Bkper.BalanceType): any[][] {
+    var tableBuilder = null;
+    if (balanceType == BALANCE_TYPE_TOTAL_) {
+      if (balanceReport.hasOnlyOneGroup()) {
+        tableBuilder = balanceReport.getBalancesContainers()[0].createDataTable();
+      } else {
+        tableBuilder = balanceReport.createDataTable();
+      }
+    } else if (balanceType == BALANCE_TYPE_CUMULATIVE_) {
+      tableBuilder = balanceReport.createDataTable();
+      tableBuilder.setBalanceType(BkperApp.BalanceType.CUMULATIVE);
+    } else if (balanceType == BALANCE_TYPE_PERIOD_) {
+      tableBuilder = balanceReport.createDataTable();
+      tableBuilder.setBalanceType(BkperApp.BalanceType.PERIOD);
+    }
+    return tableBuilder.build();
+  }  
   
   function getNumberFormats_(table: any[][], balanceType: GoogleAppsScript.Bkper.BalanceType, periodicity: GoogleAppsScript.Bkper.Periodicity, datePattern: string, fractionDigits: number) {
     var formatsTable = new Array();

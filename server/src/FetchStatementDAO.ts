@@ -5,6 +5,7 @@ interface Statement {
   query: string,
   rangeName: string,
   fetchType: string,
+  balanceType?: GoogleAppsScript.Bkper.BalanceType;
   lastUpdate: number
 }
 class FetchStatementDAO {
