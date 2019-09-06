@@ -1,10 +1,11 @@
-var FetchTabActivity = {
 
-	init : function() {
+namespace FetchTabActivity {
 
-	},
+	export function init() {
 
-	loadQueries : function(ledgerId) {
+	}
+
+	export function loadQueries(ledgerId) {
 		FetchTabView.showQueryError(false);
 		FetchTabView.verifyFormState();
 		if (ledgerId != null && ledgerId.trim() != "") {
@@ -21,7 +22,7 @@ var FetchTabActivity = {
 				SidebarView.disableLedgerSelect(true);
 				SidebarView.loading(true);
 				if (!DEV_MODE) {
-					google.script.run.withSuccessHandler(FetchTabActivity.queriesLoaded).withFailureHandler(SidebarView.showError).loadQueries(ledgerId);
+					google.script.run.withSuccessHandler(queriesLoaded).withFailureHandler(SidebarView.showError).loadQueries(ledgerId);
 				}
 			}
 			if (DEV_MODE) {
@@ -32,17 +33,17 @@ var FetchTabActivity = {
 			FetchTabView.hideQueryAutocomplete();
 			FetchTabView.disableQueryInput(true);
 		}
-	},
+	}
 
-	fetchQuery : function() {
+	export function fetchQuery() {
 		FetchTabView.showQueryError(false);
 		SidebarView.loading(true);
 		var form = FetchTabView.getForm();
-		google.script.run.withSuccessHandler(FetchTabActivity.fetched).withFailureHandler(FetchTabView.showQueryError).fetchQuery(form);
-	},
+		google.script.run.withSuccessHandler(fetched).withFailureHandler(FetchTabView.showQueryError).fetchQuery(form);
+	}
 
 	//CALLBACKS
-	queriesLoaded : function(ledgerQueries) {
+	function queriesLoaded(ledgerQueries) {
 		var queries = ledgerQueries.queries;
 		var ledgerId = ledgerQueries.ledgerId;
 		var ledgerQueriesKey = "ledgerQueries_" + ledgerId;
@@ -51,10 +52,10 @@ var FetchTabActivity = {
 		FetchTabView.disableQueryInput(false);
 		SidebarView.disableLedgerSelect(false);
 		SidebarView.loading(false);
-	},
+	}
 
-	fetched : function(ledgers) {
+	function fetched(ledgers) {
 		SidebarView.loading(false);
-	},
+	}
 
 };

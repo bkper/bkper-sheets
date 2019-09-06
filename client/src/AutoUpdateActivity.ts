@@ -1,53 +1,54 @@
 var triggerEnabled = false;
 
-var AutoUpdateActivity = {
+namespace AutoUpdateActivity {
 
-	init : function() {
-		AutoUpdateActivity.loadConfig();
-	},
+	export function init() {
+		loadConfig();
+	}
 
-	loadConfig : function() {
+	function loadConfig() {
 		if (DEV_MODE) {
-			AutoUpdateActivity.configLoaded(false)
+			configLoaded(false)
 		} else {
-			google.script.run.withSuccessHandler(AutoUpdateActivity.configLoaded).withFailureHandler(AutoUpdateActivity.configLoadError).loadAutoUpdateConfig();
+			google.script.run.withSuccessHandler(configLoaded).withFailureHandler(configLoadError).loadAutoUpdateConfig();
 		}
-	},
+	}
 
-	toggle : function() {
+	export function toggle() {
 		var enable = !triggerEnabled;
 		AutoUpdateView.waiting(true);        
 
 		if (DEV_MODE) {
-			AutoUpdateActivity.toggled(enable);
+			toggled(enable);
 		} else {
-			google.script.run.withSuccessHandler(AutoUpdateActivity.toggled).withFailureHandler(AutoUpdateActivity.enabledError).enableAutoUpdate(enable);
+			google.script.run.withSuccessHandler(toggled).withFailureHandler(enabledError).enableAutoUpdate(enable);
 		}
-	},
+	}
 
-	toggled : function(autoUpdateConfig) {
+	function toggled(autoUpdateConfig) {
 		triggerEnabled = autoUpdateConfig.enabled;
 		AutoUpdateView.waiting(false);
 		AutoUpdateView.setEnabled(triggerEnabled, autoUpdateConfig.statusText);
-	},
+	}
 
 	// CALLBACK FUNCTIONS
 
-	configLoaded : function(autoUpdateConfig) {
+	function configLoaded(autoUpdateConfig) {
 		triggerEnabled = autoUpdateConfig.enabled;
 		AutoUpdateView.waiting(false);
 		AutoUpdateView.setEnabled(triggerEnabled, autoUpdateConfig.statusText);
-	},
-    
-	enabledError : function(e) {
+	}
+  
+	function enabledError(e) {
         var errorMsg = e + "";
         AutoUpdateView.waiting(false);
         AutoUpdateView.setEnabled(false, errorMsg);   
         AutoUpdateView.setOnOffLabel("SORRY");        
-	},
-	configLoadError : function(e) {
+  }
+  
+	function configLoadError(e) {
  
 		//TODO
-	},
+	}
 
 };

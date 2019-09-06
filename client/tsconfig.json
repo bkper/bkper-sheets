@@ -1,10 +1,10 @@
 {
   "extends": "../tsconfig",
   "compilerOptions": {
-    "lib": [ "esnext" ],
-    "target": "ES3",
-    "noImplicitAny": true
-  },  
+    "lib": ["esnext", "dom"],
+    "target": "ES5",
+    "noImplicitAny": false,
+  },
   "include": [
     "src/**/*.ts",
     "test/**/*.ts",
@@ -13,5 +13,5 @@
   "exclude": [
     "node_modules/",
     "build/"
-  ]    
+  ]
 }

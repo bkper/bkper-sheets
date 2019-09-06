@@ -6,12 +6,14 @@
   "author": "Bkper Inc.",
   "private": true,
   "scripts": {
-    "clean": "rm -rf ./dist",
+    "clean": "rm -rf ./dist && rm -rf ./build",
     "build": "yarn gulp"
   },
   "devDependencies": {
+    "@types/jquery": "^3.3.31",
     "copyfiles": "^2.1.1",
     "gulp": "^4.0.2",
-    "gulp-inline-source": "^4.0.0"
+    "gulp-inline-source": "^4.0.0",
+    "gulp-typescript": "^5.0.1"
   }
 }

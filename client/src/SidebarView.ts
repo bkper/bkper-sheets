@@ -12,43 +12,42 @@ $(function() {
 	FetchTabActivity.init();
 });
 
-var view;
+ namespace SidebarView {
 
-var SidebarView = {
+	var selectedTab = 0;
 
-	selectedTab : 0,
+	var view;
 
-	view : {
-		sidebarWrapper : $('#sidebarWrapper'),
-		ledgerSelect : $('#ledgerSelect'),
-		createOpenLedgerLink : $('#createOpenLedgerLink'),
-		openLinkFetch : $('#openLinkFetch'),
-		openLinkRecord : $('#openLinkRecord'),
-		opeButton : $('#opeButton'),
-		tabBar : $('#tab-bar'),
-		tabBarItem1 : $('#tabBarItem1'),
-		tabBarItem2 : $('#tabBarItem2'),
-		tab2Content : $('#tab2Content'),
-		tab1Content : $('#tab1Content'),
-		contentWrapper : $('#contentWrapper'),
-		generalError : $('#generalError'),
-		loadPanel : $('#loadPanel'),
+	export function init() {
 
-	},
+		view = {
+      sidebarWrapper: $('#sidebarWrapper'),
+      ledgerSelect: $('#ledgerSelect'),
+      createOpenLedgerLink: $('#createOpenLedgerLink'),
+      openLinkFetch: $('#openLinkFetch'),
+      openLinkRecord: $('#openLinkRecord'),
+      opeButton: $('#opeButton'),
+      tabBar: $('#tab-bar'),
+      tabBarItem1: $('#tabBarItem1'),
+      tabBarItem2: $('#tabBarItem2'),
+      tab2Content: $('#tab2Content'),
+      tab1Content: $('#tab1Content'),
+      contentWrapper: $('#contentWrapper'),
+      generalError: $('#generalError'),
+      loadPanel: $('#loadPanel'),
+    };
 
-	init : function() {
-		view = this.view;
-		SidebarView.bindUIActions();
-	},
+		bindUIActions();
+	}
 
-	bindUIActions : function() {
-		view.ledgerSelect.change(SidebarView.onLedgerChange);
-		view.loadPanel.click(SidebarView.onClickReload);
-		view.tabBarItem1.click(SidebarView.onClickTabBarItem1);
-		view.tabBarItem2.click(SidebarView.onClickTabBarItem2);
-	},
+	function bindUIActions() {
+		view.ledgerSelect.change(onLedgerChange);
+		view.loadPanel.click(onClickReload);
+		view.tabBarItem1.click(onClickTabBarItem1);
+		view.tabBarItem2.click(onClickTabBarItem2);
+	}
 
-	setLedgers : function(ledgers) {
+	export function setLedgers(ledgers?) {
 
 		if (DEV_MODE) {
 			ledgers = [
@@ -59,14 +58,13 @@ var SidebarView = {
 		}
 
 
-
 		$("option", view.ledgerSelect).remove();
 		view.ledgerSelect.append(new Option("Select a book...", ""));
 
 		var ledgerSelected = false;
 
 		$.each(ledgers, function(index, value) {
-			var valueJSON = JSON.stringify(value);
+      var valueJSON = JSON.stringify(value);
 			var opt = new Option(value.name, valueJSON);
 			if (value.selected) {
 				opt.selected = value.selected;
@@ -77,56 +75,56 @@ var SidebarView = {
 		});
 
 		if (ledgerSelected) {
-			SidebarView.configureSelectedLedger();
+			configureSelectedLedger();
 		}
-	},
+	}
 
-	onClickReload : function() {
+	function onClickReload() {
 		view.generalError.hide();
 		SidebarActivity.reload();
-		SidebarView.selectRecordTab();
-		SidebarView.showContentWrapper(false);
-		SidebarView.disableLedgerSelect(true);
+		selectRecordTab();
+		showContentWrapper(false);
+		disableLedgerSelect(true);
 
 		FetchTabView.disableFetchButton(true);
 		RecordTabView.disableRecordButton(true);
-	},
+	}
 
-	onLedgerChange : function() {
+	function onLedgerChange() {
 		SidebarActivity.saveLastSelectedLedger();
-		SidebarView.configureSelectedLedger();
-	},
+		configureSelectedLedger();
+	}
 
-	configureSelectedLedger : function() {
-		var ledger = SidebarView.getSelectedLedger();
+	function configureSelectedLedger() {
+		var ledger = getSelectedLedger();
 
 		FetchTabView.disableFetchButton(true);
-		SidebarView.configureOpenCreateButton();
+		configureOpenCreateButton();
 
 		if (ledger) {
 			if (ledger.id) {
-				SidebarView.showContentWrapper(true);
+				showContentWrapper(true);
 				if (ledger.permission != "VIEWER") {
 					RecordTabView.disableRecordButton(false);
-					SidebarView.showTabBar(true);
+					showTabBar(true);
 				} else {
-					SidebarView.selectFetchTab();
-					SidebarView.showTabBar(false);
+					selectFetchTab();
+					showTabBar(false);
 				}
 				if (FetchTabView.isFetchVisible()) {
 					FetchTabActivity.loadQueries(ledger.id);
 				}
 			} else {
 				RecordTabView.disableRecordButton(true);
-				SidebarView.showContentWrapper(false);
+				showContentWrapper(false);
 			}
 		} else {
 			RecordTabView.disableRecordButton(true);
-			SidebarView.showContentWrapper(false);
+			showContentWrapper(false);
 		}
-	},
+	}
 
-	loading : function(loading) {
+	export function loading(loading) {
 		if (loading) {
 			view.loadPanel.removeClass("loadPanelLoadingLink");
 			view.loadPanel.addClass("loadPanelLoading");
@@ -135,68 +133,68 @@ var SidebarView = {
 			view.loadPanel.addClass("loadPanelLoadingLink");
 			view.loadPanel.removeClass("loadPanelLoading");
 		}
-	},
+	}
 
-	disableLedgerSelect : function(disable) {
+	export function disableLedgerSelect(disable) {
 		view.ledgerSelect.attr('disabled', disable);
-		SidebarView.configureOpenCreateButton();
-	},
+		configureOpenCreateButton();
+	}
 
 	// GENERAL
 
-	configureOpenButton : function(form) {
-		var appendQuery = (SidebarView.selectedTab == 1);
+	function configureOpenButton(form) {
+		var appendQuery = (selectedTab == 1);
 		var url = SidebarActivity.getOpenURL(form, appendQuery);
 		view.createOpenLedgerLink.attr('href', url);
 		$("button", view.createOpenLedgerLink).text('Open');
 		$("button", view.createOpenLedgerLink).removeClass('create');
 
-	},
+	}
 
-	configureCreateButton : function() {
+	function configureCreateButton() {
 		view.createOpenLedgerLink.attr('href',
 				'https://app.bkper.com/create');
 		$("button", view.createOpenLedgerLink).text('Create');
 		$("button", view.createOpenLedgerLink).addClass('create');
-	},
+	}
 
-	configureOpenCreateButton : function() {
+	export function configureOpenCreateButton() {
 		var form = FetchTabView.getForm();
 		var ledgerId = form.ledgerId;
 
 		if (ledgerId != null && ledgerId.trim() != "") {
-			SidebarView.configureOpenButton(form);
+			configureOpenButton(form);
 		} else {
-			SidebarView.configureCreateButton();
+			configureCreateButton();
 		}
-	},
+	}
 
-	showError : function(msg) {
-		SidebarView.disableLedgerSelect(true);
-		SidebarView.loading(false);
+	export function showError() {
+		disableLedgerSelect(true);
+		loading(false);
 		view.generalError.show();
-	},
+	}
 
-	onClickTabBarItem1 : function() {
-		SidebarView.selectRecordTab();
-	},
+	function onClickTabBarItem1() {
+		selectRecordTab();
+	}
 
-	onClickTabBarItem2 : function() {
-		SidebarView.selectFetchTab();
-	},
+	function onClickTabBarItem2() {
+		selectFetchTab();
+	}
 
-	selectRecordTab : function() {
-		SidebarView.selectedTab = 0;
+	function selectRecordTab() {
+		selectedTab = 0;
 		view.tabBarItem1.addClass("tab-bar-item-selected");
 		view.tabBarItem2.removeClass("tab-bar-item-selected");
 		view.tab2Content.removeClass("hiddenContent");
 		view.tab1Content.addClass("hiddenContent");
-		SidebarView.configureOpenCreateButton();
-	},
+		configureOpenCreateButton();
+	}
 
-	selectFetchTab : function() {
-		SidebarView.selectedTab = 1;
-		var ledger = SidebarView.getSelectedLedger();
+	function selectFetchTab() {
+		selectedTab = 1;
+		var ledger = getSelectedLedger();
 		FetchTabView.disableFetchButton(true);
 		if (ledger) {
 			FetchTabActivity.loadQueries(ledger.id);
@@ -205,53 +203,53 @@ var SidebarView = {
 			view.tab1Content.removeClass("hiddenContent");
 			view.tab2Content.addClass("hiddenContent");
 		}
-	},
+	}
 
-	getSelectedLedger : function() {
+	export function getSelectedLedger() {
 		var ledgerJSON = view.ledgerSelect.val();
 		if (ledgerJSON) {
 			var ledger = JSON.parse(ledgerJSON);
 			return ledger;
 		}
 		return null;
-	},
+	}
 
 
-	showContentWrapper : function(show) {
+	function showContentWrapper(show) {
 		if (show) {
 			view.contentWrapper.show();
 		} else {
 			view.contentWrapper.hide();
 		}
-	},
+	}
 
-	showSidebarWrapper : function(show) {
+	export function showSidebarWrapper(show) {
 		if (show) {
 			view.sidebarWrapper.show();
 		} else {
 			view.sidebarWrapper.hide();
 		}
-	},
+	}
 
-	showTabBar : function(show) {
+	function showTabBar(show) {
 		if (show) {
 			view.tabBar.show();
 		} else {
 			view.tabBar.hide();
 		}
-	},
+	}
 
-	disableRadio : function(radio) {
+	function disableRadio(radio) {
 		radio.attr('disabled', true);
 		radio.prop('checked', false);
-	},
+	}
 
-	enableRadio : function(radio) {
+	function enableRadio(radio) {
 		radio.attr('disabled', false);
-	},
+	}
 
-	getForm : function() {
-		var ledger = SidebarView.getSelectedLedger();
+	export function getForm(): any {
+		var ledger = getSelectedLedger();
 		var ledgerkey = "";
 		if (ledger != null) {
 			ledgerkey = ledger.id;
@@ -260,5 +258,5 @@ var SidebarView = {
 			ledgerId : ledgerkey,
 		}
 		return form;
-	},
+	}
 };
