@@ -1,11 +1,7 @@
 <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
 <LINK rel="stylesheet"  href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css" type="text/css">
 
-<!-- JUST FOR DEVELOPMENT
-<LINK rel="stylesheet" href="SidebarViewCSS.html" type="text/css">
-
-  -->
-<?!= include('SidebarViewCSS'); ?>
+<link inline href="SidebarView.css" rel="stylesheet">
 
 <style>
 .ui-autocomplete {
@@ -167,24 +163,10 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
 
-<!-- JUST FOR DEVELOPTMENT
-<script src="SidebarViewJS.html"></script>
-<script src="FetchTabViewJS.html"></script>
-<script src="RecordTabViewJS.html"></script>
 
-<script src="SidebarActivityJS.html"></script>
-<script src="FetchTabActivityJS.html"></script>
-<script src="RecordTabActivityJS.html"></script>
-
- -->
-
-
-<script>
-  <?!= include('SidebarViewJS'); ?>
-  <?!= include('FetchTabViewJS'); ?>
-  <?!= include('RecordTabViewJS'); ?>
-
-  <?!= include('SidebarActivityJS'); ?>
-  <?!= include('FetchTabActivityJS'); ?>
-  <?!= include('RecordTabActivityJS'); ?>
-</script>
+<script inline src="SidebarView.js"></script>
+<script inline src="FetchTabView.js"></script>
+<script inline src="RecordTabView.js"></script>
+<script inline src="SidebarActivity.js"></script>
+<script inline src="FetchTabActivity.js"></script>
+<script inline src="RecordTabActivity.js"></script>

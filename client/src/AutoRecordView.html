@@ -4,11 +4,7 @@
 
 <link rel="import" href="https://bkper-cdn.appspot.com/polymer/bower_components/paper-toggle-button/paper-toggle-button.html">
 
-  <!-- JUST FOR DEVELOPMENT
-  <LINK rel="stylesheet" href="AutoRecordViewCSS.html" type="text/css">
-  -->
-
-<?!= include('AutoRecordViewCSS'); ?>
+<link inline href="AutoRecordView.css" rel="stylesheet">
 
 <div class="block form-group center">
   <div id="waiting">
@@ -26,16 +22,9 @@
 
 </div>
 
-
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 
-<!-- JUST FOR DEVELOPTMEN
-<script src="AutoRecordActivityJS.html"></script>
-<script src="AutoRecordViewJS.html"></script>
- -->
+<script inline src="AutoRecordActivity.js"></script>
 
-<script>
-<?!= include('AutoRecordActivityJS'); ?>
-<?!= include('AutoRecordViewJS'); ?>
-</script>
+<script inline src="AutoRecordView.js"></script>
+

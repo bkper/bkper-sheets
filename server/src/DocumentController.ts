@@ -28,10 +28,6 @@ function onEdit(e: GoogleAppsScript.Events.SheetsOnEdit){
   fetchStatementDAO.deleteEmptyStatements();
 }
 
-function include(filename: string): string {
-  return HtmlService.createTemplateFromFile(filename).getRawContent();
-}
-
 function getActiveSpreadsheet(): GoogleAppsScript.Spreadsheet.Spreadsheet {
   return Utilities_.retry(function() {
     return SpreadsheetApp.getActiveSpreadsheet();

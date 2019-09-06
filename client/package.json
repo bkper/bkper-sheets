@@ -7,9 +7,11 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf ./dist",
-    "build": "copyfiles -f ./src/*.html dist/"
+    "build": "yarn gulp"
   },
   "devDependencies": {
-    "copyfiles": "^2.1.1"
+    "copyfiles": "^2.1.1",
+    "gulp": "^4.0.2",
+    "gulp-inline-source": "^4.0.0"
   }
 }
