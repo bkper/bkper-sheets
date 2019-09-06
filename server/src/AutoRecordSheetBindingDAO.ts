@@ -1,29 +1,40 @@
 var AUTO_RECORD_BINDER_PREFIX = "bkper_autoRecord_";
 
-function AutoRecordSheetBindingDAO(properties) {
-  
-  this.properties = properties;
+interface AutorecordBinding {
+  sheetId: number
+  bookId: string,
+  currentRow: number,
+  retries: number
+}
 
-  AutoRecordSheetBindingDAO.prototype.saveBinding = function(binding) {
+class AutoRecordSheetBindingDAO {
+
+  private properties: GoogleAppsScript.Properties.Properties;
+
+  constructor(properties: GoogleAppsScript.Properties.Properties) {
+    this.properties = properties;
+  }
+
+  saveBinding(binding: AutorecordBinding) {
     var bindingKey = this.getKey(binding.sheetId);
     var bindingJSON = JSON.stringify(binding);
     this.properties.setProperty(bindingKey, bindingJSON);    
   }
   
-  AutoRecordSheetBindingDAO.prototype.getKey = function(sheetId) {
+  getKey(sheetId: number) {
     var userEmail = Session.getEffectiveUser().getEmail();
     var bindingKey = AUTO_RECORD_BINDER_PREFIX + userEmail + sheetId;
     return bindingKey;
   }
   
-  AutoRecordSheetBindingDAO.prototype.deleteBinding = function(sheetId) {
+  deleteBinding(sheetId: number) {
     var bindingKey = this.getKey(sheetId);
     this.properties.deleteProperty(bindingKey);    
   }
   
-  AutoRecordSheetBindingDAO.prototype.loadBinding = function(sheetId) {
+  loadBinding(sheetId: number) {
     var bindingKey = this.getKey(sheetId);
-    var bindingJSON = properties.getProperty(bindingKey);    
+    var bindingJSON = this.properties.getProperty(bindingKey);    
     if (bindingJSON != null) {
       return JSON.parse(bindingJSON);
     } else {
@@ -31,7 +42,7 @@ function AutoRecordSheetBindingDAO(properties) {
     }
   }  
   
-  AutoRecordSheetBindingDAO.prototype.getBindings = function() {
+  getBindings() {
     var properties = this.properties.getProperties();
     var bindings = new Array();
     var userEmail = Session.getEffectiveUser().getEmail();
@@ -46,12 +57,12 @@ function AutoRecordSheetBindingDAO(properties) {
     return bindings;
   }
   
-    AutoRecordSheetBindingDAO.prototype.getBindingsForSheet = function(sheetId) {
+    getBindingsForSheet(sheetId: number) {
     var properties = this.properties.getProperties();
     var bindings = new Array();
     
     for (var property in properties) {
-      if (property.indexOf(sheetId) > 0) {
+      if (property.indexOf(sheetId+"") > 0) {
         var bindingJSON = properties[property];
         var binding = JSON.parse(bindingJSON);
         bindings.push(binding);

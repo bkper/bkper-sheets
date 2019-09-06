@@ -1,7 +1,23 @@
 function showAutoRecordPopup() {
   if (BkperApp.isUserAuthorized()) {
     var bookId = loadLastSelectedLedger();
-    bkperSpreadsheetsAddonLib.showAutoRecordPopup(bookId);
+    var ui = HtmlService.createTemplateFromFile('AutoRecordView').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setWidth(550).setHeight(155);
+    if (bookId == null) {
+      showSidebar();
+      Browser.msgBox("Please select a book first.")
+      return;
+    }
+    try {
+      var sheetName = SpreadsheetApp.getActiveSheet().getName();
+      var book = BkperApp.getBook(bookId);
+      //Check if user has access to book
+      book.getName();
+      SpreadsheetApp.getUi().showModalDialog(ui, 'Auto-Record new lines from sheet [' + sheetName + ']?');
+    } catch (error) {
+      Utilities_.logError(error);
+      showSidebar();
+      Browser.msgBox("Please select a book first.")    
+    }    
   } else {
     showAuthorizeView_();
   }  
@@ -11,10 +27,10 @@ function loadAutoRecordConfig() {
   var sheet = getActiveSpreadsheet().getActiveSheet();
   var bookId = loadLastSelectedLedger();
   var properties = getDocumentProperties(); 
-  return bkperSpreadsheetsAddonLib.loadAutoRecordConfig(sheet, bookId, properties);
+  return AutoRecordService_.loadAutoRecordConfig(sheet, bookId, properties);
 }
 
-function enableAutoRecord(enable) {
+function enableAutoRecord(enable: boolean): AutorecordConfig {
   var sheet = getActiveSpreadsheet().getActiveSheet();
   var bookId = loadLastSelectedLedger();
   var properties = getDocumentProperties();
@@ -23,9 +39,9 @@ function enableAutoRecord(enable) {
     if (!AutoRecordTrigger.isEnabled()) {
       AutoRecordTrigger.enableTrigger();
     }
-    config = bkperSpreadsheetsAddonLib.enableAutoRecord(sheet, bookId, properties);
+    config = AutoRecordService_.createAutoRecordBinding(sheet, bookId, properties);
   } else {
-    config = bkperSpreadsheetsAddonLib.disableAutoRecord(sheet, bookId, properties);
+    config = AutoRecordService_.deleteAutoRecordBinding(sheet, bookId, properties);
   }
   return config;
 }

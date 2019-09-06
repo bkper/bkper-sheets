@@ -6,9 +6,9 @@
   "author": "Bkper Inc.",
   "private": true,
   "scripts": {
-    "clean": "rm -rf ./dist",
-    "build": "tsc src/Utilities_.ts test/Utilities_.spec.ts --skipLibCheck --sourcemap --outFile dist/bundle.js",
-    "test": "yarn build && mocha --require source-map-support/register dist/bundle.js"
+    "clean": "rm -rf ./build",
+    "build": "tsc --skipLibCheck --sourcemap --outFile build/test-bundle.js --module system",
+    "test": "yarn build && mocha --require source-map-support/register build/test-bundle.js"
   },
   "devDependencies": {
     "@types/chai": "^4.2.1",

@@ -1,35 +1,33 @@
 var AUTORECORD_TRIGGER_FUNCTION = 'triggerBkperAutoRecord';
 
-var AutoRecordTrigger = {
+namespace AutoRecordTrigger {
 
-  enableTrigger: function() {
+  export function enableTrigger() {
     ScriptApp.newTrigger(AUTORECORD_TRIGGER_FUNCTION).forSpreadsheet(getActiveSpreadsheet()).onChange().create();
     ScriptApp.newTrigger(AUTORECORD_TRIGGER_FUNCTION).forSpreadsheet(getActiveSpreadsheet()).onFormSubmit().create();
     ScriptApp.newTrigger(AUTORECORD_TRIGGER_FUNCTION).forSpreadsheet(getActiveSpreadsheet()).onEdit().create();
-    
-  },
+  }
+
+  export function isEnabled() {
+    return get_() != null;   
+  }
   
-  get_: function() {
+  function get_() {
     var triggers = Utilities_.retry<GoogleAppsScript.Script.Trigger[]>(function() {
       return ScriptApp.getUserTriggers(getActiveSpreadsheet());
     });
     
     for (var i = 0; i < triggers.length; i++) {
-      if (AutoRecordTrigger.isAutoRecordTrigger(triggers[i])) {
+      if (isAutoRecordTrigger(triggers[i])) {
         return triggers[i];
       }
     }
     return null;    
-  },
-
+  }
   
-  isEnabled: function() {
-    return AutoRecordTrigger.get_() != null;   
-  },
-  
-  isAutoRecordTrigger:function(trigger) {
+  function isAutoRecordTrigger(trigger: GoogleAppsScript.Script.Trigger) {
     return trigger.getHandlerFunction() == AUTORECORD_TRIGGER_FUNCTION;
-  },
+  }
   
 }
 
@@ -43,7 +41,7 @@ function triggerBkperAutoRecord() {
     lock.waitLock(120000);  
     var spreadsheet = getActiveSpreadsheet();
     var properties = getDocumentProperties();
-    bkperSpreadsheetsAddonLib.processAutoRecord(spreadsheet, properties)
+    AutoRecordService_.processAutoRecord(spreadsheet, properties)
     Utilities.sleep(2000);
     lock.releaseLock();
   } catch (e) {

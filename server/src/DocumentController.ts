@@ -1,5 +1,9 @@
-//@ts-ignore
-BkperApp.APP_KEY = "AIzaSyDvJOj3NEj3qP676HyIBlJ3Upq3kvJcgJw";
+try {
+  //@ts-ignore
+  BkperApp.APP_KEY = "AIzaSyDvJOj3NEj3qP676HyIBlJ3Upq3kvJcgJw";
+} catch (err) {
+  //OK
+}
 
 /**
  * @OnlyCurrentDoc
@@ -52,4 +56,17 @@ function update() {
   } else {
     showAuthorizeView_();
   }
+}
+
+function executeFetch(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, properties: GoogleAppsScript.Properties.Properties, fetchStatement: FetchStatement, range: GoogleAppsScript.Spreadsheet.Range, saveStatement: boolean): void {
+  if (range == null) {
+    range = spreadsheet.getActiveCell();
+  }
+  if(fetchStatement.query.length > 0) {    
+    if (fetchStatement.fetchType == "balances") {
+      BalanceService_.insert(spreadsheet, properties, fetchStatement, range, saveStatement);
+    } else if (fetchStatement.fetchType == "transactions") {
+      TransactionService_.insert(spreadsheet, properties, fetchStatement, range, saveStatement);
+    }
+  }  
 }

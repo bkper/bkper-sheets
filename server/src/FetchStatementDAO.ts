@@ -1,6 +1,6 @@
 var STATEMENT_PREFIX = "bkper_fetch_";
 
-interface Statement {
+interface FetchStatement {
   ledgerId: string,
   query: string,
   rangeName: string,
@@ -18,7 +18,7 @@ class FetchStatementDAO {
     this.spreadsheet = spreadsheet;
   }
 
-  saveStatement(range: GoogleAppsScript.Spreadsheet.Range, statement: Statement) {
+  saveStatement(range: GoogleAppsScript.Spreadsheet.Range, statement: FetchStatement) {
     var rangeName = STATEMENT_PREFIX + Utilities_.generateUID();
     this.spreadsheet.setNamedRange(rangeName, range);
     statement.rangeName = rangeName;
@@ -26,7 +26,7 @@ class FetchStatementDAO {
     this.properties.setProperty(rangeName, statementJSON);    
   }
   
-  updateStatement(statement: Statement): void {
+  updateStatement(statement: FetchStatement): void {
     var rangeName = statement.rangeName;
     var statementJSON = JSON.stringify(statement);
     this.properties.setProperty(rangeName, statementJSON);    
@@ -101,9 +101,9 @@ class FetchStatementDAO {
     return true;
   }  
   
-  getStatements(): Statement[] {
+  getStatements(): FetchStatement[] {
     var properties = this.properties.getProperties();
-    var statements = new Array<Statement>();
+    var statements = new Array<FetchStatement>();
     for (var property in properties) {
       if (property.indexOf(STATEMENT_PREFIX) == 0) {
         Logger.log(property);

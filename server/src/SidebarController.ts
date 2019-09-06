@@ -38,7 +38,7 @@ function loadQueries(ledgerId: string): LedgerQueries {
 	return QueryService_.loadQueries(ledgerId);
 }
 
-function fetchQuery(fetchStatement: Statement) {
+function fetchQuery(fetchStatement: FetchStatement) {
   var spreadsheet = getActiveSpreadsheet();
   var properties = getDocumentProperties();
   executeFetch(spreadsheet, properties, fetchStatement, null, true);

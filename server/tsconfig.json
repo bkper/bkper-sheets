@@ -4,10 +4,10 @@
       "esnext"
     ],
     "target": "ES3",
-    "module": "system",
+    "module": "none",
     "noImplicitUseStrict": true,
     "noImplicitAny": true,
-    "experimentalDecorators": true,
+    "experimentalDecorators": true
   },
   "include": [
     "src/**/*.ts",
@@ -16,6 +16,6 @@
   ],
   "exclude": [
     "node_modules/",
-    "dist/"
+    "build/"
   ]
 }

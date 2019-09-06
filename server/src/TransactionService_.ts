@@ -3,7 +3,7 @@ var RECORD_BACKGROUND_ = '#B0DDBC';
 namespace TransactionService_ {
   
   //insert on spreadsheet
-  export function insert(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, properties: GoogleAppsScript.Properties.Properties, fetchStatement: Statement, range: GoogleAppsScript.Spreadsheet.Range, saveStatement: boolean): void {
+  export function insert(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, properties: GoogleAppsScript.Properties.Properties, fetchStatement: FetchStatement, range: GoogleAppsScript.Spreadsheet.Range, saveStatement: boolean): void {
     var ledger = BkperApp.getBook(fetchStatement.ledgerId);
     
     var builder =  ledger.createTransactionsDataTable(fetchStatement.query);  

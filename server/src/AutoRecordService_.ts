@@ -1,44 +1,49 @@
-var AutoRecordService_ = {
+interface AutorecordConfig {
+  bookName: string,
+  enabled: boolean
+}
+
+namespace AutoRecordService_ {
   
-  createAutoRecordBinding: function(sheet, bookId, properties) {
+  export function createAutoRecordBinding(sheet: GoogleAppsScript.Spreadsheet.Sheet, bookId: string, properties: GoogleAppsScript.Properties.Properties): AutorecordConfig {
     var binding = {
       sheetId: sheet.getSheetId(),
       bookId: bookId,
-      currentRow: AutoRecordService_.getLastRow_(sheet),
+      currentRow: getLastRow_(sheet),
       retries: 0,
     }
     var autoRecordSheetsBindingDAO = new AutoRecordSheetBindingDAO(properties);
     autoRecordSheetsBindingDAO.saveBinding(binding);
-    var config = AutoRecordService_.createAutoRecordConfig_(bookId, true);
+    var config = createAutoRecordConfig_(bookId, true);
     sheet.setTabColor(RECORD_BACKGROUND_);
     return config;    
-  },
+  }
 
-  deleteAutoRecordBinding: function(sheet, bookId, properties) {
+  export function deleteAutoRecordBinding(sheet: GoogleAppsScript.Spreadsheet.Sheet, bookId: string, properties: GoogleAppsScript.Properties.Properties): AutorecordConfig {
     var autoRecordSheetsBindingDAO = new AutoRecordSheetBindingDAO(properties);
     autoRecordSheetsBindingDAO.deleteBinding(sheet.getSheetId());
-    var config = AutoRecordService_.createAutoRecordConfig_(bookId, false);
+    var config = createAutoRecordConfig_(bookId, false);
     var bindingsForSameTab = autoRecordSheetsBindingDAO.getBindingsForSheet(sheet.getSheetId());
     if (bindingsForSameTab.length == 0) {
       sheet.setTabColor(null);
     }
     return config;
-  },
+  }
   
-  loadAutoRecordConfig: function(sheet, bookId, properties) {
+  export function loadAutoRecordConfig(sheet: GoogleAppsScript.Spreadsheet.Sheet, bookId: string, properties: GoogleAppsScript.Properties.Properties): AutorecordConfig {
     var autoRecordSheetsBindingDAO = new AutoRecordSheetBindingDAO(properties);
     var binding = autoRecordSheetsBindingDAO.loadBinding(sheet.getSheetId());
     var config;
     if (binding != null) {
-      config = AutoRecordService_.createAutoRecordConfig_(binding.bookId, true)
+      config = createAutoRecordConfig_(binding.bookId, true)
     } else {
-      config = AutoRecordService_.createAutoRecordConfig_(bookId, false);
+      config = createAutoRecordConfig_(bookId, false);
     }
     return config;
-  },  
+  }
   
-  createAutoRecordConfig_: function(bookId, enabled) {
-    var book = BkperApp.openById(bookId);
+  function createAutoRecordConfig_(bookId: string, enabled: boolean): AutorecordConfig {
+    var book = BkperApp.getBook(bookId);
     var config;
     try {
       config = {
@@ -52,18 +57,18 @@ var AutoRecordService_ = {
       }
     }
     return config;
-  },
+  }
   
-  processAutoRecord: function(spreadsheet, properties) {
+  export function processAutoRecord(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, properties: GoogleAppsScript.Properties.Properties): void {
     var autoRecordSheetsBindingDAO = new AutoRecordSheetBindingDAO(properties);
     var bindings = autoRecordSheetsBindingDAO.getBindings();
     var timeZone = spreadsheet.getSpreadsheetTimeZone();
     for (var i = 0; i < bindings.length; i++) {
       var binding = bindings[i];
-      var sheet = AutoRecordService_.getSheetById_(spreadsheet, binding.sheetId);
+      var sheet = getSheetById_(spreadsheet, binding.sheetId);
       if (sheet != null && binding.retries < 50) {
         try {
-          AutoRecordService_.recordLines_(sheet, binding, autoRecordSheetsBindingDAO, timeZone);
+          recordLines_(sheet, binding, autoRecordSheetsBindingDAO, timeZone);
         } catch (error) {
           Utilities_.logError(error);
           binding.retries++;
@@ -79,13 +84,13 @@ var AutoRecordService_ = {
       }
     }
     
-  },
+  }
   
-  recordLines_: function(sheet, binding, autoRecordSheetsBindingDAO, timeZone) {
+  function recordLines_(sheet: GoogleAppsScript.Spreadsheet.Sheet, binding: AutorecordBinding, autoRecordSheetsBindingDAO: AutoRecordSheetBindingDAO, timeZone: string) {
     var currentRow = binding.currentRow;
-    var lastRow = AutoRecordService_.getLastRow_(sheet);
+    var lastRow = getLastRow_(sheet);
     if (lastRow > currentRow) {
-      var book = BkperApp.openById(binding.bookId);
+      var book = BkperApp.getBook(binding.bookId);
       var lastColumn = sheet.getLastColumn();
       var numberOfRowsToRecord = lastRow - currentRow;
       var range = sheet.getRange(currentRow + 1, 1, numberOfRowsToRecord, lastColumn);
@@ -97,11 +102,11 @@ var AutoRecordService_ = {
       binding.currentRow = lastRow;
       binding.retries = 0;
       autoRecordSheetsBindingDAO.saveBinding(binding);
-      AutoRecordService_.insertLogNote_(book, range, timeZone);
+      insertLogNote_(book, range, timeZone);
     }
-  },
+  }
   
-  insertLogNote_: function(book, range, timeZone) {
+  function insertLogNote_(book: GoogleAppsScript.Bkper.Book, range: GoogleAppsScript.Spreadsheet.Range, timeZone: string) {
     var note = range.getNote();
     if (note != null && note != "") {
       note += " | ";
@@ -124,15 +129,15 @@ var AutoRecordService_ = {
     
     range.setNotes(notes);
     
-  },
+  }
   
-  getLastRow_: function(sheet) {
+  function getLastRow_(sheet: GoogleAppsScript.Spreadsheet.Sheet) {
     var values = sheet.getDataRange().getValues();
-    values = BkperUtils.removeEmptyRowsAtEnd(values, AutoRecordService_.isRowEmpty_);
+    values = Utilities_.removeEmptyRowsAtEnd(values, isRowEmpty_);
     return values.length;
-  },
+  }
   
-  getSheetById_: function(ss, id) {
+  function getSheetById_(ss: GoogleAppsScript.Spreadsheet.Spreadsheet, id: number) {
     var sheets = ss.getSheets();
     for (var i=0; i<sheets.length; i++) {
       if (sheets[i].getSheetId() == id) {
@@ -140,21 +145,21 @@ var AutoRecordService_ = {
       }
     }
     return;
-  },
+  }
   
-  isRowEmpty_: function(row) {
+  function isRowEmpty_(row: any[]): boolean {
     var rowStr = row.join("").trim();
     
     if (rowStr == "") {
       return true;
     }
     
-    if (rowStr == 0) {
+    if (rowStr == '0') {
       return true;
     }
     
     return false;
-  },
+  }
   
   
 }

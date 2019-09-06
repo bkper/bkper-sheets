@@ -2,7 +2,7 @@ namespace BalanceService_ {
 
 
   //insert on spreadsheet
-  export function insert(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, properties: GoogleAppsScript.Properties.Properties, fetchStatement: Statement, range: GoogleAppsScript.Spreadsheet.Range, saveStatement: boolean): void {  
+  export function insert(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, properties: GoogleAppsScript.Properties.Properties, fetchStatement: FetchStatement, range: GoogleAppsScript.Spreadsheet.Range, saveStatement: boolean): void {  
     var ledger = LedgerService_.loadLedger(fetchStatement.ledgerId);
     
 	var balances = ledger.getBalancesReport(fetchStatement.query);
