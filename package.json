@@ -6,11 +6,22 @@
   "author": "Bkper Inc.",
   "private": true,
   "scripts": {
-    "clean": "rm -rf ./dist",
     "clasp": "./node_modules/.bin/clasp",
+    "clean:client": "yarn --cwd client/ clean",
+    "clean:server": "yarn --cwd server/ clean",
+    "clean": "yarn clean:server && yarn clean:client && rm -rf ./dist",
+    "copy:client": "copyfiles -f client/dist/* dist/",
+    "copy:server": "copyfiles -f server/src/* dist/",
+    "copy": "yarn copy:server && yarn copy:client",
+    "build:client": "yarn --cwd client/ build",
+    "build:server": "yarn --cwd server/ build",
+    "build": "yarn clean && yarn build:client && yarn build:server",
+    "postbuild": "yarn copy",
+    "prepush": "yarn build",
     "push": "yarn run clasp push"
-  },  
+  },
   "devDependencies": {
-    "@google/clasp": "^2.2.1"
+    "@google/clasp": "^2.2.1",
+    "copyfiles": "^2.1.1"
   }
 }

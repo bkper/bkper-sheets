@@ -1,6 +1,6 @@
-var BALANCE_TYPE_TOTAL_ = "total";
-var BALANCE_TYPE_PERIOD_ = "period";
-var BALANCE_TYPE_CUMULATIVE_ = "cumulative";
+var BALANCE_TYPE_TOTAL_ = "TOTAL";
+var BALANCE_TYPE_PERIOD_ = "PERIOD";
+var BALANCE_TYPE_CUMULATIVE_ = "CUMULATIVE";
 
 function showSidebar(): void {
   if (BkperApp.isUserAuthorized()) {
