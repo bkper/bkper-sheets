@@ -1,12 +1,9 @@
 {
   "name": "bkper-sheets-server",
-  "version": "1",
-  "description": "Bkper Sheets Add-on server module",
-  "repository": "https://github.com/bkper/bkper-sheets.git",
-  "author": "Bkper Inc.",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
-    "clean": "rm -rf ./build",
+    "clean": "rimraf build",
     "build": "tsc --skipLibCheck --sourcemap --outFile build/test-bundle.js --module system",
     "postbuild": "yarn test",
     "test": "mocha --require source-map-support/register build/test-bundle.js"
@@ -17,6 +14,7 @@
     "@types/mocha": "^5.2.7",
     "chai": "^4.2.0",
     "mocha": "^6.2.0",
+    "rimraf": "^3.0.0",
     "source-map-support": "^0.5.13"
   }
 }

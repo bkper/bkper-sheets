@@ -1,19 +1,21 @@
 {
   "name": "bkper-sheets-client",
-  "version": "1",
-  "description": "Bkper Sheets Add-on client module",
-  "repository": "https://github.com/bkper/bkper-sheets.git",
-  "author": "Bkper Inc.",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
-    "clean": "rm -rf ./dist && rm -rf ./build",
-    "build": "yarn gulp"
+    "clean": "rimraf dist build",
+    "build": "npm-run-all clean build:*",
+      "build:transpile": "tsc --outDir build",
+      "build:copy": "copyfiles -f -e '**/*.ts' src/* build",
+      "build:inline": "mkdirp dist && glob-exec --foreach './build/**/*.html' --  'cat {{file}} | inline-source --root build > dist/{{file.name}}{{file.ext}}'"
   },
   "devDependencies": {
     "@types/jquery": "^3.3.31",
     "copyfiles": "^2.1.1",
-    "gulp": "^4.0.2",
-    "gulp-inline-source": "^4.0.0",
-    "gulp-typescript": "^5.0.1"
+    "glob-exec": "^0.1.1",
+    "inline-source-cli": "^1.2.0",
+    "mkdirp": "^0.5.1",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.0"
   }
 }
