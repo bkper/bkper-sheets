@@ -51,8 +51,8 @@ namespace QueryService_ {
     return ledger.getGroups().filter(group => group.hasAccounts()).map(group => {
       return {
         title: group.getName(),
-        query: `acc:'${group.getName()}'`,
-        category: QUERY_CATEGORY_ACCOUNT_
+        query: `group:'${group.getName()}'`,
+        category: QUERY_CATEGORY_GROUP_
       }
     }).sort(queryComparator_);
   }

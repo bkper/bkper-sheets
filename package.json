@@ -6,6 +6,7 @@
   "author": "Bkper Inc.",
   "private": true,
   "scripts": {
+    "open": "clasp open",
     "clean:dist": "rimraf dist",
     "clean:client": "yarn --cwd client/ clean",
     "clean:server": "yarn --cwd server/ clean",
