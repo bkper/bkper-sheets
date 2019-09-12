@@ -26,10 +26,44 @@ declare namespace google {
 
     /**
      */
+    export interface FetchStatement {
+
+      balanceType: GoogleAppsScript.Bkper.BalanceType;
+
+      fetchType: string;
+
+      lastUpdate: number;
+
+      ledgerId: string;
+
+      query: string;
+
+      rangeName: string;
+
+    }
+
     /**
      */
+    export interface LedgerQueries {
+
+      ledgerId: string;
+
+      queries: undefined;
+
+    }
+
     /**
      */
+    export interface Query {
+
+      category: string;
+
+      query: string;
+
+      title: string;
+
+    }
+
   }
 
 }
