@@ -8,6 +8,9 @@ function showAutoUpdatePopup() {
   }  
 }
 
+/**
+ * @public
+ */
 function loadAutoUpdateConfig() {
   var spreadsheet = getActiveSpreadsheet();
   var properties = getDocumentProperties();  
@@ -19,6 +22,9 @@ function loadAutoUpdateConfig() {
   return config;
 }
 
+/**
+ * @public
+ */
 function enableAutoUpdate(enable: boolean): { enabled: boolean, statusText: string}   {
   
   if (enable) {

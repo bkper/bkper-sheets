@@ -19,7 +19,8 @@
     "build": "run-p clean build:*",
     "postbuild": "yarn copy",
     "prepush": "yarn build",
-    "push": "yarn clasp push"
+    "push": "yarn clasp push",
+    "dts": "clasp-dts --gsrun --src server/src --out client/@types"
   },
   "devDependencies": {
     "@google/clasp": "^2.2.1",

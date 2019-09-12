@@ -2,12 +2,18 @@ var QUERY_CATEGORY_SAVED_ = "Saved Queries";
 var QUERY_CATEGORY_ACCOUNT_ = "Accounts";
 var QUERY_CATEGORY_GROUP_ = "Groups";
 
+/**
+ * @public
+ */
 interface Query {
   title: string,
   query: string,
   category: string
 }
 
+/**
+ * @public
+ */
 interface LedgerQueries {
   ledgerId: string,
   queries: Query[]

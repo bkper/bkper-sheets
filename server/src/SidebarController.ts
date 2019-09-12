@@ -11,12 +11,18 @@ function showSidebar(): void {
   }
 }
 
+/**
+ * @public
+ */
 function checkUserAuthorized() {
   if (BkperApp.isUserAuthorized()) {
     showSidebar();
   }
 }
 
+/**
+ * @public
+ */
 function loadLedgers(): {id: string, name: string, permission : GoogleAppsScript.Bkper.Permission, selected: boolean}[] {
   try {
     var ledgers = LedgerService_.loadLedgers();
@@ -30,14 +36,23 @@ function loadLedgers(): {id: string, name: string, permission : GoogleAppsScript
   }  
 }
 
+/**
+ * @public
+ */
 function recordLines(ledgerId: string, highlight: boolean): boolean {
   return TransactionService_.record(ledgerId, highlight);
 }
 
+/**
+ * @public
+ */
 function loadQueries(ledgerId: string): LedgerQueries {
 	return QueryService_.loadQueries(ledgerId);
 }
 
+/**
+ * @public
+ */
 function fetchQuery(fetchStatement: FetchStatement) {
   var spreadsheet = getActiveSpreadsheet();
   var properties = getDocumentProperties();
@@ -52,6 +67,9 @@ function loadLastSelectedLedger() {
   return getDocumentProperties().getProperty(getRecordTemplatesKey());
 }
 
+/**
+ * @public
+ */
 function saveLastSelectedLedger(ledgerId: string): void {
   if (ledgerId != null) {
     getDocumentProperties().setProperty(getRecordTemplatesKey(), ledgerId);

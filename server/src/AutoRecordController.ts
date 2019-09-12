@@ -30,6 +30,9 @@ function loadAutoRecordConfig() {
   return AutoRecordService_.loadAutoRecordConfig(sheet, bookId, properties);
 }
 
+/**
+ * @public 
+ */
 function enableAutoRecord(enable: boolean): AutorecordConfig {
   var sheet = getActiveSpreadsheet().getActiveSheet();
   var bookId = loadLastSelectedLedger();

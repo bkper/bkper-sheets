@@ -1,5 +1,8 @@
 var STATEMENT_PREFIX = "bkper_fetch_";
 
+/**
+ * @public
+ */
 interface FetchStatement {
   ledgerId: string,
   query: string,
