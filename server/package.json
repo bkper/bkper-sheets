@@ -4,19 +4,22 @@
   "private": true,
   "scripts": {
     "clean": "rimraf build",
-    "build": "tsc --skipLibCheck --sourcemap --outFile build/test-bundle.js --module system",
-    "postbuild": "yarn test",
-    "test": "mocha --require source-map-support/register build/test-bundle.js"
+    "build": "yarn test",
+    "test": "run-s test:*",
+    "test:bundle": "tsc --skipLibCheck --sourcemap --outFile build/test-bundle.js --module system",
+    "test:run": "mocha --require source-map-support/register build/test-bundle.js"
   },
   "devDependencies": {
+    "@bkper/bkper-app-dts": "file:../../bkper-app/dts",
     "@types/chai": "^4.2.1",
     "@types/google-apps-script": "^0.0.58",
     "@types/mocha": "^5.2.7",
+    "@types/node": "^12.7.5",
     "chai": "^4.2.0",
     "mocha": "^6.2.0",
+    "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.0",
-    "source-map-support": "^0.5.13",
-    "@bkper/bkperapp": "file:../../bkper-app/dist"
+    "source-map-support": "^0.5.13"
   },
   "dependencies": {}
 }

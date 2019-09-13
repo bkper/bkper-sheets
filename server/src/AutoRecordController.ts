@@ -23,6 +23,9 @@ function showAutoRecordPopup() {
   }  
 }
 
+/**
+ * @public
+ */
 function loadAutoRecordConfig() {
   var sheet = getActiveSpreadsheet().getActiveSheet();
   var bookId = loadLastSelectedLedger();

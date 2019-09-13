@@ -39,11 +39,11 @@ namespace QueryService_ {
 
   }
 
-  function filterBalanceSavedQueries_(ledger: GoogleAppsScript.Bkper.Book): Query[] {
+  function filterBalanceSavedQueries_(ledger: bkper.Book): Query[] {
     return ledger.getSavedQueries().map(query => {return {...query, category: QUERY_CATEGORY_SAVED_}}).sort(queryComparator_);
   }
 
-  function createAccountQueries_(ledger: GoogleAppsScript.Bkper.Book): Query[] {
+  function createAccountQueries_(ledger: bkper.Book): Query[] {
     return ledger.getAccounts().filter(account => account.isActive()).map(account => {
       return {
         title: account.getName(),
@@ -53,7 +53,7 @@ namespace QueryService_ {
     }).sort(queryComparator_);
   }
   
-  function createGroupQueries_(ledger: GoogleAppsScript.Bkper.Book): Query[] {
+  function createGroupQueries_(ledger: bkper.Book): Query[] {
     return ledger.getGroups().filter(group => group.hasAccounts()).map(group => {
       return {
         title: group.getName(),
@@ -63,8 +63,8 @@ namespace QueryService_ {
     }).sort(queryComparator_);
   }
   
-  function getFirstAccountNameOnString_(queryString: string, accountsArray: GoogleAppsScript.Bkper.Account[]): GoogleAppsScript.Bkper.Account {
-    var correctAccount: GoogleAppsScript.Bkper.Account;
+  function getFirstAccountNameOnString_(queryString: string, accountsArray: bkper.Account[]): bkper.Account {
+    var correctAccount: bkper.Account;
     var largestAccountName = 0;
     
     for (var j = 0; j < accountsArray.length; j++) {

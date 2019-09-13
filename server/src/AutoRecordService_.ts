@@ -109,7 +109,7 @@ namespace AutoRecordService_ {
     }
   }
   
-  function insertLogNote_(book: GoogleAppsScript.Bkper.Book, range: GoogleAppsScript.Spreadsheet.Range, timeZone: string) {
+  function insertLogNote_(book: bkper.Book, range: GoogleAppsScript.Spreadsheet.Range, timeZone: string) {
     var note = range.getNote();
     if (note != null && note != "") {
       note += " | ";

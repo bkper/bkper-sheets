@@ -3,7 +3,7 @@
   "compilerOptions": {
     "lib": ["esnext", "dom"],
     "target": "ES5",
-    "noImplicitAny": false,
+    "noImplicitAny": false
   },
   "include": [
     "src/**/*.ts",

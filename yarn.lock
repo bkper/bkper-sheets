@@ -82,11 +82,6 @@
     "@types/minimatch" "*"
     "@types/node" "*"
 
-"@types/google-apps-script@^0.0.59":
-  version "0.0.59"
-  resolved "https://registry.yarnpkg.com/@types/google-apps-script/-/google-apps-script-0.0.59.tgz#d248ea06895e12136891ff7f2103431f79ca6689"
-  integrity sha512-P3vuBBvpaEtpkRuMIuxXh1vZ6UiKMETnXBfPvyn8egWHxNHgISfUC+pDs6uni/MrgFd9KySA6h9ckKQ/mRPWKw==
-
 "@types/minimatch@*", "@types/minimatch@^3.0.3":
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.3.tgz#3dca0e3f33b200fc7d1139c0cd96c1268cadfd9d"

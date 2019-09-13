@@ -23,7 +23,7 @@ function checkUserAuthorized() {
 /**
  * @public
  */
-function loadLedgers(): {id: string, name: string, permission : GoogleAppsScript.Bkper.Permission, selected: boolean}[] {
+function loadLedgers(): {id: string, name: string, permission : bkper.Permission, selected: boolean}[] {
   try {
     var ledgers = LedgerService_.loadLedgers();
     var lastSelectedLedger = loadLastSelectedLedger();

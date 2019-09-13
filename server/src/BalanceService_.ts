@@ -23,7 +23,7 @@ namespace BalanceService_ {
     }
   }
 
-  function getBalancesDataTable_(balanceReport: GoogleAppsScript.Bkper.BalancesReport, balanceType: GoogleAppsScript.Bkper.BalanceType): any[][] {
+  function getBalancesDataTable_(balanceReport: bkper.BalancesReport, balanceType: "CUMULATIVE" | "PERIOD" | "TOTAL"): any[][] {
     var tableBuilder = null;
     if (balanceType == BALANCE_TYPE_TOTAL_) {
       if (balanceReport.hasOnlyOneGroup()) {
@@ -41,7 +41,7 @@ namespace BalanceService_ {
     return tableBuilder.build();
   }  
   
-  function getNumberFormats_(table: any[][], balanceType: GoogleAppsScript.Bkper.BalanceType, periodicity: GoogleAppsScript.Bkper.Periodicity, datePattern: string, fractionDigits: number) {
+  function getNumberFormats_(table: any[][], balanceType: "CUMULATIVE" | "PERIOD" | "TOTAL", periodicity: bkper.Periodicity, datePattern: string, fractionDigits: number) {
     var formatsTable = new Array();
     var numberFormatPattern = Utilities_.getNumberFormatPattern(fractionDigits);
     var dateFormatPattern = getDateFormatPattern_(periodicity, datePattern);
@@ -65,7 +65,7 @@ namespace BalanceService_ {
     return formatsTable;
   }
     
-  function getDateFormatPattern_(periodicity: GoogleAppsScript.Bkper.Periodicity, datePattern: string) {
+  function getDateFormatPattern_(periodicity: bkper.Periodicity, datePattern: string) {
     if (periodicity == BkperApp.Periodicity.DAILY) {
       return datePattern;
     } else if (periodicity == BkperApp.Periodicity.MONTHLY) {
