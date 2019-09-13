@@ -3,12 +3,12 @@
   "compilerOptions": {
     "lib": [ "esnext" ],
     "target": "ES3",
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "typeRoots" : ["./node_modules/@types", "./node_modules/@bkper", "./@types"]
   },  
   "include": [
     "src/**/*.ts",
-    "test/**/*.ts",
-    "@types/**/*.d.ts"
+    "test/**/*.ts"
   ],
   "exclude": [
     "node_modules/",

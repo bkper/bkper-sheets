@@ -15,6 +15,8 @@
     "chai": "^4.2.0",
     "mocha": "^6.2.0",
     "rimraf": "^3.0.0",
-    "source-map-support": "^0.5.13"
-  }
+    "source-map-support": "^0.5.13",
+    "@bkper/bkperapp": "file:../../bkper-app/dist"
+  },
+  "dependencies": {}
 }
