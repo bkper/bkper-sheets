@@ -1,3 +1,6 @@
+/**
+ * @public
+ */
 interface AutorecordConfig {
   bookName: string,
   enabled: boolean

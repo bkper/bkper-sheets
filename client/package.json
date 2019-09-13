@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "clean": "rimraf dist build",
+    "clean": "rimraf dist build @types/google.script.run",
     "server": "live-server build --port=5000",
     "build": "run-s clean build:*",
     "build:transpile": "tsc --outDir build",

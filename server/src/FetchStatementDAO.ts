@@ -8,7 +8,7 @@ interface FetchStatement {
   query: string,
   rangeName: string,
   fetchType: string,
-  balanceType?: GoogleAppsScript.Bkper.BalanceType;
+  balanceType?: "CUMULATIVE" | "PERIOD" | "TOTAL";
   lastUpdate: number
 }
 class FetchStatementDAO {
