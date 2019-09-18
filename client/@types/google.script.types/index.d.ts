@@ -32,8 +32,6 @@ declare namespace google {
 
         }
 
-        /**
-         */
         export interface AutorecordConfig {
 
             bookName: string;
@@ -42,8 +40,6 @@ declare namespace google {
 
         }
 
-        /**
-         */
         export interface FetchStatement {
 
             balanceType: "CUMULATIVE" | "PERIOD" | "TOTAL";
@@ -60,8 +56,6 @@ declare namespace google {
 
         }
 
-        /**
-         */
         export interface LedgerQueries {
 
             ledgerId: string;
@@ -70,8 +64,6 @@ declare namespace google {
 
         }
 
-        /**
-         */
         export interface Query {
 
             category: string;

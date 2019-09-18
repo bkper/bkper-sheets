@@ -25,16 +25,16 @@ namespace BalanceService_ {
 
   function getBalancesDataTable_(balanceReport: bkper.BalancesReport, balanceType: "CUMULATIVE" | "PERIOD" | "TOTAL"): any[][] {
     var tableBuilder = null;
-    if (balanceType == BALANCE_TYPE_TOTAL_) {
+    if (balanceType.toUpperCase() == BALANCE_TYPE_TOTAL_) {
       if (balanceReport.hasOnlyOneGroup()) {
         tableBuilder = balanceReport.getBalancesContainers()[0].createDataTable();
       } else {
         tableBuilder = balanceReport.createDataTable();
       }
-    } else if (balanceType == BALANCE_TYPE_CUMULATIVE_) {
+    } else if (balanceType.toUpperCase() == BALANCE_TYPE_CUMULATIVE_) {
       tableBuilder = balanceReport.createDataTable();
       tableBuilder.setBalanceType(BkperApp.BalanceType.CUMULATIVE);
-    } else if (balanceType == BALANCE_TYPE_PERIOD_) {
+    } else if (balanceType.toUpperCase() == BALANCE_TYPE_PERIOD_) {
       tableBuilder = balanceReport.createDataTable();
       tableBuilder.setBalanceType(BkperApp.BalanceType.PERIOD);
     }

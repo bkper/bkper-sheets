@@ -4,8 +4,8 @@
     "lib": [ "esnext" ],
     "target": "ES3",
     "noImplicitAny": true,
-    "typeRoots" : ["./node_modules/@types", "./node_modules/@bkper", "./@types"]
-  },  
+    "typeRoots" : ["node_modules/@bkper", "node_modules/@types" ]
+    },  
   "include": [
     "src/**/*.ts",
     "test/**/*.ts"

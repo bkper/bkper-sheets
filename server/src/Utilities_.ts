@@ -86,6 +86,8 @@ namespace Utilities_ {
       return hours.toFixed(0) + " hours ago";
     }
 
+    timeZone = timeZone + "";
+
     if (realtiveTo.getFullYear() == date.getFullYear() && realtiveTo.getMonth() == date.getMonth() && realtiveTo.getDate() == date.getDate()) {
       return "today, " + Utilities.formatDate(date, timeZone, "h:mm a");
     }
