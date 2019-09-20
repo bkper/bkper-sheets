@@ -18,14 +18,17 @@
     "build:server": "yarn --cwd server/ build",
     "build": "run-p clean build:*",
     "postbuild": "yarn copy",
-    "prepush": "yarn build",
-    "push": "yarn clasp push"
+    "watch": "run-p watch:*",
+    "watch:server": "watch 'yarn copy:server' ./server/src",
+    "watch:push": "watch 'yarn push' ./dist --wait 5",
+    "push": "yarn clasp push --force"
   },
   "devDependencies": {
-    "@google/clasp": "^2.2.1",
+    "@google/clasp": "^2.3.0",
     "copyfiles": "^2.1.1",
     "npm-run-all": "^4.1.5",
-    "rimraf": "^3.0.0"
+    "rimraf": "^3.0.0",
+    "watch": "^1.0.2"
   },
   "dependencies": {}
 }

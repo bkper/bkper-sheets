@@ -44,7 +44,7 @@ declare namespace google {
 
             balanceType: "CUMULATIVE" | "PERIOD" | "TOTAL";
 
-            fetchType: string;
+            fetchType: "transactions" | "balances";
 
             lastUpdate: number;
 

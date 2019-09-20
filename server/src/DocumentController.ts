@@ -62,7 +62,7 @@ function executeFetch(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, pro
     if (fetchStatement.fetchType == "balances") {
       BalanceService_.insert(spreadsheet, properties, fetchStatement, range, saveStatement);
     } else if (fetchStatement.fetchType == "transactions") {
-      TransactionService_.insert(spreadsheet, properties, fetchStatement, range, saveStatement);
+      TransactionService_.insert(spreadsheet, fetchStatement, range);
     }
   }  
 }

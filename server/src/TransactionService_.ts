@@ -3,66 +3,57 @@ var RECORD_BACKGROUND_ = '#B0DDBC';
 namespace TransactionService_ {
   
   //insert on spreadsheet
-  export function insert(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, properties: GoogleAppsScript.Properties.Properties, fetchStatement: FetchStatement, range: GoogleAppsScript.Spreadsheet.Range, saveStatement: boolean): void {
-    var ledger = BkperApp.getBook(fetchStatement.ledgerId);
+  export function insert(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, fetchStatement: FetchStatement, range: GoogleAppsScript.Spreadsheet.Range): void {
     
-    var builder =  ledger.createTransactionsDataTable(fetchStatement.query);  
-    
-    var transactions = builder.addUrls().build();
-    if (transactions.length > 0 && transactions[0].length > 0) {
-      var newRange = Utilities_.getRangeForTable(spreadsheet, transactions, range);
-      var fetchStatementDAO = new FetchStatementDAO(spreadsheet, properties);
-      if (saveStatement) {
-        fetchStatementDAO.deletePreviousStatementAtSameRange(newRange);      
-        fetchStatementDAO.saveStatement(newRange, fetchStatement);      
-      } else {
-        range.clearContent();
-      }
+    // var transactions = builder.addUrls().build();
+    // if (transactions.length > 0 && transactions[0].length > 0) {
+    //   var newRange = Utilities_.getRangeForTable(spreadsheet, transactions, range);
 
-      newRange.setValues(transactions);
+
+    //   newRange.setValues(transactions);
       
-      var filteredByAccount = builder.getFilteredByAccount();
-      var isFilterByPermanentAcc = filteredByAccount != null && filteredByAccount.isPermanent();
-      var dateFormatPattern = ledger.getDatePattern();
-      var fractionDigits = ledger.getFractionDigits();
-      var numberFormats = getNumberFormats_(transactions, isFilterByPermanentAcc, dateFormatPattern, fractionDigits);
-      newRange.setNumberFormats(numberFormats);      
+    //   var filteredByAccount = builder.getFilteredByAccount();
+    //   var isFilterByPermanentAcc = filteredByAccount != null && filteredByAccount.isPermanent();
+    //   var dateFormatPattern = ledger.getDatePattern();
+    //   var fractionDigits = ledger.getFractionDigits();
+    //   var numberFormats = getNumberFormats_(transactions, isFilterByPermanentAcc, dateFormatPattern, fractionDigits);
+    //   newRange.setNumberFormats(numberFormats);      
       
-    } else {
-      Browser.msgBox("No data matched your search.");
-    }
+    // } else {
+    //   Browser.msgBox("No data matched your search.");
+    // }
   }
   
-  function getNumberFormats_(table: any[][], isFilterByPermanentAcc: boolean, dateFormatPattern: string, fractionDigits: number): string[][] {
-    var formatsTable = new Array<Array<string>>();
-    var numberFormatPattern = Utilities_.getNumberFormatPattern(fractionDigits);
-    for(var i = 0; i < table.length; i++) {
-      var formatsRow = new Array()
-      for(var j = 0; j < table[i].length; j++) {
-        if (j == 0) {
-          //Date - first column
-          formatsRow.push(dateFormatPattern);
-        } else if (isAmountColumn_(j, isFilterByPermanentAcc)) {
-          //Amount
-          formatsRow.push(numberFormatPattern);
-        } else if (isTimestampColumn_(j, isFilterByPermanentAcc)) {
-          formatsRow.push(dateFormatPattern + " HH:mm")
-        }else {
-          formatsRow.push("@");
-        }
-      }
-      formatsTable.push(formatsRow);
-    }
-    return formatsTable;
-  }
+  // function getNumberFormats_(table: any[][], isFilterByPermanentAcc: boolean, dateFormatPattern: string, fractionDigits: number): string[][] {
+  //   var formatsTable = new Array<Array<string>>();
+  //   var numberFormatPattern = Utilities_.getNumberFormatPattern(fractionDigits);
+  //   for(var i = 0; i < table.length; i++) {
+  //     var formatsRow = new Array()
+  //     for(var j = 0; j < table[i].length; j++) {
+  //       if (j == 0) {
+  //         //Date - first column
+  //         formatsRow.push(dateFormatPattern);
+  //       } else if (isAmountColumn_(j, isFilterByPermanentAcc)) {
+  //         //Amount
+  //         formatsRow.push(numberFormatPattern);
+  //       } else if (isTimestampColumn_(j, isFilterByPermanentAcc)) {
+  //         formatsRow.push(dateFormatPattern + " HH:mm")
+  //       }else {
+  //         formatsRow.push("@");
+  //       }
+  //     }
+  //     formatsTable.push(formatsRow);
+  //   }
+  //   return formatsTable;
+  // }
   
-  function isAmountColumn_(index: number, isFilterByPermanentAcc: boolean): boolean {
-    return (isFilterByPermanentAcc && (index == 5)) || (!isFilterByPermanentAcc && index == 4);
-  }
+  // function isAmountColumn_(index: number, isFilterByPermanentAcc: boolean): boolean {
+  //   return (isFilterByPermanentAcc && (index == 5)) || (!isFilterByPermanentAcc && index == 4);
+  // }
   
-  function isTimestampColumn_(index: number, isFilterByPermanentAcc: boolean): boolean {
-    return (isFilterByPermanentAcc && (index == 6)) || (!isFilterByPermanentAcc && index == 5);
-  }
+  // function isTimestampColumn_(index: number, isFilterByPermanentAcc: boolean): boolean {
+  //   return (isFilterByPermanentAcc && (index == 6)) || (!isFilterByPermanentAcc && index == 5);
+  // }
   
   export function record(ledgerId: string, highlight: boolean): boolean {
     var activeSS = SpreadsheetApp.getActiveSpreadsheet();

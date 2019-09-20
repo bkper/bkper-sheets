@@ -7,7 +7,7 @@ interface FetchStatement {
   ledgerId: string,
   query: string,
   rangeName: string,
-  fetchType: string,
+  fetchType: "transactions" | "balances",
   balanceType?: "CUMULATIVE" | "PERIOD" | "TOTAL";
   lastUpdate: number
 }
