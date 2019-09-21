@@ -13,52 +13,36 @@ namespace UpdateService_ {
         if (Formula.isBkperFormula(formulaStr)) {
           let formula = Formula.parseString(formulaStr);
           formula.switch();
-          //TODOCheck if book was updated
+          //TODO Check if book was updated
+          //TODO Only update if permission ok
           range.setFormula(formula.toString());
         }
       })
     }
-    // try {
-    //   var fetchStatementDAO = new FetchStatementDAO(spreadsheet, properties);
-    //   var statements = fetchStatementDAO.getStatements();
-    //   for (var i = 0; i < statements.length; i++) {
-    //     var statement = statements[i];
-    //     var ledger = LedgerService_.loadLedger(statement.ledgerId);
-    //     try {
-    //       if (autoUpdate) {
-    //         if (statement.lastUpdate != null && ledger.getLastUpdateMs() == statement.lastUpdate) {
-    //           //Book was not updated! Go to next statement
-    //           Logger.log("Avoiding fetch. Book was not updated!");
-    //           continue;
-    //         } else {
-    //           //Update last update
-    //           statement.lastUpdate = ledger.getLastUpdateMs();
-    //           new Date().getTime
-    //           fetchStatementDAO.updateStatement(statement);
-    //         }
-    //       }
 
-    //       Logger.log("Fetching from Book...");
+    UpdateService_.setLastUpdate(properties);
 
-    //       var range = spreadsheet.getRangeByName(statement.rangeName);
-    //       if (range != null) {
-    //         executeFetch(spreadsheet, properties, statement, range, false);
-    //       }
-    //     } catch (error) {
-    //       var errorMsg = error + "";
-    //       if (errorMsg.indexOf("code 401") >= 0) {
-    //         Logger.log("Attempt to fetch from a non authorized ledger.");
-    //       } else {
-    //         fetchStatementDAO.deleteEmptyStatements();
-    //         throw error;
-    //       }
-    //     }
-    //   }
-      UpdateService_.setLastUpdate(properties);
-    // } catch (error) {
-    //   Utilities_.logError(error);
-    //   UpdateService_.setLastUpdateError(properties, error + "");
-    // }
+    //Migration
+    var fetchStatementDAO = new FetchStatementDAO(spreadsheet, properties);
+    var statements = fetchStatementDAO.getStatements();
+    for (var i = 0; i < statements.length; i++) {
+      var statement = statements[i];
+      var range = spreadsheet.getRangeByName(statement.rangeName);
+      if (range != null) {
+        range.clear();
+        executeFetch(spreadsheet, statement, range, false);
+        fetchStatementDAO.deleteStatement(statement.rangeName);
+      }
+    }
+
+    let namedRanges = spreadsheet.getNamedRanges();
+    if (namedRanges != null) {
+      namedRanges.forEach(namedRange => {
+        if (namedRange.getName().indexOf("bkper_fetch") >= 0) {
+          fetchStatementDAO.deleteStatement(namedRange.getName());
+        }
+      })
+    }
 
   }
 

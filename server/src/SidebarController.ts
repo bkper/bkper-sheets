@@ -55,8 +55,7 @@ function loadQueries(ledgerId: string): LedgerQueries {
  */
 function fetchQuery(fetchStatement: FetchStatement) {
   var spreadsheet = getActiveSpreadsheet();
-  var properties = getDocumentProperties();
-  executeFetch(spreadsheet, properties, fetchStatement, null, true);
+  executeFetch(spreadsheet, fetchStatement, null, true);
 }
 
 function getRecordTemplatesKey() {

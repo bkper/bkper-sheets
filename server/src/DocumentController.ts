@@ -21,13 +21,6 @@ function onInstall() {
   onOpen();
 }
 
-function onEdit(e: GoogleAppsScript.Events.SheetsOnEdit) {
-  var spreadsheet = getActiveSpreadsheet();
-  var properties = getDocumentProperties();
-  var fetchStatementDAO = new FetchStatementDAO(spreadsheet, properties);
-  fetchStatementDAO.deleteEmptyStatements();
-}
-
 function getActiveSpreadsheet(): GoogleAppsScript.Spreadsheet.Spreadsheet {
   return Utilities_.retry(function () {
     return SpreadsheetApp.getActiveSpreadsheet();
@@ -54,10 +47,11 @@ function update() {
   }
 }
 
-function executeFetch(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, properties: GoogleAppsScript.Properties.Properties, fetchStatement: FetchStatement, range: GoogleAppsScript.Spreadsheet.Range, saveStatement: boolean): void {
+function executeFetch(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, fetchStatement: FetchStatement, range: GoogleAppsScript.Spreadsheet.Range, saveStatement: boolean): void {
   if (range == null) {
     range = spreadsheet.getActiveCell();
   }
+  range = range.getCell(1, 1);
   if (fetchStatement.query.length > 0) {
     let formula = Formula.parseFetchStatement(fetchStatement);
     range.setFormula(formula.toString());
