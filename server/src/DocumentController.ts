@@ -10,18 +10,18 @@ try {
  */
 function onOpen() {
   SpreadsheetApp.getUi().createAddonMenu()
-  .addItem('Open', 'showSidebar')
-  .addItem('Auto-Record...', 'showAutoRecordPopup')
-  .addItem('Update', 'update')
-  .addItem('Auto-Update...', 'showAutoUpdatePopup')
-  .addToUi();
+    .addItem('Open', 'showSidebar')
+    .addItem('Auto-Record...', 'showAutoRecordPopup')
+    .addItem('Update', 'update')
+    .addItem('Auto-Update...', 'showAutoUpdatePopup')
+    .addToUi();
 }
 
 function onInstall() {
   onOpen();
 }
 
-function onEdit(e: GoogleAppsScript.Events.SheetsOnEdit){
+function onEdit(e: GoogleAppsScript.Events.SheetsOnEdit) {
   var spreadsheet = getActiveSpreadsheet();
   var properties = getDocumentProperties();
   var fetchStatementDAO = new FetchStatementDAO(spreadsheet, properties);
@@ -29,13 +29,13 @@ function onEdit(e: GoogleAppsScript.Events.SheetsOnEdit){
 }
 
 function getActiveSpreadsheet(): GoogleAppsScript.Spreadsheet.Spreadsheet {
-  return Utilities_.retry(function() {
+  return Utilities_.retry(function () {
     return SpreadsheetApp.getActiveSpreadsheet();
   });
 }
 
 function getDocumentProperties(): GoogleAppsScript.Properties.Properties {
-  return Utilities_.retry(function() {
+  return Utilities_.retry(function () {
     return PropertiesService.getDocumentProperties();
   });
 }
@@ -58,11 +58,8 @@ function executeFetch(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, pro
   if (range == null) {
     range = spreadsheet.getActiveCell();
   }
-  if(fetchStatement.query.length > 0) {    
-    if (fetchStatement.fetchType == "balances") {
-      BalanceService_.insert(spreadsheet, properties, fetchStatement, range, saveStatement);
-    } else if (fetchStatement.fetchType == "transactions") {
-      TransactionService_.insert(spreadsheet, fetchStatement, range);
-    }
-  }  
+  if (fetchStatement.query.length > 0) {
+    let formula = Formula.parseFetchStatement(fetchStatement);
+    range.setFormula(formula.toString());
+  }
 }
