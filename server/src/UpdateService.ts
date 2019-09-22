@@ -5,9 +5,13 @@ namespace UpdateService_ {
 
   export function updateDocument(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, properties: GoogleAppsScript.Properties.Properties, autoUpdate: boolean) {
 
-    updateFormulas(spreadsheet, 'Date', autoUpdate);
-    updateFormulas(spreadsheet, 'Name', autoUpdate);
-    UpdateService_.setLastUpdate(properties);
+    try {
+      updateFormulas(spreadsheet, properties, 'Date', autoUpdate);
+      updateFormulas(spreadsheet, properties, 'Name', autoUpdate);
+      setLastUpdate(properties);
+    } catch(error) {
+      setLastUpdateError(properties, error);
+    }
 
     //Migration
     var fetchStatementDAO = new FetchStatementDAO(spreadsheet, properties);
@@ -33,7 +37,7 @@ namespace UpdateService_ {
 
   }
 
-  function updateFormulas(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, text: string, autoUpdate: boolean) {
+  function updateFormulas(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, properties: GoogleAppsScript.Properties.Properties, text: string, autoUpdate: boolean) {
     let finder = spreadsheet.createTextFinder(text);
     let ranges = finder.findAll();
     if (ranges != null && ranges.length > 0) {
@@ -42,17 +46,33 @@ namespace UpdateService_ {
         if (Formula.isBkperFormula(formulaStr)) {
           let formula = Formula.parseString(formulaStr);
           formula.incrementUpdate();
-          if (autoUpdate) {
-            //TODO Check if book was updated
-          }
-          //TODO Only update if permission ok
-          range.setFormula(formula.toString());
+          // try {
+            let book = LedgerService_.loadBook(formula.bookId);
+            if (book.getPermission() != BkperApp.Permission.NONE && book.getPermission() != BkperApp.Permission.RECORD_ONLY) {
+              if (autoUpdate) {
+                //Check if book was updated
+                let key = `book_last_update_${book.getId()}`;
+                let lastUpdate = +properties.getProperty(key);
+                if (lastUpdate != null && book.getLastUpdateMs() !== lastUpdate) {
+                  //Update last update
+                  lastUpdate = book.getLastUpdateMs();
+                  properties.setProperty(key, lastUpdate + "");
+                  range.setFormula(formula.toString());
+                }
+              } else {
+                range.setFormula(formula.toString());
+              }
+            }
+          // } catch (error) {
+          //   Logger.log(error);
+          //   //OK - Don't update in case of error such as book not found or forbidden
+          // }
         }
       });
     }
   }
 
-  export function setLastUpdate(properties: GoogleAppsScript.Properties.UserProperties): void {
+  function setLastUpdate(properties: GoogleAppsScript.Properties.UserProperties): void {
     var lastUpdate = {
       dateMs: Date.now(),
       user: Session.getEffectiveUser().getEmail()
@@ -60,34 +80,27 @@ namespace UpdateService_ {
     properties.setProperty(LAST_UPDATE_KEY, JSON.stringify(lastUpdate));
   }
 
-  export function setLastUpdateError(properties: GoogleAppsScript.Properties.UserProperties, error: string): void {
-
+  function setLastUpdateError(properties: GoogleAppsScript.Properties.UserProperties, error: string): void {
     var lastUpdate = {
       dateMs: null as number,
       user: error
     }
     properties.setProperty(LAST_UPDATE_KEY, JSON.stringify(lastUpdate));
-  }
+  }  
+
 
   export function getLastUpdate(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, properties: GoogleAppsScript.Properties.UserProperties): string {
-
     var lastUpdateJSON = properties.getProperty(LAST_UPDATE_KEY);
     if (lastUpdateJSON == null) {
       return "";
     }
-
     var lastUpdate = JSON.parse(lastUpdateJSON);
-
     if (lastUpdate.dateMs == null) {
       return "Last update was UNSUCESSFUL: " + lastUpdate.user;
     }
-
     var lastUpdateDate = new Date(new Number(lastUpdate.dateMs).valueOf());
-
     var formatedLastUpdateDate = Utilities_.formatDateRelativeTo(lastUpdateDate, new Date(), spreadsheet.getSpreadsheetTimeZone());
-
     var fullLastUpdate = "Last update was " + formatedLastUpdateDate + " by " + lastUpdate.user;
-
     return fullLastUpdate;
   }
 

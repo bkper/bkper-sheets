@@ -4,11 +4,11 @@ namespace LedgerService_ {
 
   var booksCache: any;
   
-  export function loadLedgers(): bkper.Book[] {
+  export function loadBooks(): bkper.Book[] {
     return BkperApp.getBooks();
   }
 
-  export function loadLedger(bookId: string): bkper.Book {
+  export function loadBook(bookId: string): bkper.Book {
     if (booksCache == null) {
       booksCache = new Object();
     }

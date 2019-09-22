@@ -22,7 +22,7 @@ interface LedgerQueries {
 namespace QueryService_ {
 
   export function loadQueries(ledgerId: string): LedgerQueries {
-    var ledger = LedgerService_.loadLedger(ledgerId);
+    var ledger = LedgerService_.loadBook(ledgerId);
 
     var queries = filterBalanceSavedQueries_(ledger);
     var groupQueries = createGroupQueries_(ledger);

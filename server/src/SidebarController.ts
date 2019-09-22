@@ -25,7 +25,7 @@ function checkUserAuthorized() {
  */
 function loadLedgers(): {id: string, name: string, permission : bkper.Permission, selected: boolean}[] {
   try {
-    var ledgers = LedgerService_.loadLedgers();
+    var ledgers = LedgerService_.loadBooks();
     var lastSelectedLedger = loadLastSelectedLedger();
     return ledgers.map((book => {return {id: book.getId(), name: book.getName(),  permission: book.getPermission(), selected: book.getId() == lastSelectedLedger}}));
   } catch (err) {
