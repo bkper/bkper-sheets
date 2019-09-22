@@ -14,8 +14,8 @@ class Formula {
   isBookIdString: boolean;
   isQueryString: boolean;
 
-  switch() {
-    this.update = this.update === 0 ? 1 : 0;
+  incrementUpdate() {
+    this.update++;
   }
 
   static isBkperFormula(formula: string): boolean {
@@ -26,7 +26,7 @@ class Formula {
     let formula = new Formula();
     formula.isBookIdString = true;
     formula.isQueryString = true;
-    formula.update = 0;
+    formula.update = 1;
     formula.bookId = fetchStatement.ledgerId;
     formula.query = fetchStatement.query.replace(/\"/g, "'");;
     if (fetchStatement.fetchType === 'transactions') {
@@ -48,9 +48,9 @@ class Formula {
     let regExp = /\(([^)]+)\)/;
     let matches = regExp.exec(formulaStr);
     let params = matches[1].split(',');
-    formula.update = +params[0];
+    formula.bookId = params[0].trim();
+    formula.update = +params[1];
 
-    formula.bookId = params[1].trim();
     if (formula.bookId[0] === "\"" && formula.bookId[formula.bookId.length - 1] === "\"") {
       formula.bookId = formula.bookId.replace(/\"/g,"");
       formula.isBookIdString = true;
@@ -82,6 +82,6 @@ class Formula {
   toString() {
     let bookIdQuotes = this.isBookIdString ? '"' : '';
     let queryQuotes = this.isQueryString ? '"' : '';
-    return `=${this.name}(${this.update}, ${bookIdQuotes}${this.bookId}${bookIdQuotes}, ${queryQuotes}${this.query}${queryQuotes})`;
+    return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}, ${this.update}, ${queryQuotes}${this.query}${queryQuotes})`;
   }
 }

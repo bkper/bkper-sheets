@@ -5,21 +5,8 @@ namespace UpdateService_ {
 
   export function updateDocument(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, properties: GoogleAppsScript.Properties.Properties, autoUpdate: boolean) {
 
-    let finder = spreadsheet.createTextFinder('Date');
-    let ranges = finder.findAll();
-    if (ranges != null && ranges.length > 0) {
-      ranges.forEach(range => {
-        let formulaStr = range.getFormula();
-        if (Formula.isBkperFormula(formulaStr)) {
-          let formula = Formula.parseString(formulaStr);
-          formula.switch();
-          //TODO Check if book was updated
-          //TODO Only update if permission ok
-          range.setFormula(formula.toString());
-        }
-      })
-    }
-
+    updateFormulas(spreadsheet, 'Date', autoUpdate);
+    updateFormulas(spreadsheet, 'Name', autoUpdate);
     UpdateService_.setLastUpdate(properties);
 
     //Migration
@@ -44,6 +31,25 @@ namespace UpdateService_ {
       })
     }
 
+  }
+
+  function updateFormulas(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, text: string, autoUpdate: boolean) {
+    let finder = spreadsheet.createTextFinder(text);
+    let ranges = finder.findAll();
+    if (ranges != null && ranges.length > 0) {
+      ranges.forEach(range => {
+        let formulaStr = range.getFormula();
+        if (Formula.isBkperFormula(formulaStr)) {
+          let formula = Formula.parseString(formulaStr);
+          formula.incrementUpdate();
+          if (autoUpdate) {
+            //TODO Check if book was updated
+          }
+          //TODO Only update if permission ok
+          range.setFormula(formula.toString());
+        }
+      });
+    }
   }
 
   export function setLastUpdate(properties: GoogleAppsScript.Properties.UserProperties): void {
