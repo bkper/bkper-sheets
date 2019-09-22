@@ -46,7 +46,7 @@ namespace UpdateService_ {
         if (Formula.isBkperFormula(formulaStr)) {
           let formula = Formula.parseString(formulaStr);
           formula.incrementUpdate();
-          // try {
+          try {
             let book = LedgerService_.loadBook(formula.bookId);
             if (book.getPermission() != BkperApp.Permission.NONE && book.getPermission() != BkperApp.Permission.RECORD_ONLY) {
               if (autoUpdate) {
@@ -63,10 +63,10 @@ namespace UpdateService_ {
                 range.setFormula(formula.toString());
               }
             }
-          // } catch (error) {
-          //   Logger.log(error);
-          //   //OK - Don't update in case of error such as book not found or forbidden
-          // }
+          } catch (error) {
+            Logger.log(error);
+            //OK - Don't update in case of error such as book not found or forbidden
+          }
         }
       });
     }
