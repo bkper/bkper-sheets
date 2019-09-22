@@ -42,7 +42,6 @@ class FetchStatementDAO {
     var statements = new Array<FetchStatement>();
     for (var property in properties) {
       if (property.indexOf(STATEMENT_PREFIX) == 0) {
-        Logger.log(property);
         var statementJSON = properties[property];
         var statement = JSON.parse(statementJSON);
         statements.push(statement);

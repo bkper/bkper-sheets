@@ -63,34 +63,6 @@ namespace QueryService_ {
     }).sort(queryComparator_);
   }
   
-  function getFirstAccountNameOnString_(queryString: string, accountsArray: bkper.Account[]): bkper.Account {
-    var correctAccount: bkper.Account;
-    var largestAccountName = 0;
-    
-    for (var j = 0; j < accountsArray.length; j++) {
-      var account = accountsArray[j];
-      var accountName = account.getName();
-      if (queryString.length >= accountName.length) {
-        var possibleMatch = queryString.substring(0, accountName.length);
-        if (possibleMatch.indexOf(accountName) == 0) {
-          if (accountName.length > largestAccountName) {          
-            largestAccountName = accountName.length;
-            correctAccount = account;
-          }
-        } else if (queryString.length > accountName.length) {
-          possibleMatch = queryString.substring(1, accountName.length+1);
-          if (possibleMatch.indexOf(accountName) == 0) {
-            if (accountName.length > largestAccountName) {
-              largestAccountName = accountName.length;
-              correctAccount = account;
-            }
-          }
-        }
-      }
-    }
-    return correctAccount;
-  }
-
   function queryComparator_(query1: Query, query2: Query) {
     if ( query1.title < query2.title)
       return -1;

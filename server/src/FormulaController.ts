@@ -8,7 +8,7 @@
  * @customfunction
  */
 function BKPER_TRANSACTIONS(bookId: string, updateCount: number, query: string): any[][] {
-  return BkperApp.getBook(bookId).createTransactionsDataTable(query).addUrls().build();
+    return BkperApp.getBook(bookId).createTransactionsDataTable(query).addUrls().build();
 }
 
 /**
@@ -35,8 +35,8 @@ function BKPER_BALANCES_TOTAL(bookId: string, updateCount: number, query: string
  * @customfunction
  */
 function BKPER_BALANCES_PERIOD(bookId: string, updateCount: number, query: string): any[][] {
-    let balanceReport = BkperApp.getBook(bookId).getBalanceReport(query);
-    return balanceReport.createDataTable().setBalanceType(BkperApp.BalanceType.PERIOD).build();
+  let balanceReport = BkperApp.getBook(bookId).getBalanceReport(query);
+  return balanceReport.createDataTable().setBalanceType(BkperApp.BalanceType.PERIOD).build();
 }
 
 /**
