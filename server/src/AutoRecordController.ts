@@ -30,7 +30,7 @@ function loadAutoRecordConfig() {
   var sheet = getActiveSpreadsheet().getActiveSheet();
   var bookId = loadLastSelectedLedger();
   var properties = getDocumentProperties(); 
-  return AutoRecordService_.loadAutoRecordConfig(sheet, bookId, properties);
+  return AutoRecordService.loadAutoRecordConfig(sheet, bookId, properties);
 }
 
 /**
@@ -45,9 +45,9 @@ function enableAutoRecord(enable: boolean): AutorecordConfig {
     if (!AutoRecordTrigger.isEnabled()) {
       AutoRecordTrigger.enableTrigger();
     }
-    config = AutoRecordService_.createAutoRecordBinding(sheet, bookId, properties);
+    config = AutoRecordService.createAutoRecordBinding(sheet, bookId, properties);
   } else {
-    config = AutoRecordService_.deleteAutoRecordBinding(sheet, bookId, properties);
+    config = AutoRecordService.deleteAutoRecordBinding(sheet, bookId, properties);
   }
   return config;
 }

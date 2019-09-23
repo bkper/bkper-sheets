@@ -1,5 +1,6 @@
 var AUTOSEND_TRIGGER_FUNCTION = 'triggerBkperAutoUpdate';
 
+//Deprecated. Delete after migrate everyone to functions
 namespace AutoUpdateTrigger {
 
   export function enableTrigger(): void {
@@ -40,20 +41,5 @@ namespace AutoUpdateTrigger {
   Trigger function. DO NOT RENAME!!!!
 */
 function triggerBkperAutoUpdate() {
-  try {
-    var lock = LockService.getDocumentLock();
-    lock.waitLock(120000);
-
-    var spreadsheet = getActiveSpreadsheet();
-    var properties = getDocumentProperties();
-
-    UpdateService_.updateDocument(spreadsheet, properties, true);
-
-    lock.releaseLock();
-  } catch (e) {
-    Utilities_.logError(e);
-  }
-
-  triggerBkperAutoRecord()
 
 }

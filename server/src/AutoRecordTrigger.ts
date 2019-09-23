@@ -3,9 +3,9 @@ var AUTORECORD_TRIGGER_FUNCTION = 'triggerBkperAutoRecord';
 namespace AutoRecordTrigger {
 
   export function enableTrigger() {
+    ScriptApp.newTrigger(AUTORECORD_TRIGGER_FUNCTION).timeBased().everyHours(1).create();
     ScriptApp.newTrigger(AUTORECORD_TRIGGER_FUNCTION).forSpreadsheet(getActiveSpreadsheet()).onChange().create();
     ScriptApp.newTrigger(AUTORECORD_TRIGGER_FUNCTION).forSpreadsheet(getActiveSpreadsheet()).onFormSubmit().create();
-    ScriptApp.newTrigger(AUTORECORD_TRIGGER_FUNCTION).forSpreadsheet(getActiveSpreadsheet()).onEdit().create();
   }
 
   export function isEnabled() {
@@ -41,7 +41,7 @@ function triggerBkperAutoRecord() {
     lock.waitLock(120000);  
     var spreadsheet = getActiveSpreadsheet();
     var properties = getDocumentProperties();
-    AutoRecordService_.processAutoRecord(spreadsheet, properties)
+    AutoRecordService.processAutoRecord(spreadsheet, properties)
     Utilities.sleep(2000);
     lock.releaseLock();
   } catch (e) {

@@ -1,6 +1,6 @@
 var LEDGER_LAST_UPDATE_PREFIX_ = "bkper_ledger_last_update_";
 
-namespace LedgerService_ {
+namespace BookService {
 
   var booksCache: any;
   

@@ -14,13 +14,9 @@ declare namespace google {
 
             enableAutoRecord(enable: boolean): void //AutorecordConfig;
 
-            enableAutoUpdate(enable: boolean): void;
-
             fetchQuery(fetchStatement: FetchStatement): void //void;
 
             loadAutoRecordConfig(): void //AutorecordConfig;
-
-            loadAutoUpdateConfig(): void;
 
             loadLedgers(): void;
 

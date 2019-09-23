@@ -6,7 +6,7 @@ interface AutorecordConfig {
   enabled: boolean
 }
 
-namespace AutoRecordService_ {
+namespace AutoRecordService {
   
   export function createAutoRecordBinding(sheet: GoogleAppsScript.Spreadsheet.Sheet, bookId: string, properties: GoogleAppsScript.Properties.Properties): AutorecordConfig {
     var binding = {
@@ -98,7 +98,7 @@ namespace AutoRecordService_ {
       var numberOfRowsToRecord = lastRow - currentRow;
       var range = sheet.getRange(currentRow + 1, 1, numberOfRowsToRecord, lastColumn);
       
-      TransactionAccountService_.createAccountsIfNeeded(book, range);      
+      TransactionAccountService.createAccountsIfNeeded(book, range);      
       
       book.record(range.getValues(), timeZone);
       range.setBackground(RECORD_BACKGROUND_);

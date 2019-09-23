@@ -25,7 +25,7 @@ function checkUserAuthorized() {
  */
 function loadLedgers(): {id: string, name: string, permission : bkper.Permission, selected: boolean}[] {
   try {
-    var ledgers = LedgerService_.loadBooks();
+    var ledgers = BookService.loadBooks();
     var lastSelectedLedger = loadLastSelectedLedger();
     return ledgers.map((book => {return {id: book.getId(), name: book.getName(),  permission: book.getPermission(), selected: book.getId() == lastSelectedLedger}}));
   } catch (err) {
@@ -40,14 +40,14 @@ function loadLedgers(): {id: string, name: string, permission : bkper.Permission
  * @public
  */
 function recordLines(ledgerId: string, highlight: boolean): boolean {
-  return TransactionService_.record(ledgerId, highlight);
+  return TransactionService.record(ledgerId, highlight);
 }
 
 /**
  * @public
  */
 function loadQueries(ledgerId: string): LedgerQueries {
-	return QueryService_.loadQueries(ledgerId);
+	return QueryService.loadQueries(ledgerId);
 }
 
 /**

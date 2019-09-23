@@ -13,7 +13,6 @@ function onOpen() {
     .addItem('Open', 'showSidebar')
     .addItem('Auto-Record...', 'showAutoRecordPopup')
     .addItem('Update', 'update')
-    .addItem('Auto-Update...', 'showAutoUpdatePopup')
     .addToUi();
 }
 
@@ -40,7 +39,7 @@ function update() {
     if (success) {
       var spreadsheet = getActiveSpreadsheet();
       var properties = getDocumentProperties();
-      UpdateService_.updateDocument(spreadsheet, properties, false);
+      FormulaService.updateDocument(spreadsheet, properties);
     }
   } else {
     showAuthorizeView_();

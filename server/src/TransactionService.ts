@@ -1,6 +1,6 @@
 var RECORD_BACKGROUND_ = '#B0DDBC';
 
-namespace TransactionService_ {
+namespace TransactionService {
   
   
   export function record(ledgerId: string, highlight: boolean): boolean {
@@ -8,7 +8,6 @@ namespace TransactionService_ {
     
     var rangeValues;
     var highlightRange;
-    var dataRange = activeSS.getDataRange();
     var selectedRange = activeSS.getActiveRange();
     
     var ledger = BkperApp.getBook(ledgerId);
@@ -21,7 +20,7 @@ namespace TransactionService_ {
       return false;
     }
     
-    TransactionAccountService_.createAccountsIfNeeded(ledger, selectedRange);
+    TransactionAccountService.createAccountsIfNeeded(ledger, selectedRange);
 
     try {
       ledger.record(rangeValues, activeSS.getSpreadsheetTimeZone());

@@ -19,10 +19,10 @@ interface LedgerQueries {
   queries: Query[]
 }
 
-namespace QueryService_ {
+namespace QueryService {
 
   export function loadQueries(ledgerId: string): LedgerQueries {
-    var ledger = LedgerService_.loadBook(ledgerId);
+    var ledger = BookService.loadBook(ledgerId);
 
     var queries = filterBalanceSavedQueries_(ledger);
     var groupQueries = createGroupQueries_(ledger);

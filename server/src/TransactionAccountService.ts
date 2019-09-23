@@ -1,4 +1,4 @@
-namespace TransactionAccountService_ {
+namespace TransactionAccountService {
   
   export function createAccountsIfNeeded(book: bkper.Book, selectedRange: GoogleAppsScript.Spreadsheet.Range): void {
     try {
