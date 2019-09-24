@@ -13,6 +13,8 @@ class Formula {
   query: string;
   isBookIdString: boolean;
   isQueryString: boolean;
+  expandGroups: boolean;
+  transpose: boolean;
 
   incrementUpdate() {
     this.update++;
@@ -47,7 +49,7 @@ class Formula {
     let formula = new Formula();
     let regExp = /\(([^)]+)\)/;
     let matches = regExp.exec(formulaStr);
-    let params = matches[1].split(',');
+    let params = matches[1].split(/[,;]/);
     formula.bookId = params[0].trim();
     formula.update = +params[1];
 
@@ -82,6 +84,6 @@ class Formula {
   toString() {
     let bookIdQuotes = this.isBookIdString ? '"' : '';
     let queryQuotes = this.isQueryString ? '"' : '';
-    return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}, ${this.update}, ${queryQuotes}${this.query}${queryQuotes})`;
+    return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}; ${this.update}; ${queryQuotes}${this.query}${queryQuotes})`;
   }
 }

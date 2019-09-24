@@ -5,8 +5,8 @@
   "scripts": {
     "clean": "rimraf dist build @types/google.script.run",
     "server": "live-server build --port=5000",
+    "types": "clasp-types --root ../ --client --src server/src --out client/",
     "build": "run-s build:*",
-    "build:types": "clasp-types --root ../ --client --src server/src --out client/",
     "build:transpile": "tsc --outDir build",
     "build:copy": "copyfiles -f -e '**/*.ts' src/* build",
     "build:inline": "mkdirp dist && glob-exec --foreach './build/**/*.html' --  'cat {{file}} | inline-source --root build > dist/{{file.name}}{{file.ext}}'"
