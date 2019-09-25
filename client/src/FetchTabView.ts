@@ -72,6 +72,7 @@ namespace FetchTabView {
         disableExpandGroups(false);
       } else {
         disableExpandGroups(true);
+        view.expandGroups.prop('checked', false);
       }      
     }
 
