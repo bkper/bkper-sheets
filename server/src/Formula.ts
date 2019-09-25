@@ -13,8 +13,8 @@ class Formula {
   query: string;
   isBookIdString: boolean;
   isQueryString: boolean;
-  expandGroups: boolean;
-  transpose: boolean;
+  expanded: boolean;
+  transposed: boolean;
 
   incrementUpdate() {
     this.update++;
@@ -42,8 +42,8 @@ class Formula {
         formula.name = FormulaName.BKPER_BALANCES_CUMULATIVE;
       }
     }
-    formula.expandGroups = fetchStatement.expandGroups ? true : false;
-    formula.transpose = fetchStatement.transpose ? true : false;
+    formula.expanded = fetchStatement.expanded ? true : false;
+    formula.transposed = fetchStatement.transposed ? true : false;
     return formula;
   }
 
@@ -79,15 +79,15 @@ class Formula {
     }
 
     if (params.length > 3) { 
-      formula.expandGroups = this.convertToBoolean(params[3]);
+      formula.expanded = this.convertToBoolean(params[3]);
     } else {
-      formula.expandGroups = false;
+      formula.expanded = false;
     }
 
     if (params.length > 4) {
-      formula.transpose = this.convertToBoolean(params[4]);
+      formula.transposed = this.convertToBoolean(params[4]);
     } else {
-      formula.transpose = false;
+      formula.transposed = false;
     }
 
 
@@ -106,6 +106,6 @@ class Formula {
   toString() {
     let bookIdQuotes = this.isBookIdString ? '"' : '';
     let queryQuotes = this.isQueryString ? '"' : '';
-    return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}; ${this.update}; ${queryQuotes}${this.query}${queryQuotes}; ${this.expandGroups}; ${this.transpose})`;
+    return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}; ${this.update}; ${queryQuotes}${this.query}${queryQuotes}; ${this.expanded}; ${this.transposed})`;
   }
 }

@@ -10,8 +10,8 @@ namespace FetchTabView {
       queryError: $('#queryError'),
       fetchTypeRadioGroup: $('#fetch-type-radio-group'),
       balanceTypeRadioGroup: $('#balance-type-radio-group'),
-      expandGroups: $('#expandGroups'),
-      transpose: $('#transpose'),
+      expanded: $('#expanded'),
+      transposed: $('#transposed'),
     }
     bindUIActions();
   }
@@ -33,11 +33,11 @@ namespace FetchTabView {
     view.fetchButton.attr('disabled', disable);
   }
 
-  function disableExpandGroups(disable) {
-    view.expandGroups.attr('disabled', disable);
+  function disableExpanded(disable) {
+    view.expanded.attr('disabled', disable);
   }
-  function disableTranspose(disable) {
-    view.transpose.attr('disabled', disable);
+  function disableTransposed(disable) {
+    view.transposed.attr('disabled', disable);
   }
 
   export function verifyFormState() {
@@ -49,8 +49,8 @@ namespace FetchTabView {
       disableFetchType(true);
       disableBalanceType(true);
       disableFetchButton(true);
-      disableExpandGroups(true);
-      disableTranspose(true);
+      disableExpanded(true);
+      disableTransposed(true);
       return;
     } else {
       disableFetchType(false);
@@ -60,19 +60,19 @@ namespace FetchTabView {
     if (form.fetchType == "transactions") {
       disableFetchButton(false);
       disableBalanceType(true);
-      disableExpandGroups(true);
-      disableTranspose(true);
+      disableExpanded(true);
+      disableTransposed(true);
       return;
     }
 
     if (form.fetchType == "balances") {
       disableBalanceType(false);
-      disableTranspose(false);
+      disableTransposed(false);
       if (form.query.indexOf("group:") >= 0) {
-        disableExpandGroups(false);
+        disableExpanded(false);
       } else {
-        disableExpandGroups(true);
-        view.expandGroups.prop('checked', false);
+        disableExpanded(true);
+        view.expanded.prop('checked', false);
       }      
     }
 
@@ -111,12 +111,12 @@ namespace FetchTabView {
     $("input[name=balance-type-radio]", view.balanceTypeRadioGroup).attr('disabled', disable);
   }
 
-  function getExpandGroups(): boolean {
-    return view.expandGroups.is(":checked")
+  function getExpanded(): boolean {
+    return view.expanded.is(":checked")
   }
   
-  function getTranspose(): boolean {
-    return view.transpose.is(":checked")
+  function getTransposed(): boolean {
+    return view.transposed.is(":checked")
   }
 
 
@@ -230,8 +230,8 @@ namespace FetchTabView {
     form.query = getQueryInput();
     form.fetchType = getFetchType();
     form.balanceType = getBalanceType();
-    form.expandGroups = getExpandGroups();
-    form.transpose = getTranspose();
+    form.expanded = getExpanded();
+    form.transposed = getTransposed();
     console.dir(form)
     return form;
   }

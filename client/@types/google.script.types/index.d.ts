@@ -40,7 +40,7 @@ declare namespace google {
 
             balanceType?: "CUMULATIVE" | "PERIOD" | "TOTAL";
 
-            expandGroups?: boolean;
+            expanded?: boolean;
 
             fetchType?: "transactions" | "balances";
 
@@ -52,7 +52,7 @@ declare namespace google {
 
             rangeName?: string;
 
-            transpose?: boolean;
+            transposed?: boolean;
 
         }
 

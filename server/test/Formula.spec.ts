@@ -20,8 +20,8 @@ describe('Formula', () => {
       query: "yyy",
       rangeName: "zzz",
       fetchType: "transactions",
-      expandGroups: true,
-      transpose: undefined,
+      expanded: true,
+      transposed: undefined,
       lastUpdate: 1121
     }
 

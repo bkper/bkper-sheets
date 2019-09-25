@@ -9,8 +9,8 @@ interface FetchStatement {
   rangeName?: string,
   fetchType?: "transactions" | "balances",
   balanceType?: "CUMULATIVE" | "PERIOD" | "TOTAL",
-  expandGroups?: boolean,
-  transpose?: boolean,
+  expanded?: boolean,
+  transposed?: boolean,
   lastUpdate?: number
 }
 class FetchStatementDAO {

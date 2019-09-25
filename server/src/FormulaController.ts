@@ -17,18 +17,18 @@ function BKPER_TRANSACTIONS(bookId: string, updateCount: number, query: string):
  * @param {string} bookId The universal Book Id.
  * @param {number} updateCount Starts in 1 and increase on every update.
  * @param {string} query The balances query.
- * @param {boolean=} expandGroups Expand group accounts
- * @param {boolean=} transpose Transpose the result
+ * @param {boolean=} expanded Expand group accounts
+ * @param {boolean=} transposed Transpose the result
  * 
  * @customfunction
  */
-function BKPER_BALANCES_TOTAL(bookId: string, updateCount: number, query: string, expandGroups?: boolean, transpose?: boolean): any[][] {
+function BKPER_BALANCES_TOTAL(bookId: string, updateCount: number, query: string, expanded?: boolean, transposed?: boolean): any[][] {
   let balanceReport = BkperApp.getBook(bookId).getBalanceReport(query);
   const builder = balanceReport.createDataTable().setBalanceType(BkperApp.BalanceType.TOTAL);
-  if (expandGroups) {
+  if (expanded) {
     builder.expandGroups();
   }
-  if (transpose) {
+  if (transposed) {
     builder.transpose();
   }
   return builder.build();
@@ -40,19 +40,19 @@ function BKPER_BALANCES_TOTAL(bookId: string, updateCount: number, query: string
  * @param {string} bookId The universal Book Id.
  * @param {number} updateCount Starts in 1 and increase on every update.
  * @param {string} query The balances query.
- * @param {boolean=} expandGroups Expand group accounts
- * @param {boolean=} transpose Transpose the result
+ * @param {boolean=} expanded Expand group accounts
+ * @param {boolean=} transposed Transpose the result
  * 
  * 
  * @customfunction
  */
-function BKPER_BALANCES_PERIOD(bookId: string, updateCount: number, query: string, expandGroups?: boolean, transpose?: boolean): any[][] {
+function BKPER_BALANCES_PERIOD(bookId: string, updateCount: number, query: string, expanded?: boolean, transposed?: boolean): any[][] {
   let balanceReport = BkperApp.getBook(bookId).getBalanceReport(query);
   const builder = balanceReport.createDataTable().setBalanceType(BkperApp.BalanceType.PERIOD);
-  if (expandGroups) {
+  if (expanded) {
     builder.expandGroups();
   }
-  if (transpose) {
+  if (transposed) {
     builder.transpose();
   }
   return builder.build();
@@ -64,18 +64,18 @@ function BKPER_BALANCES_PERIOD(bookId: string, updateCount: number, query: strin
  * @param {string} bookId The universal Book Id.
  * @param {number} updateCount Starts in 1 and increase on every update.
  * @param {string} query The balances query.
- * @param {boolean=} expandGroups Expand group accounts
- * @param {boolean=} transpose Transpose the result
+ * @param {boolean=} expanded Expand group accounts
+ * @param {boolean=} transposed Transpose the result
  * 
  * @customfunction
  */
-function BKPER_BALANCES_CUMULATIVE(bookId: string, updateCount: number, query: string, expandGroups?: boolean, transpose?: boolean): any[][] {
+function BKPER_BALANCES_CUMULATIVE(bookId: string, updateCount: number, query: string, expanded?: boolean, transposed?: boolean): any[][] {
   let balanceReport = BkperApp.getBook(bookId).getBalanceReport(query);
   const builder = balanceReport.createDataTable().setBalanceType(BkperApp.BalanceType.CUMULATIVE);
-  if (expandGroups) {
+  if (expanded) {
     builder.expandGroups();
   }
-  if (transpose) {
+  if (transposed) {
     builder.transpose();
   }  
   return builder.build();
