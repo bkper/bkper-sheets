@@ -5,13 +5,13 @@ var STATEMENT_PREFIX = "bkper_fetch_";
  */
 interface FetchStatement {
   ledgerId: string,
-  query: string,
-  rangeName: string,
-  fetchType: "transactions" | "balances",
+  query?: string,
+  rangeName?: string,
+  fetchType?: "transactions" | "balances",
   balanceType?: "CUMULATIVE" | "PERIOD" | "TOTAL",
   expandGroups?: boolean,
   transpose?: boolean,
-  lastUpdate: number
+  lastUpdate?: number
 }
 class FetchStatementDAO {
 

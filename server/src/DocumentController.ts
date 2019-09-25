@@ -46,7 +46,7 @@ function update() {
   }
 }
 
-function executeFetch(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, fetchStatement: FetchStatement, range: GoogleAppsScript.Spreadsheet.Range, saveStatement: boolean): void {
+function executeFetch(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, fetchStatement: FetchStatement, range: GoogleAppsScript.Spreadsheet.Range): void {
   if (range == null) {
     range = spreadsheet.getActiveCell();
   }

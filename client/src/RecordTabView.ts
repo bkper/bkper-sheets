@@ -44,7 +44,7 @@ namespace RecordTabView {
 
   //GENERAL
   export function getForm() {
-    var form = SidebarView.getForm();
+    var form = SidebarView.getForm() as any;
     form.highlight = getHighlight();
     return form;
   }

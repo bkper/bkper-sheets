@@ -239,16 +239,8 @@ $(function() {
 		}
 	}
 
-	function disableRadio(radio) {
-		radio.attr('disabled', true);
-		radio.prop('checked', false);
-	}
 
-	function enableRadio(radio) {
-		radio.attr('disabled', false);
-	}
-
-	export function getForm(): any {
+	export function getForm(): {ledgerId: string} {
 		var ledger = getSelectedLedger();
 		var ledgerkey = "";
 		if (ledger != null) {

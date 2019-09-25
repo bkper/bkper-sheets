@@ -42,8 +42,18 @@ class Formula {
         formula.name = FormulaName.BKPER_BALANCES_CUMULATIVE;
       }
     }
+    formula.expandGroups = fetchStatement.expandGroups ? true : false;
+    formula.transpose = fetchStatement.transpose ? true : false;
     return formula;
   }
+
+  private static convertToBoolean(input: string): boolean | undefined {
+    try {
+        return JSON.parse(input);
+    } catch (e) {
+        return false;
+    }
+}
 
   static parseString(formulaStr: string): Formula {
     let formula = new Formula();
@@ -68,6 +78,18 @@ class Formula {
       formula.isQueryString = false;
     }
 
+    if (params.length > 3) { 
+      formula.expandGroups = this.convertToBoolean(params[3]);
+    } else {
+      formula.expandGroups = false;
+    }
+
+    if (params.length > 4) {
+      formula.transpose = this.convertToBoolean(params[4]);
+    } else {
+      formula.transpose = false;
+    }
+
 
     if (formulaStr.indexOf(FormulaName.BKPER_TRANSACTIONS) >= 0) {
       formula.name = FormulaName.BKPER_TRANSACTIONS;
@@ -84,6 +106,6 @@ class Formula {
   toString() {
     let bookIdQuotes = this.isBookIdString ? '"' : '';
     let queryQuotes = this.isQueryString ? '"' : '';
-    return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}; ${this.update}; ${queryQuotes}${this.query}${queryQuotes})`;
+    return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}; ${this.update}; ${queryQuotes}${this.query}${queryQuotes}; ${this.expandGroups}; ${this.transpose})`;
   }
 }

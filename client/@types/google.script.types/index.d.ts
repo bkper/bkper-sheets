@@ -38,17 +38,21 @@ declare namespace google {
 
         export interface FetchStatement {
 
-            balanceType: "CUMULATIVE" | "PERIOD" | "TOTAL";
+            balanceType?: "CUMULATIVE" | "PERIOD" | "TOTAL";
 
-            fetchType: "transactions" | "balances";
+            expandGroups?: boolean;
 
-            lastUpdate: number;
+            fetchType?: "transactions" | "balances";
+
+            lastUpdate?: number;
 
             ledgerId: string;
 
-            query: string;
+            query?: string;
 
-            rangeName: string;
+            rangeName?: string;
+
+            transpose?: boolean;
 
         }
 

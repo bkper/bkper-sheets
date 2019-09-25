@@ -16,7 +16,7 @@ namespace FormulaService {
       var range = spreadsheet.getRangeByName(statement.rangeName);
       if (range != null) {
         range.clear();
-        executeFetch(spreadsheet, statement, range, false);
+        executeFetch(spreadsheet, statement, range);
         fetchStatementDAO.deleteStatement(statement.rangeName);
       }
     }
