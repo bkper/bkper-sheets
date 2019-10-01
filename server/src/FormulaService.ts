@@ -13,12 +13,19 @@ namespace FormulaService {
     var statements = fetchStatementDAO.getStatements();
     for (var i = 0; i < statements.length; i++) {
       var statement = statements[i];
-      var range = spreadsheet.getRangeByName(statement.rangeName);
+      var range = null;
+      
+      try {
+        range = spreadsheet.getRangeByName(statement.rangeName);
+      } catch (error) {
+        Utilities_.logError(error);
+      }
+
       if (range != null) {
         range.clear();
         executeFetch(spreadsheet, statement, range);
-        fetchStatementDAO.deleteStatement(statement.rangeName);
       }
+        fetchStatementDAO.deleteStatement(statement.rangeName);
     }
 
     let namedRanges = spreadsheet.getNamedRanges();
