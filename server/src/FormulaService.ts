@@ -8,38 +8,51 @@ namespace FormulaService {
     updateFormulas(spreadsheet, 'Date');
     updateFormulas(spreadsheet, 'Name');
 
-    //Migration
-    var fetchStatementDAO = new FetchStatementDAO(spreadsheet, properties);
-    var statements = fetchStatementDAO.getStatements();
-    for (var i = 0; i < statements.length; i++) {
-      var statement = statements[i];
-      var range = null;
-      
-      try {
-        range = spreadsheet.getRangeByName(statement.rangeName);
-      } catch (error) {
-        Utilities_.logError(error);
-      }
-
-      if (range != null) {
-        range.clear();
-        executeFetch(spreadsheet, statement, range);
-      }
-        fetchStatementDAO.deleteStatement(statement.rangeName);
-    }
-
-    let namedRanges = spreadsheet.getNamedRanges();
-    if (namedRanges != null) {
-      namedRanges.forEach(namedRange => {
-        if (namedRange.getName().indexOf("bkper_fetch") >= 0) {
-          fetchStatementDAO.deleteStatement(namedRange.getName());
+    //Migration - TODO REMOVE Later
+    try {
+      var fetchStatementDAO = new FetchStatementDAO(spreadsheet, properties);
+      var statements = fetchStatementDAO.getStatements();
+      for (var i = 0; i < statements.length; i++) {
+        try {
+          var statement = statements[i];
+          var range = null;
+          
+          try {
+            range = spreadsheet.getRangeByName(statement.rangeName);
+          } catch (error) {
+            Utilities_.logError(error);
+          }
+    
+          if (range != null) {
+            range.clear();
+            executeFetch(spreadsheet, statement, range);
+          }
+          fetchStatementDAO.deleteStatement(statement.rangeName);
+        } catch (error) {
+          Utilities_.logError(error);
         }
-      })
+      }
+  
+      let namedRanges = spreadsheet.getNamedRanges();
+      if (namedRanges != null) {
+        namedRanges.forEach(namedRange => {
+          try {
+            if (namedRange.getName().indexOf("bkper_fetch") >= 0) {
+              fetchStatementDAO.deleteStatement(namedRange.getName());
+            }
+          } catch (error) {
+            Utilities_.logError(error);
+          }
+        })
+      }
+  
+      if (AutoUpdateTrigger.isEnabled()) {
+        AutoUpdateTrigger.disable();
+      }
+    } catch (error) {
+      Utilities_.logError(error);
     }
 
-    if (AutoUpdateTrigger.isEnabled()) {
-      AutoUpdateTrigger.disable();
-    }
 
   }
 
