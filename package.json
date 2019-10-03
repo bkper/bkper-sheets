@@ -1,6 +1,6 @@
 {
   "name": "bkper-sheets",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Bkper Sheets Add-on",
   "repository": "https://github.com/bkper/bkper-sheets",
   "author": "Bkper Inc.",
@@ -24,7 +24,9 @@
     "watch:client:dist": "watch 'yarn copy:client' ./client/dist",
     "watch:server": "watch 'yarn copy:server' ./server/src",
     "watch:push": "watch 'yarn push' ./dist --wait 5",
-    "push": "yarn clasp push --force"
+    "push": "yarn clasp push --force",
+    "preversion": "run-s build push",
+    "postversion": "clasp version $npm_package_version && git push && git push --tags && echo \"Successfully released version $npm_package_version!\""
   },
   "devDependencies": {
     "@google/clasp": "^2.3.0",
