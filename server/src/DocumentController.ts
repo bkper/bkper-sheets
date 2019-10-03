@@ -34,13 +34,9 @@ function getDocumentProperties(): GoogleAppsScript.Properties.Properties {
 
 function update() {
   if (BkperApp.isUserAuthorized()) {
-    var lock = LockService.getDocumentLock();
-    var success = lock.tryLock(20000);
-    if (success) {
-      var spreadsheet = getActiveSpreadsheet();
-      var properties = getDocumentProperties();
-      FormulaService.updateDocument(spreadsheet, properties);
-    }
+    var spreadsheet = getActiveSpreadsheet();
+    var properties = getDocumentProperties();
+    FormulaService.updateDocument(spreadsheet, properties);
   } else {
     showAuthorizeView_();
   }
