@@ -48,7 +48,7 @@ function executeFetch(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, fet
   }
   range = range.getCell(1, 1);
   if (fetchStatement.query.length > 0) {
-    let formula = Formula.parseFetchStatement(fetchStatement);
+    let formula = Formula.parseFetchStatement(fetchStatement, spreadsheet.getSpreadsheetLocale());
     range.setFormula(formula.toString());
   }
 }

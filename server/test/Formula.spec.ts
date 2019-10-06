@@ -26,43 +26,43 @@ describe('Formula', () => {
     }
 
     it('should parse transactions', () => {
-      expect(Formula.parseFetchStatement(fetchStatement).toString()).to.eql('=BKPER_TRANSACTIONS("xxx"; 1; "yyy"; true; false)');
+      expect(Formula.parseFetchStatement(fetchStatement, 'pt_BR').toString()).to.eql('=BKPER_TRANSACTIONS("xxx"; 1; "yyy")');
     })
 
     it('should replace query double quotes', () => {
       fetchStatement.query = 'acc: "some account"'
-      expect(Formula.parseFetchStatement(fetchStatement).toString()).to.eql('=BKPER_TRANSACTIONS("xxx"; 1; "acc: \'some account\'"; true; false)');
+      expect(Formula.parseFetchStatement(fetchStatement, 'en_US').toString()).to.eql('=BKPER_TRANSACTIONS("xxx", 1, "acc: \'some account\'")');
     })
     
     it('should parse balances query', () => {
       fetchStatement.fetchType = "balances";
       fetchStatement.balanceType = 'CUMULATIVE'
-      expect(Formula.parseFetchStatement(fetchStatement).toString()).to.eql('=BKPER_BALANCES_CUMULATIVE("xxx"; 1; "acc: \'some account\'"; true; false)');
+      expect(Formula.parseFetchStatement(fetchStatement, 'pt_BR').toString()).to.eql('=BKPER_BALANCES_CUMULATIVE("xxx"; 1; "acc: \'some account\'"; true; false)');
       fetchStatement.balanceType = 'PERIOD'
-      expect(Formula.parseFetchStatement(fetchStatement).toString()).to.eql('=BKPER_BALANCES_PERIOD("xxx"; 1; "acc: \'some account\'"; true; false)');
+      expect(Formula.parseFetchStatement(fetchStatement, 'en_US').toString()).to.eql('=BKPER_BALANCES_PERIOD("xxx", 1, "acc: \'some account\'", true, false)');
       fetchStatement.balanceType = 'TOTAL'
-      expect(Formula.parseFetchStatement(fetchStatement).toString()).to.eql('=BKPER_BALANCES_TOTAL("xxx"; 1; "acc: \'some account\'"; true; false)');
+      expect(Formula.parseFetchStatement(fetchStatement, 'pt_BR').toString()).to.eql('=BKPER_BALANCES_TOTAL("xxx"; 1; "acc: \'some account\'"; true; false)');
     })
   
   });  
 
   describe('#parseString()', () => {
     it('should parse transactions', () => {
-      expect(Formula.parseString('= BKPER_TRANSACTIONS("xxx"; 1; "yyy"; true; false)').toString()).to.eql('=BKPER_TRANSACTIONS("xxx"; 1; "yyy"; true; false)');
+      expect(Formula.parseString('= BKPER_TRANSACTIONS("xxx"; 1; "yyy"; true; false)', 'pt_BR').toString()).to.eql('=BKPER_TRANSACTIONS("xxx"; 1; "yyy")');
     })
 
     it('should replace query double quotes', () => {
-      expect(Formula.parseString('=BKPER_TRANSACTIONS("xxx"; 1; "acc: \'some account\'"; true; true)').toString()).to.eql('=BKPER_TRANSACTIONS("xxx"; 1; "acc: \'some account\'"; true; true)');
+      expect(Formula.parseString('=BKPER_TRANSACTIONS("xxx"; 1; "acc: \'some account\'"; true; true)', 'en_US').toString()).to.eql('=BKPER_TRANSACTIONS("xxx", 1, "acc: \'some account\'")');
     })
     
     it('should parse balances query', () => {
-      expect(Formula.parseString('=BKPER_BALANCES_CUMULATIVE("xxx", 1, "acc: \'some account\'"; false; true) ').toString()).to.eql('=BKPER_BALANCES_CUMULATIVE("xxx"; 1; "acc: \'some account\'"; false; true)');
-      expect(Formula.parseString(' =BKPER_BALANCES_PERIOD("xxx"; 1; "acc: \'some account\'"; false; false)').toString()).to.eql('=BKPER_BALANCES_PERIOD("xxx"; 1; "acc: \'some account\'"; false; false)');
-      expect(Formula.parseString('=  BKPER_BALANCES_TOTAL("xxx"; 1; "acc: \'some account\'")').toString()).to.eql('=BKPER_BALANCES_TOTAL("xxx"; 1; "acc: \'some account\'"; false; false)');
+      expect(Formula.parseString('=BKPER_BALANCES_CUMULATIVE("xxx", 1, "acc: \'some account\'"; false; true) ', 'en_US').toString()).to.eql('=BKPER_BALANCES_CUMULATIVE("xxx", 1, "acc: \'some account\'", false, true)');
+      expect(Formula.parseString(' =BKPER_BALANCES_PERIOD("xxx"; 1; "acc: \'some account\'"; false; false)', 'pt_BR').toString()).to.eql('=BKPER_BALANCES_PERIOD("xxx"; 1; "acc: \'some account\'"; false; false)');
+      expect(Formula.parseString('=  BKPER_BALANCES_TOTAL("xxx"; 1; "acc: \'some account\'")', 'pt_BR').toString()).to.eql('=BKPER_BALANCES_TOTAL("xxx"; 1; "acc: \'some account\'"; false; false)');
     })
 
     it('should preserve references', () => {
-      expect(Formula.parseString('= BKPER_TRANSACTIONS(H1; 1; H3)').toString()).to.eql('=BKPER_TRANSACTIONS(H1; 1; H3; false; false)');
+      expect(Formula.parseString('= BKPER_TRANSACTIONS(H1; 1; H3)', 'pt_BR').toString()).to.eql('=BKPER_TRANSACTIONS(H1; 1; H3)');
     })
   
   });  

@@ -15,6 +15,8 @@ class Formula {
   isQueryString: boolean;
   expanded: boolean;
   transposed: boolean;
+  locale: string;
+  COMMA_LOCALES = ["en_US", "en_AU", "en_CA", "zh_CN", "ar_EG", "zh_HK", "hi_IN", "bn_IN", "gu_IN", "kn_IN", "ml_IN", "mr_IN", "pa_IN", "ta_IN", "te_IN", "en_IE", "iw_IL", "ja_JP", "es_MX", "mn_MN", "my_MM", "fil_PH", "ko_KR", "de_CH", "zh_TW", "th_TH", "en_GB", "cy_GB"];
 
   incrementUpdate() {
     this.update++;
@@ -24,8 +26,9 @@ class Formula {
     return formula != null && formula.replace(/ /g, '').indexOf('=BKPER') === 0;
   }
 
-  static parseFetchStatement(fetchStatement: FetchStatement): Formula {
+  static parseFetchStatement(fetchStatement: FetchStatement, locale: string): Formula {
     let formula = new Formula();
+    formula.locale = locale;
     formula.isBookIdString = true;
     formula.isQueryString = true;
     formula.update = 1;
@@ -55,8 +58,9 @@ class Formula {
     }
 }
 
-  static parseString(formulaStr: string): Formula {
+  static parseString(formulaStr: string, locale: string): Formula {
     let formula = new Formula();
+    formula.locale = locale;
     let regExp = /\(([^)]+)\)/;
     let matches = regExp.exec(formulaStr);
     let params = matches[1].split(/[,;]/);
@@ -106,6 +110,18 @@ class Formula {
   toString() {
     let bookIdQuotes = this.isBookIdString ? '"' : '';
     let queryQuotes = this.isQueryString ? '"' : '';
-    return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}; ${this.update}; ${queryQuotes}${this.query}${queryQuotes}; ${this.expanded}; ${this.transposed})`;
+    let sep = this.getSep();
+    if (this.name === FormulaName.BKPER_TRANSACTIONS) {
+      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update}${sep} ${queryQuotes}${this.query}${queryQuotes})`;
+    } else {
+      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update}${sep} ${queryQuotes}${this.query}${queryQuotes}${sep} ${this.expanded}${sep} ${this.transposed})`;
+    }
+  }
+
+  getSep() {
+    if(this.COMMA_LOCALES.includes(this.locale)) {
+      return ','
+    }
+    return ';'
   }
 }
