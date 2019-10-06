@@ -119,9 +119,13 @@ class Formula {
   }
 
   getSep() {
-    if(this.COMMA_LOCALES.includes(this.locale)) {
-      return ','
-    }
+    for (const locale of this.COMMA_LOCALES) {
+      console.log(locale)
+      if (locale === this.locale) {
+        return ','
+      }
+    }  
     return ';'
   }
+
 }
