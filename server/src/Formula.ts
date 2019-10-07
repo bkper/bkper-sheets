@@ -52,7 +52,7 @@ class Formula {
 
   private static convertToBoolean(input: string): boolean | undefined {
     try {
-        return JSON.parse(input);
+        return JSON.parse(input.toLocaleLowerCase());
     } catch (e) {
         return false;
     }
