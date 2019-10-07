@@ -3,6 +3,19 @@ var expect = require('chai').expect;
 
 describe('Formula', () => {
 
+  describe('#isBkperFormula()', () => {
+    
+    it('should be true only for BKPER formulas', () => {
+      expect(Formula.isBkperFormula('xxx')).to.eql(false);
+      expect(Formula.isBkperFormula('=SUM')).to.eql(false);
+      expect(Formula.isBkperFormula('= SUM')).to.eql(false);
+      expect(Formula.isBkperFormula('=BKPER_TRANSACTIONS(xxx')).to.eql(true);
+      expect(Formula.isBkperFormula(' = BKPER_BALANCES_TOTAL(xxx')).to.eql(true);
+    })
+  
+  });
+
+
   describe('#parseFetchStatement()', () => {
     let fetchStatement: FetchStatement = {
       ledgerId: "xxx",

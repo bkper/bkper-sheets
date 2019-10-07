@@ -18,6 +18,10 @@ class Formula {
   locale: string;
   COMMA_LOCALES = ["en_US", "en_AU", "en_CA", "zh_CN", "ar_EG", "zh_HK", "hi_IN", "bn_IN", "gu_IN", "kn_IN", "ml_IN", "mr_IN", "pa_IN", "ta_IN", "te_IN", "en_IE", "iw_IL", "ja_JP", "es_MX", "mn_MN", "my_MM", "fil_PH", "ko_KR", "de_CH", "zh_TW", "th_TH", "en_GB", "cy_GB"];
 
+  static isBkperFormula(formula: string): boolean {
+    return formula != null && formula.replace(/ /g, '').indexOf('=BKPER') === 0;
+  }  
+
   incrementUpdate() {
     this.update++;
   }

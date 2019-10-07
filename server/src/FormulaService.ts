@@ -61,9 +61,11 @@ namespace FormulaService {
     if (ranges != null && ranges.length > 0) {
       ranges.forEach(range => {
         let formulaStr = range.getFormula();
+        if (Formula.isBkperFormula(formulaStr)) {
           let formula = Formula.parseString(formulaStr, spreadsheet.getSpreadsheetLocale());
           formula.incrementUpdate();
           range.setFormula(formula.toString());          
+        }
       });
     }
   }
