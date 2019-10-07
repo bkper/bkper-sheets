@@ -22,10 +22,6 @@ class Formula {
     this.update++;
   }
 
-  static isBkperFormula(formula: string): boolean {
-    return formula != null && formula.replace(/ /g, '').indexOf('=BKPER') === 0;
-  }
-
   static parseFetchStatement(fetchStatement: FetchStatement, locale: string): Formula {
     let formula = new Formula();
     formula.locale = locale;
@@ -111,16 +107,17 @@ class Formula {
     let bookIdQuotes = this.isBookIdString ? '"' : '';
     let queryQuotes = this.isQueryString ? '"' : '';
     let sep = this.getSep();
+    let transposed = (''+this.transposed).toUpperCase();
+    let expanded = (''+this.expanded).toUpperCase();
     if (this.name === FormulaName.BKPER_TRANSACTIONS) {
       return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update}${sep} ${queryQuotes}${this.query}${queryQuotes})`;
     } else {
-      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update}${sep} ${queryQuotes}${this.query}${queryQuotes}${sep} ${this.expanded}${sep} ${this.transposed})`;
+      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update}${sep} ${queryQuotes}${this.query}${queryQuotes}${sep} ${expanded}${sep} ${transposed})`;
     }
   }
 
   getSep() {
     for (const locale of this.COMMA_LOCALES) {
-      console.log(locale)
       if (locale === this.locale) {
         return ','
       }

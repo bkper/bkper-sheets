@@ -5,8 +5,7 @@ namespace FormulaService {
 
   export function updateDocument(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, properties: GoogleAppsScript.Properties.Properties) {
 
-    updateFormulas(spreadsheet, 'Date');
-    updateFormulas(spreadsheet, 'Name');
+    updateFormulas(spreadsheet);
 
     //Migration - TODO REMOVE Later
     try {
@@ -56,17 +55,15 @@ namespace FormulaService {
 
   }
 
-  function updateFormulas(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, text: string) {
-    let finder = spreadsheet.createTextFinder(text);
+  function updateFormulas(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet) {
+    let finder = spreadsheet.createTextFinder("BKPER").matchFormulaText(true);
     let ranges = finder.findAll();
     if (ranges != null && ranges.length > 0) {
       ranges.forEach(range => {
         let formulaStr = range.getFormula();
-        if (Formula.isBkperFormula(formulaStr)) {
           let formula = Formula.parseString(formulaStr, spreadsheet.getSpreadsheetLocale());
           formula.incrementUpdate();
           range.setFormula(formula.toString());          
-        }
       });
     }
   }

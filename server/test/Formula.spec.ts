@@ -2,17 +2,6 @@
 var expect = require('chai').expect;
 
 describe('Formula', () => {
-  describe('#isBkperFormula()', () => {
-    
-    it('should be true only for BKPER formulas', () => {
-      expect(Formula.isBkperFormula('xxx')).to.eql(false);
-      expect(Formula.isBkperFormula('=SUM')).to.eql(false);
-      expect(Formula.isBkperFormula('= SUM')).to.eql(false);
-      expect(Formula.isBkperFormula('=BKPER_TRANSACTIONS(xxx')).to.eql(true);
-      expect(Formula.isBkperFormula(' = BKPER_BALANCES_TOTAL(xxx')).to.eql(true);
-    })
-  
-  });
 
   describe('#parseFetchStatement()', () => {
     let fetchStatement: FetchStatement = {
@@ -37,11 +26,11 @@ describe('Formula', () => {
     it('should parse balances query', () => {
       fetchStatement.fetchType = "balances";
       fetchStatement.balanceType = 'CUMULATIVE'
-      expect(Formula.parseFetchStatement(fetchStatement, 'pt_BR').toString()).to.eql('=BKPER_BALANCES_CUMULATIVE("xxx"; 1; "acc: \'some account\'"; true; false)');
+      expect(Formula.parseFetchStatement(fetchStatement, 'pt_BR').toString()).to.eql('=BKPER_BALANCES_CUMULATIVE("xxx"; 1; "acc: \'some account\'"; TRUE; FALSE)');
       fetchStatement.balanceType = 'PERIOD'
-      expect(Formula.parseFetchStatement(fetchStatement, 'en_US').toString()).to.eql('=BKPER_BALANCES_PERIOD("xxx", 1, "acc: \'some account\'", true, false)');
+      expect(Formula.parseFetchStatement(fetchStatement, 'en_US').toString()).to.eql('=BKPER_BALANCES_PERIOD("xxx", 1, "acc: \'some account\'", TRUE, FALSE)');
       fetchStatement.balanceType = 'TOTAL'
-      expect(Formula.parseFetchStatement(fetchStatement, 'pt_BR').toString()).to.eql('=BKPER_BALANCES_TOTAL("xxx"; 1; "acc: \'some account\'"; true; false)');
+      expect(Formula.parseFetchStatement(fetchStatement, 'pt_BR').toString()).to.eql('=BKPER_BALANCES_TOTAL("xxx"; 1; "acc: \'some account\'"; TRUE; FALSE)');
     })
   
   });  
@@ -56,9 +45,9 @@ describe('Formula', () => {
     })
     
     it('should parse balances query', () => {
-      expect(Formula.parseString('=BKPER_BALANCES_CUMULATIVE("xxx", 1, "acc: \'some account\'"; FALSE; TRUE) ', 'en_US').toString()).to.eql('=BKPER_BALANCES_CUMULATIVE("xxx", 1, "acc: \'some account\'", false, true)');
-      expect(Formula.parseString(' =BKPER_BALANCES_PERIOD("xxx"; 1; "acc: \'some account\'"; false; false)', 'pt_BR').toString()).to.eql('=BKPER_BALANCES_PERIOD("xxx"; 1; "acc: \'some account\'"; false; false)');
-      expect(Formula.parseString('=  BKPER_BALANCES_TOTAL("xxx"; 1; "acc: \'some account\'")', 'pt_BR').toString()).to.eql('=BKPER_BALANCES_TOTAL("xxx"; 1; "acc: \'some account\'"; false; false)');
+      expect(Formula.parseString('=BKPER_BALANCES_CUMULATIVE("xxx", 1, "acc: \'some account\'"; FALSE; TRUE) ', 'en_US').toString()).to.eql('=BKPER_BALANCES_CUMULATIVE("xxx", 1, "acc: \'some account\'", FALSE, TRUE)');
+      expect(Formula.parseString(' =BKPER_BALANCES_PERIOD("xxx"; 1; "acc: \'some account\'"; false; false)', 'pt_BR').toString()).to.eql('=BKPER_BALANCES_PERIOD("xxx"; 1; "acc: \'some account\'"; FALSE; FALSE)');
+      expect(Formula.parseString('=  BKPER_BALANCES_TOTAL("xxx"; 1; "acc: \'some account\'")', 'pt_BR').toString()).to.eql('=BKPER_BALANCES_TOTAL("xxx"; 1; "acc: \'some account\'"; FALSE; FALSE)');
     })
 
     it('should preserve references', () => {
