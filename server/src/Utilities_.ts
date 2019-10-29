@@ -35,27 +35,33 @@ namespace Utilities_ {
     return message;
   }
 
-  export function retry<R>(func: Function): R {
+  export function retry<R>(func: Function, sleepTimeMinMs?: number, sleepTimeMaxMs?: number, maxRetries?: number, rumpUp?: number): R {
+
+    sleepTimeMinMs = sleepTimeMinMs != null ? sleepTimeMinMs : 500;
+    sleepTimeMaxMs = sleepTimeMaxMs != null ? sleepTimeMaxMs : 1000;
+    maxRetries = maxRetries != null ? maxRetries : 5;
+    rumpUp = rumpUp != null ? rumpUp : 2;
+
     var retries = 0;
-    var sleepTime = 1000;
     while (true) {
       try {
         return func();
       } catch (e) {
         Logger.log("Failed to execute: " + retries);
-        logError(e);
-        if (retries > 5) {
+        if (retries > maxRetries) {
           throw e;
         } else {
-          Logger.log("Retrying in " + (sleepTime / 1000) + " secs...");
-
-          Utilities.sleep(sleepTime);
-          sleepTime = sleepTime * 2;
+          let sleepTimeMs = Math.random() * (+sleepTimeMaxMs - +sleepTimeMinMs) + +sleepTimeMinMs;
+          Logger.log("Retrying in " + (sleepTimeMs / 1000) + " secs...");
+          Utilities.sleep(sleepTimeMs);
+          sleepTimeMaxMs = sleepTimeMaxMs * rumpUp;
+          sleepTimeMinMs = sleepTimeMinMs * rumpUp;
           retries++;
         }
       }
     }
-  }
+  }    
+
 
   export function formatDateRelativeTo(date: Date, realtiveTo: Date, timeZone: string): string {
 
