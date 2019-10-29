@@ -1,6 +1,7 @@
 var AUTO_RECORD_BINDER_PREFIX = "bkper_autoRecord_";
 
 interface AutorecordBinding {
+id?: string,
   sheetId: number
   bookId: string,
   currentRow: number,
@@ -16,6 +17,9 @@ class AutoRecordSheetBindingDAO {
   }
 
   saveBinding(binding: AutorecordBinding) {
+    if (binding.id == null) {
+      binding.id = Utilities_.generateUID();
+    }
     var bindingKey = this.getKey(binding.sheetId);
     var bindingJSON = JSON.stringify(binding);
     this.properties.setProperty(bindingKey, bindingJSON);    

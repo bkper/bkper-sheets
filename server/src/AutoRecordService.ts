@@ -98,9 +98,20 @@ namespace AutoRecordService {
       var numberOfRowsToRecord = lastRow - currentRow;
       var range = sheet.getRange(currentRow + 1, 1, numberOfRowsToRecord, lastColumn);
       
-      TransactionAccountService.createAccountsIfNeeded(book, range);      
+      TransactionAccountService.createAccountsIfNeeded(book, range);
+
+      const values = range.getValues();
+
+      if (binding.id != null) {
+        for (var i = 0; i < values.length; i++) {
+          let row = values[i];
+          let rowNum = currentRow + 1 + i;
+          let id = `auto_record_${binding.id}_row_${rowNum}`;
+          row.push(`id:${id}`)
+        }
+      }
       
-      book.record(range.getValues(), timeZone);
+      book.record(values, timeZone);
       range.setBackground(RECORD_BACKGROUND_);
       binding.currentRow = lastRow;
       binding.retries = 0;
