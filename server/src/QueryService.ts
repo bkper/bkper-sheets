@@ -47,7 +47,7 @@ namespace QueryService {
     return ledger.getAccounts().filter(account => account.isActive()).map(account => {
       return {
         title: account.getName(),
-        query: `acc:'${account.getName()}'`,
+        query: `account:'${account.getName()}'`,
         category: QUERY_CATEGORY_ACCOUNT_
       }
     }).sort(queryComparator_);
