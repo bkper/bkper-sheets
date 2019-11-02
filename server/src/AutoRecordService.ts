@@ -108,6 +108,12 @@ namespace AutoRecordService {
           let rowNum = currentRow + 1 + i;
           let id = `auto_record_${binding.id}_row_${rowNum}`;
           row.push(`id:${id}`)
+
+          if (hasMoreThanOneDate_(row)) {
+            //Hack to avoid record form response date, when other dates were provided
+            row[0] = '';
+          }
+
         }
       }
       
@@ -118,6 +124,19 @@ namespace AutoRecordService {
       autoRecordSheetsBindingDAO.saveBinding(binding);
       insertLogNote_(book, range, timeZone);
     }
+  }
+
+  function hasMoreThanOneDate_(row: any[]): boolean {
+    if (row == null || row.length == 0) {
+      return false;
+    }
+    let firstValue = row[0];
+    for (var i = 1; i < row.length; i++) {
+      if (firstValue instanceof Date && row[i] instanceof Date) {
+        return true;
+      }
+    }
+    return false;
   }
   
   function insertLogNote_(book: bkper.Book, range: GoogleAppsScript.Spreadsheet.Range, timeZone: string) {
