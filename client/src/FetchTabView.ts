@@ -232,7 +232,6 @@ namespace FetchTabView {
     form.balanceType = getBalanceType();
     form.expanded = getExpanded();
     form.transposed = getTransposed();
-    console.dir(form)
     return form;
   }
 
