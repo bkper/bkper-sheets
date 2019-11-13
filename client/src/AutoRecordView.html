@@ -1,9 +1,5 @@
 <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
 
-<script src="https://bkper-cdn.appspot.com/polymer/bower_components/webcomponentsjs/webcomponents.js"></script>
-
-<link rel="import" href="https://bkper-cdn.appspot.com/polymer/bower_components/paper-toggle-button/paper-toggle-button.html">
-
 <link inline href="AutoRecordView.css" rel="stylesheet">
 
 <div class="block form-group center">
@@ -13,7 +9,10 @@
     OFF
   </div>
   <div id="onOffButtonPanel">
-    <paper-toggle-button id="onOffButton" checked="false" on-change="{{AutoRecordChanged}}" class="bluetooth" role="button" aria-pressed="true" tabindex="0" touch-action="pan-y"></paper-toggle-button>
+    <label class="switch">
+      <input id="onOffButton" type="checkbox">
+      <span class="slider round"></span>
+    </label>    
   </div>
 
   <div class="bookPanel">
