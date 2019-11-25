@@ -1,4 +1,4 @@
-var SCRIPT_URI = "https://script.google.com/macros/d/1WDiSLYb67DLWs2XdnKopZcsK3HCwnhRlRYjaAXlMDdej6WFo8EMhiPk4/usercallback"
+var SCRIPT_URI = "https://script.google.com/macros/d/1WDiSLYb67DLWs2XdnKopZcsK3HCwnhRlRYjaAXlMDdej6WFo8EMhiPk4"
 
 function showAuthorizeView_() {
   var ui = HtmlService.createTemplateFromFile('AuthorizeView').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setTitle('Bkper Sheets');
