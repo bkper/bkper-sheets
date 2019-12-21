@@ -4,7 +4,7 @@ var BALANCE_TYPE_CUMULATIVE_ = "CUMULATIVE";
 
 function showSidebar(): void {
   if (BkperApp.isUserAuthorized()) {
-    var ui = HtmlService.createTemplateFromFile('SidebarView').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setTitle('Bkper Sheets');
+    var ui = HtmlService.createTemplateFromFile('SidebarView').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setTitle('Bkper');
     SpreadsheetApp.getUi().showSidebar(ui);
   } else {
     showAuthorizeView_();
