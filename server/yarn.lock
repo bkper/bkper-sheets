@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@bkper/bkper-app-types@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@bkper/bkper-app-types/-/bkper-app-types-1.0.0.tgz#105104c1b4f1af6792065bb8e9a091a14bb24d97"
-  integrity sha512-Kp8kgdujHYlya6Bkgj+bkO6qljIdmws35xgADPoAxWkMilqjVeclOlEnBZ7a0oqPvKnuNFCWhFBcE7y6jr2yFw==
+"@bkper/bkper-app-types@^1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@bkper/bkper-app-types/-/bkper-app-types-1.5.0.tgz#5e96a55dbc9a05d6d8d55e9dd9de0fab69c323b4"
+  integrity sha512-ZZlk8Q13S9WXcPKe1vGCRvxUNDFoLIGuSZaLvmpyTeCBK+yiBiQnH71UqhA4d0QL+u2++NtXDpmR/oK4631UuQ==
   dependencies:
     "@types/google-apps-script" "*"
 
@@ -15,9 +15,9 @@
   integrity sha512-8V2aCcPM3WLuJvJpF6N60uUvdZb7NHjpjQlLk1QmZbTP4XZET/FX0c3TJ3K7qt4L98FS1Pifa8BVofTVuJFWVA==
 
 "@types/google-apps-script@*":
-  version "0.0.60"
-  resolved "https://registry.yarnpkg.com/@types/google-apps-script/-/google-apps-script-0.0.60.tgz#81b25efba40d5b8474d1de6e67ed804970a2bd7d"
-  integrity sha512-z91yemyKLgaIf+gtPPuH/5PRWpWu9R0saqogxCdNil4IfaTyM8B4PqmgckvWu7WWw7aoqr4JnRNWj0jE6dncLQ==
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/@types/google-apps-script/-/google-apps-script-1.0.11.tgz#28f97c3cffda4ea4d477e3057799575b9b466b7e"
+  integrity sha512-LQS3WtXMv/dcU3kdk2DT80fdTZUdL+7Wi4mIZFBYisbx8SBSln7uPDhejpe9BiULvEscZW74pgqrD+rqAaZw5w==
 
 "@types/google-apps-script@^0.0.59":
   version "0.0.59"

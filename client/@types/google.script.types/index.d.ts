@@ -10,8 +10,6 @@ declare namespace google {
 
             withUserObject(object: any): Runner;
 
-            checkUserAuthorized(): void //void;
-
             enableAutoRecord(enable: boolean): void //AutorecordConfig;
 
             fetchQuery(fetchStatement: FetchStatement): void //void;

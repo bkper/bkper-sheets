@@ -1,9 +1,9 @@
 try {
-  //@ts-ignore
-  BkperApp.APP_KEY = "AIzaSyDvJOj3NEj3qP676HyIBlJ3Upq3kvJcgJw";
-} catch (err) {
+  BkperApp.setApiKey("AIzaSyDvJOj3NEj3qP676HyIBlJ3Upq3kvJcgJw");
+} catch (error) {
   //OK
 }
+
 
 /**
  * @OnlyCurrentDoc
@@ -33,13 +33,9 @@ function getDocumentProperties(): GoogleAppsScript.Properties.Properties {
 }
 
 function update() {
-  if (BkperApp.isUserAuthorized()) {
-    var spreadsheet = getActiveSpreadsheet();
-    var properties = getDocumentProperties();
-    FormulaService.updateDocument(spreadsheet, properties);
-  } else {
-    showAuthorizeView_();
-  }
+  var spreadsheet = getActiveSpreadsheet();
+  var properties = getDocumentProperties();
+  FormulaService.updateDocument(spreadsheet, properties);
 }
 
 function executeFetch(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, fetchStatement: FetchStatement, range: GoogleAppsScript.Spreadsheet.Range): void {
