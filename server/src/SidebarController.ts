@@ -16,8 +16,8 @@ function showSidebar(): void {
  */
 function checkUserAuthorized() {
   if (Authorizer.isUserAuthorized()) {
-    update();
     showSidebar();
+    update();
   }
 }
 
