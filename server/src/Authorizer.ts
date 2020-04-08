@@ -5,6 +5,17 @@ namespace Authorizer {
   const clientIdKey = "CLIENT_ID"
   const clientSecretKey = "CLIENT_SECRET"  
 
+  export function init() {
+    try {
+      BkperApp.setApiKey(CachedProperties_.getCachedProperty(CacheService.getScriptCache(), PropertiesService.getScriptProperties(), 'API_KEY'));
+      BkperApp.setOAuthTokenProvider({
+        getOAuthToken: () => Authorizer.getAccessToken()
+      })
+    } catch (error) {
+      //OK
+    }
+  }  
+
   export function handleCallback(request: object): boolean {
     return getBkperService().handleCallback(request)
   }
@@ -62,7 +73,7 @@ namespace Authorizer {
     // Create a new service with the given name. The name will be used when
     // persisting the authorized token, so ensure it is unique within the
     // scope of the property store.
-    return OAuth2.createService('bkper5')
+    return OAuth2.createService('bkper')
   
         // Set the endpoint URLs, which are the same for all Google services.
         .setAuthorizationBaseUrl('https://accounts.google.com/o/oauth2/auth')

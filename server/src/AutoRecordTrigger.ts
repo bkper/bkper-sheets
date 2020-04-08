@@ -35,18 +35,15 @@ namespace AutoRecordTrigger {
   Trigger function. DO NOT RENAME!!!!
 */
 function triggerBkperAutoRecord() {
-  let sleepMin = 300;
-  let sleepMax = 1500;
-  let rumpUp = 1;
-  let maxRetries = 20;
   try {
-    var lock = Utilities_.retry<GoogleAppsScript.Lock.Lock>(() => LockService.getDocumentLock(), sleepMin, sleepMax, maxRetries, rumpUp);
-    Utilities_.retry<GoogleAppsScript.Lock.Lock>(() => lock.waitLock(120000), sleepMin, sleepMax, maxRetries, rumpUp);    
+    var lock = Utilities_.retry<GoogleAppsScript.Lock.Lock>(() => LockService.getDocumentLock());
+    Utilities_.retry<GoogleAppsScript.Lock.Lock>(() => lock.waitLock(120000));    
+    Authorizer.init();
     var spreadsheet = getActiveSpreadsheet();
     var properties = getDocumentProperties();
     AutoRecordService.processAutoRecord(spreadsheet, properties)
     Utilities.sleep(500);
-    Utilities_.retry<GoogleAppsScript.Lock.Lock>(() => lock.releaseLock(), sleepMin, sleepMax, maxRetries, rumpUp);        
+    Utilities_.retry<GoogleAppsScript.Lock.Lock>(() => lock.releaseLock());        
   } catch (e) {
     Utilities_.logError(e);
   }
