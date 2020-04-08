@@ -4,8 +4,9 @@ namespace Authorizer {
 
   const clientIdKey = "CLIENT_ID"
   const clientSecretKey = "CLIENT_SECRET"  
+  let service: GoogleAppsScriptOAuth2.OAuth2Service = null;
 
-  export function init() {
+  export function initAuth() {
     try {
       BkperApp.setApiKey(CachedProperties_.getCachedProperty(CacheService.getScriptCache(), PropertiesService.getScriptProperties(), 'API_KEY'));
       BkperApp.setOAuthTokenProvider({
@@ -69,40 +70,21 @@ namespace Authorizer {
     }
   }
 
-  function getBkperService() {
-    // Create a new service with the given name. The name will be used when
-    // persisting the authorized token, so ensure it is unique within the
-    // scope of the property store.
-    return OAuth2.createService('bkper')
-  
-        // Set the endpoint URLs, which are the same for all Google services.
-        .setAuthorizationBaseUrl('https://accounts.google.com/o/oauth2/auth')
-        .setTokenUrl('https://accounts.google.com/o/oauth2/token')
-  
-        // Set the client ID and secret, from the Google Developers Console.
-        .setClientId(CachedProperties_.getCachedProperty(CacheService.getScriptCache(), PropertiesService.getScriptProperties(), clientIdKey))
-        .setClientSecret(CachedProperties_.getCachedProperty(CacheService.getScriptCache(), PropertiesService.getScriptProperties(), clientSecretKey))
-  
-        // Set the name of the callback function in the script referenced
-        // above that should be invoked to complete the OAuth flow.
-        .setCallbackFunction('authorizationCallback')
-
-        .setCache(CacheService.getUserCache())
-  
-        // Set the property store where authorized tokens should be persisted.
-        .setPropertyStore(PropertiesService.getUserProperties())
-  
-        // Set the scopes to request (space-separated for Google services).
-        .setScope('email')
-  
-        // Below are Google-specific OAuth2 parameters.
-  
-        // Requests offline access.
-        .setParam('access_type', 'offline')
-  
-        // Consent prompt is required to ensure a refresh token is always
-        // returned when requesting offline access.
-        .setParam('prompt', 'consent');
+  function getBkperService(): GoogleAppsScriptOAuth2.OAuth2Service {
+    if (service == null) {
+      service = OAuth2.createService('bkper')
+      .setAuthorizationBaseUrl('https://accounts.google.com/o/oauth2/auth')
+      .setTokenUrl('https://accounts.google.com/o/oauth2/token')
+      .setClientId(CachedProperties_.getCachedProperty(CacheService.getScriptCache(), PropertiesService.getScriptProperties(), clientIdKey))
+      .setClientSecret(CachedProperties_.getCachedProperty(CacheService.getScriptCache(), PropertiesService.getScriptProperties(), clientSecretKey))
+      .setCallbackFunction('authorizationCallback')
+      .setCache(CacheService.getUserCache())
+      .setPropertyStore(PropertiesService.getUserProperties())
+      .setScope('email')
+      .setParam('access_type', 'offline')
+      .setParam('prompt', 'consent');     
+    }
+    return service;
   }  
   
 }

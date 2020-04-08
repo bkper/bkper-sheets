@@ -38,7 +38,6 @@ function triggerBkperAutoRecord() {
   try {
     var lock = Utilities_.retry<GoogleAppsScript.Lock.Lock>(() => LockService.getDocumentLock());
     Utilities_.retry<GoogleAppsScript.Lock.Lock>(() => lock.waitLock(120000));    
-    Authorizer.init();
     var spreadsheet = getActiveSpreadsheet();
     var properties = getDocumentProperties();
     AutoRecordService.processAutoRecord(spreadsheet, properties)

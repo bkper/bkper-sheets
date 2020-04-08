@@ -9,7 +9,7 @@ function showAutoRecordPopup() {
     }
     try {
       var sheetName = SpreadsheetApp.getActiveSheet().getName();
-      var book = BkperApp.getBook(bookId);
+      var book = BookService.getBook(bookId);
       //Check if user has access to book
       book.getName();
       SpreadsheetApp.getUi().showModalDialog(ui, 'Auto-Record new lines from sheet [' + sheetName + ']?');

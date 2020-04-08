@@ -10,7 +10,7 @@ namespace TransactionService {
     var highlightRange;
     var selectedRange = activeSS.getActiveRange();
     
-    var ledger = BkperApp.getBook(ledgerId);
+    var ledger = BookService.getBook(ledgerId);
     
     if (!selectedRange.isBlank()) {
       rangeValues = getRangeValues_(selectedRange);

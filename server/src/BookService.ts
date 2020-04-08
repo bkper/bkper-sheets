@@ -5,10 +5,12 @@ namespace BookService {
   var booksCache: any;
   
   export function loadBooks(): bkper.Book[] {
+    Authorizer.initAuth();
     return BkperApp.getBooks();
   }
 
-  export function loadBook(bookId: string): bkper.Book {
+  export function getBook(bookId: string): bkper.Book {
+    Authorizer.initAuth();
     if (booksCache == null) {
       booksCache = new Object();
     }

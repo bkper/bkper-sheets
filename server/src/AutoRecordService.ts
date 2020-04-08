@@ -46,7 +46,7 @@ namespace AutoRecordService {
   }
   
   function createAutoRecordConfig_(bookId: string, enabled: boolean): AutorecordConfig {
-    var book = BkperApp.getBook(bookId);
+    var book = BookService.getBook(bookId);
     var config;
     try {
       config = {
@@ -93,7 +93,7 @@ namespace AutoRecordService {
     var currentRow = binding.currentRow;
     var lastRow = getLastRow_(sheet);
     if (lastRow > currentRow) {
-      var book = BkperApp.getBook(binding.bookId);
+      var book = BookService.getBook(binding.bookId);
       var lastColumn = sheet.getLastColumn();
       var numberOfRowsToRecord = lastRow - currentRow;
       var range = sheet.getRange(currentRow + 1, 1, numberOfRowsToRecord, lastColumn);
