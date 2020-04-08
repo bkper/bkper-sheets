@@ -1,4 +1,5 @@
 function showAutoRecordPopup() {
+  if (Authorizer.isUserAuthorized()) {
     var bookId = loadLastSelectedLedger();
     var ui = HtmlService.createTemplateFromFile('AutoRecordView').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setWidth(550).setHeight(155);
     if (bookId == null) {
@@ -17,6 +18,9 @@ function showAutoRecordPopup() {
       showSidebar();
       Browser.msgBox("Please select a book first.")    
     }    
+  } else {
+    showAuthorizeView_();
+  }  
 }
 
 /**
@@ -47,4 +51,3 @@ function enableAutoRecord(enable: boolean): AutorecordConfig {
   }
   return config;
 }
-

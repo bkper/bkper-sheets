@@ -1,10 +1,3 @@
-try {
-  BkperApp.setApiKey("AIzaSyDvJOj3NEj3qP676HyIBlJ3Upq3kvJcgJw");
-} catch (error) {
-  //OK
-}
-
-
 /**
  * @OnlyCurrentDoc
  */
@@ -33,9 +26,13 @@ function getDocumentProperties(): GoogleAppsScript.Properties.Properties {
 }
 
 function update() {
-  var spreadsheet = getActiveSpreadsheet();
-  var properties = getDocumentProperties();
-  FormulaService.updateDocument(spreadsheet, properties);
+  if (Authorizer.isUserAuthorized()) {
+    var spreadsheet = getActiveSpreadsheet();
+    var properties = getDocumentProperties();
+    FormulaService.updateDocument(spreadsheet, properties);
+  } else {
+    showAuthorizeView_();
+  }
 }
 
 function executeFetch(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, fetchStatement: FetchStatement, range: GoogleAppsScript.Spreadsheet.Range): void {

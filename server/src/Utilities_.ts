@@ -35,12 +35,12 @@ namespace Utilities_ {
     return message;
   }
 
-  export function retry<R>(func: Function, sleepTimeMinMs?: number, sleepTimeMaxMs?: number, maxRetries?: number, rumpUp?: number): R {
-
-    sleepTimeMinMs = sleepTimeMinMs != null ? sleepTimeMinMs : 500;
-    sleepTimeMaxMs = sleepTimeMaxMs != null ? sleepTimeMaxMs : 1000;
-    maxRetries = maxRetries != null ? maxRetries : 5;
-    rumpUp = rumpUp != null ? rumpUp : 2;
+  export function retry<R>(func: Function): R {
+    
+    let sleepTimeMinMs=300; 
+    let sleepTimeMaxMs=1500;  
+    let rumpUp = 1;     
+    let maxRetries = 20;
 
     var retries = 0;
     while (true) {

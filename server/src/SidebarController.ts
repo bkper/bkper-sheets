@@ -3,17 +3,38 @@ var BALANCE_TYPE_PERIOD_ = "PERIOD";
 var BALANCE_TYPE_CUMULATIVE_ = "CUMULATIVE";
 
 function showSidebar(): void {
-  var ui = HtmlService.createTemplateFromFile('SidebarView').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setTitle('Bkper');
-  SpreadsheetApp.getUi().showSidebar(ui);
+  if (Authorizer.isUserAuthorized()) {
+    var ui = HtmlService.createTemplateFromFile('SidebarView').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setTitle('Bkper');
+    SpreadsheetApp.getUi().showSidebar(ui);
+  } else {
+    showAuthorizeView_();
+  }
+}
+
+/**
+ * @public
+ */
+function checkUserAuthorized() {
+  if (Authorizer.isUserAuthorized()) {
+    update();
+    showSidebar();
+  }
 }
 
 /**
  * @public
  */
 function loadLedgers(): {id: string, name: string, permission : bkper.Permission, selected: boolean}[] {
+  try {
     var ledgers = BookService.loadBooks();
     var lastSelectedLedger = loadLastSelectedLedger();
     return ledgers.map((book => {return {id: book.getId(), name: book.getName(),  permission: book.getPermission(), selected: book.getId() == lastSelectedLedger}}));
+  } catch (err) {
+    if (!Authorizer.isUserAuthorized()) {
+      showAuthorizeView_();
+      throw err;
+    }
+  }  
 }
 
 /**
@@ -56,4 +77,3 @@ function saveLastSelectedLedger(ledgerId: string): void {
     getDocumentProperties().deleteProperty(getRecordTemplatesKey())
   }
 }
-

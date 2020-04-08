@@ -1,0 +1,68 @@
+<link rel="stylesheet"href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
+<style>
+.right {
+  float: right;
+}
+.center { 
+  text-align: center;
+}
+.block {
+  padding-bottom: 30px;
+}
+.sidebar { 
+  padding: 30px;
+}
+.signin-button {
+  background-image: url("https://storage.googleapis.com/bkper-public/addons/btn_google_signin_dark_normal_web.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 166px 40px;
+  width: 166px;
+  height: 40px;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.signin-button:hover {
+  background-image: url("https://storage.googleapis.com/bkper-public/addons/btn_google_signin_dark_focus_web.png");
+}
+.signin-button:active {
+  background-image: url("https://storage.googleapis.com/bkper-public/addons/btn_google_signin_dark_pressed_web.png");
+}
+
+body::after{
+   position:absolute; width:0; height:0; overflow:hidden; z-index:-1;
+   content:url("https://storage.googleapis.com/bkper-public/addons/btn_google_signin_dark_focus_web.png") url("https://storage.googleapis.com/bkper-public/addons/btn_google_signin_dark_pressed_web.png"); 
+}
+
+</style>
+
+<div class="sidebar">
+
+
+<div class="block">
+  <img alt="bkper" class="logo" src="https://storage.googleapis.com/bkper-public/logo.svg"/>
+  <span class="right gray branding-text">Easier Bookkeeping on G Suite</span>
+</div>
+  <div class="block center">
+  <div class='signin-button' onclick="popupwindow('<?!= authorizationUrl ?>', 'Sign in', 600, 600)"></div>
+</div>
+    
+</div>
+
+
+<script>
+
+function popupwindow(url, title, w, h) {
+  var left = (screen.width/2)-(w/2);
+  var top = (screen.height/2)-(h/2);
+  return window.open(url, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);
+}
+  
+var i = 1
+var timer = setInterval(checkUserAuthorized, 1500)
+
+function checkUserAuthorized() {
+		google.script.run.checkUserAuthorized();
+}
+</script>

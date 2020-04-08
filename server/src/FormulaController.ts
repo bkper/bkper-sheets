@@ -1,3 +1,12 @@
+try {
+  BkperApp.setApiKey(CachedProperties_.getCachedProperty(CacheService.getScriptCache(), PropertiesService.getScriptProperties(), 'API_KEY'));
+  BkperApp.setOAuthTokenProvider({
+    getOAuthToken: () => Authorizer.getAccessToken()
+  })
+} catch (error) {
+  //OK
+}
+
 /**
  * Fetch Transactions
  *
