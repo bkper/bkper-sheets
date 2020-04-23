@@ -1,0 +1,9 @@
+type: generic-app  #types available: webhook-bot / generic-app / menu-app / gas-bot
+
+# You can override the name from the repository
+name: Google Sheets Add-on
+
+# Set your logo url from public host. Best fit 200x200 px. Use https:// 
+logo: https://bkper.com/images/automations/logo-google-sheets.png
+
+
