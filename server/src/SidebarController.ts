@@ -24,7 +24,7 @@ function checkUserAuthorized() {
 /**
  * @public
  */
-function loadLedgers(): {id: string, name: string, permission : bkper.Permission, selected: boolean}[] {
+function loadLedgers(): {id: string, name: string, permission : Bkper.Permission, selected: boolean}[] {
   try {
     var ledgers = BookService.loadBooks();
     var lastSelectedLedger = loadLastSelectedLedger();

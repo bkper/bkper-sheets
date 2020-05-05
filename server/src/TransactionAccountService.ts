@@ -1,6 +1,6 @@
 namespace TransactionAccountService {
   
-  export function createAccountsIfNeeded(book: bkper.Book, selectedRange: GoogleAppsScript.Spreadsheet.Range): void {
+  export function createAccountsIfNeeded(book: Bkper.Book, selectedRange: GoogleAppsScript.Spreadsheet.Range): void {
     try {
       
       var headerGroups = getHeaderGroups_(book, selectedRange);
@@ -17,11 +17,11 @@ namespace TransactionAccountService {
     }
   }
   
-  function getHeaderGroups_(book: bkper.Book, range: GoogleAppsScript.Spreadsheet.Range): {columnIndex: number, group: bkper.Group}[] {
+  function getHeaderGroups_(book: Bkper.Book, range: GoogleAppsScript.Spreadsheet.Range): {columnIndex: number, group: Bkper.Group}[] {
     
     var groups = book.getGroups();
     
-    var headerGroups = new Array<{columnIndex: number, group: bkper.Group}>();
+    var headerGroups = new Array<{columnIndex: number, group: Bkper.Group}>();
     
     for (var i = 0; i < groups.length; i++) {
       var group = groups[i];
@@ -35,7 +35,7 @@ namespace TransactionAccountService {
 
   }
   
-  function getColumnIndex_(book: bkper.Book, range: GoogleAppsScript.Spreadsheet.Range, columnTag: string): number {
+  function getColumnIndex_(book: Bkper.Book, range: GoogleAppsScript.Spreadsheet.Range, columnTag: string): number {
     var frozenRows = range.getSheet().getFrozenRows();
     var numRows = frozenRows > 0 ? frozenRows : 1;
     var headerValues = range.getSheet().getSheetValues(1, range.getColumn(), numRows, range.getNumColumns());
@@ -56,7 +56,7 @@ namespace TransactionAccountService {
     return false;
   }
   
-  function createAccountsIfDoesNotExists_(book: bkper.Book, group: bkper.Group, accountNamesArray: string[]): void {
+  function createAccountsIfDoesNotExists_(book: Bkper.Book, group: Bkper.Group, accountNamesArray: string[]): void {
     for (var i = 0; i < accountNamesArray.length; i++) {
       var accountName = accountNamesArray[i];
       if (book.getAccount(accountName) == null) {

@@ -10,7 +10,7 @@
     "test:run": "mocha --require source-map-support/register build/test-bundle.js"
   },
   "devDependencies": {
-    "@bkper/bkper-app-types": "^1.6.3",
+    "@bkper/bkper-app-types": "^1.7.0",
     "@types/chai": "^4.2.1",
     "@types/google-apps-script": "^0.0.59",
     "@types/google-apps-script-oauth2": "^24.0.2",

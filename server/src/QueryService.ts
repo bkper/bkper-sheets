@@ -39,11 +39,11 @@ namespace QueryService {
 
   }
 
-  function filterBalanceSavedQueries_(ledger: bkper.Book): Query[] {
+  function filterBalanceSavedQueries_(ledger: Bkper.Book): Query[] {
     return ledger.getSavedQueries().map(query => {return {...query, category: QUERY_CATEGORY_SAVED_}}).sort(queryComparator_);
   }
 
-  function createAccountQueries_(ledger: bkper.Book): Query[] {
+  function createAccountQueries_(ledger: Bkper.Book): Query[] {
     return ledger.getAccounts().filter(account => account.isActive()).map(account => {
       return {
         title: account.getName(),
@@ -53,7 +53,7 @@ namespace QueryService {
     }).sort(queryComparator_);
   }
   
-  function createGroupQueries_(ledger: bkper.Book): Query[] {
+  function createGroupQueries_(ledger: Bkper.Book): Query[] {
     return ledger.getGroups().filter(group => group.hasAccounts()).map(group => {
       return {
         title: group.getName(),
