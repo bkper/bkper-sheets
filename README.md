@@ -6,5 +6,13 @@ The Bkper add-on for Google Sheets lets you record transactions from Google Shee
 
 ![Bkper add-on for Google Sheets](https://downloads.intercomcdn.com/i/o/201320536/51500ec47feb0f2560ffdd58/bkper-export-data-google-sheet-3.png)
 
-## Instalattion
-Install Bkper from the ![G Suite Marketplace](https://gsuite.google.com/marketplace/app/bkper/360398463400) with one click on the install button on the top right. Open the Add-on for Bkper from the Google sheets menu Add-ons.
+## Installation
+
+Install from the [G Suite Marketplace](https://gsuite.google.com/marketplace/app/bkper/360398463400) with one click on the install button on the top right, then:
+
+1. On your computer, open a Google spreadsheet.
+2. Click Add-ons and then "Bkper".
+3. Point to an add-on to see a short description. To see a full description, click the add-on.
+
+The first time you access the Add-on you must authorize the access from your Google Sheet to Bkper for your user account. 
+Once installed and authorized, the Add-on for Bkper and the Bkper Sheets Formulas will be available on all your Google Sheets.
