@@ -7,6 +7,7 @@
   "private": true,
   "scripts": {
     "open": "clasp open",
+    "test": "yarn --cwd server/ test",
     "clean:dist": "rimraf dist",
     "clean:client": "yarn --cwd client/ clean",
     "clean:server": "yarn --cwd server/ clean",

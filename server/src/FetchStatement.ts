@@ -11,6 +11,7 @@ interface FetchStatement {
   balanceType?: "CUMULATIVE" | "PERIOD" | "TOTAL",
   expanded?: boolean,
   transposed?: boolean,
+  hideDates?: boolean,
   lastUpdate?: number
 }
 class FetchStatementDAO {
