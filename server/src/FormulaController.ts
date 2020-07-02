@@ -40,7 +40,7 @@ function BKPER_BALANCES_TOTAL(bookId: string, cache: number, query: string, expa
  * @param {string} query The balances query.
  * @param {boolean=} expanded Expand group accounts
  * @param {boolean=} transposed Transpose the result
- * 
+ * @param {boolean=} hideDates Hide dates column/row
  * 
  * @customfunction
  */
@@ -62,6 +62,7 @@ function BKPER_BALANCES_PERIOD(bookId: string, cache: number, query: string, exp
  * @param {string} query The balances query.
  * @param {boolean=} expanded Expand group accounts
  * @param {boolean=} transposed Transpose the result
+ * @param {boolean=} hideDates Hide dates column/row
  * 
  * @customfunction
  */
