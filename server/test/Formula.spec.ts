@@ -66,6 +66,16 @@ describe('Formula', () => {
     it('should preserve references', () => {
       expect(Formula.parseString('= BKPER_TRANSACTIONS(H1; 1; H3)', 'pt_BR').toString()).to.eql('=BKPER_TRANSACTIONS(H1; 1; H3)');
     })
+
+    it('should not parse comma inside quotes', () => {
+      expect(Formula.parseString('=BKPER_TRANSACTIONS(H1; 1; "account: \'Account, bla\'")', 'pt_BR').toString()).to.eql('=BKPER_TRANSACTIONS(H1; 1; "account: \'Account, bla\'")');
+      expect(Formula.parseString(' =BKPER_BALANCES_PERIOD("xxx"; 1; "acc: \'some, account\'"; false; false; false)', 'pt_BR').toString()).to.eql('=BKPER_BALANCES_PERIOD("xxx"; 1; "acc: \'some, account\'"; FALSE; FALSE; FALSE)');
+    })
+
+    it('should preserve inner formulas', () => {
+      expect(Formula.parseString('=BKPER_BALANCES_PERIOD(\'Configuração\'!$C$5, 21, "group:\'Receita Provedores Regionais\' after:"&TEXT(\'Configuração\'!$C$6, "mm/yyyy")&" before:"&TEXT(\'Configuração\'!$C$7, "mm/yyyy"), FALSE, TRUE, TRUE)', 'en_US')
+      .toString()).to.eql('=BKPER_BALANCES_PERIOD(\'Configuração\'!$C$5, 21, "group:\'Receita Provedores Regionais\' after:"&TEXT(\'Configuração\'!$C$6, "mm/yyyy")&" before:"&TEXT(\'Configuração\'!$C$7, "mm/yyyy"), FALSE, TRUE, TRUE)');
+    })
   
   });  
 });

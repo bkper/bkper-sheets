@@ -63,9 +63,22 @@ class Formula {
   static parseString(formulaStr: string, locale: string): Formula {
     let formula = new Formula();
     formula.locale = locale;
-    let regExp = /\(([^)]+)\)/;
-    let matches = regExp.exec(formulaStr);
-    let params = matches[1].split(/[,;]/);
+    let init = formulaStr.indexOf('(');
+    let end = formulaStr.lastIndexOf(')')
+
+    let formulaParams = formulaStr.substr(init+1,end-init-1);
+
+    // Parenteses OK - https://stackoverflow.com/questions/39647555/how-to-split-string-while-ignoring-portion-in-parentheses
+    // let params = formulaParams.split(/[,;](?![^(]*\)) /);
+
+    
+    // Aspas OK - https://stackoverflow.com/questions/23582276/split-string-by-comma-but-ignore-commas-inside-quotes/23582323
+    // let params = formulaParams.split(/[,;](?=(?:(?:[^"]*"){2})*[^"]*$)/);
+    
+    //Combining both
+    let params = formulaParams.split(/[,;]((?=(?:(?:[^"]*"){2})*[^"]*$)(?![^(]*\)))/);
+    params = params.filter(n => n);
+
     formula.bookId = params[0].trim();
     formula.update = +params[1];
 
