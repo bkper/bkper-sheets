@@ -110,8 +110,8 @@ $(function() {
 				} else {
 					selectFetchTab();
 					showTabBar(false);
-				}
-				if (FetchTabView.isFetchVisible()) {
+        }
+        if (FetchTabView.isQuerySearchEnabled()) {
 					FetchTabActivity.loadQueries(ledger.id);
 				}
 			} else {
@@ -195,9 +195,8 @@ $(function() {
 	function selectFetchTab() {
 		selectedTab = 1;
 		var ledger = getSelectedLedger();
-		FetchTabView.disableFetchButton(true);
+    FetchTabView.verifyFormState();
 		if (ledger) {
-			FetchTabActivity.loadQueries(ledger.id);
 			view.tabBarItem2.addClass("tab-bar-item-selected");
 			view.tabBarItem1.removeClass("tab-bar-item-selected");
 			view.tab1Content.removeClass("hiddenContent");

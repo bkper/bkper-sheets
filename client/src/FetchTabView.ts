@@ -21,8 +21,13 @@ namespace FetchTabView {
     view.queryInput.click(showQueries);
     view.queryInput.change(verifyFormState);
     view.queryInput.blur(verifyFormState);
-    $('input[name=fetch-type-radio]', view.fetchTypeRadioGroup).change(verifyFormState);
+    $('input[name=fetch-type-radio]', view.fetchTypeRadioGroup).change(fetchTypeRadioChanged);
     $('input[name=balance-type-radio]', view.balanceTypeRadioGroup).change(verifyFormState);
+  }
+
+  function fetchTypeRadioChanged() {
+    var ledger = SidebarView.getSelectedLedger();
+    FetchTabActivity.loadQueries(ledger.id);
   }
 
   function onClickFetchButton() {
@@ -34,10 +39,10 @@ namespace FetchTabView {
   }
 
   function disableExpanded(disable) {
-    view.expanded.attr('disabled', disable);
+    disableInput(disable, view.expanded);
   }
   function disableTransposed(disable) {
-    view.transposed.attr('disabled', disable);
+    disableInput(disable, view.transposed);
   }
 
   export function verifyFormState() {
@@ -45,59 +50,65 @@ namespace FetchTabView {
     SidebarView.configureOpenCreateButton();
 
     var form: any = getForm();
-    if (form.query == null || form.query.trim() == "") {
-      disableFetchType(true);
-      disableBalanceType(true);
-      disableFetchButton(true);
-      disableExpanded(true);
-      disableTransposed(true);
+
+    disableQueryInput(true)
+    disableBalanceType(true);
+    disableFetchButton(true);
+    disableExpanded(true);
+    disableTransposed(true);
+    disableFetchButton(true);
+
+    if (form.fetchType == "accounts") {
+      disableFetchButton(false);
       return;
-    } else {
-      disableFetchType(false);
     }
 
-
     if (form.fetchType == "transactions") {
-      disableFetchButton(false);
-      disableBalanceType(true);
-      disableExpanded(true);
-      disableTransposed(true);
+
+      disableQueryInput(false)
+
+      if (form.query != null && form.query.trim() != "") {
+        disableFetchButton(false);
+      }
+
+
       return;
     }
 
     if (form.fetchType == "balances") {
+      disableQueryInput(false)
       disableBalanceType(false);
       disableTransposed(false);
+
+      if (form.query == null || form.query.trim() == "") {
+        return;
+      }
+      
       if (form.query.indexOf("group:") >= 0) {
         disableExpanded(false);
       } else {
-        disableExpanded(true);
         view.expanded.prop('checked', false);
-      }      
-    }
-
-
-    if (form.balanceType != null) {
-      disableFetchButton(false);
-    } else {
-      disableFetchButton(true);
+      }
+      
+      if (form.balanceType != null) {
+        disableFetchButton(false);
+      }
+      
+      return;
     }
 
   }
 
-  export function isFetchVisible() {
-    return view.queryInput.is(":visible");
+  export function isQuerySearchEnabled() {
+    var form: any = getForm();
+    return form.fetchType == "transactions" || form.fetchType == "balances";
   }
 
 
   //fetch type
-  function getFetchType(): "transactions" | "balances" {
+  function getFetchType(): "transactions" | "balances" | "accounts" {
     //@ts-ignore
     return $("input[name=fetch-type-radio]:checked", view.fetchTypeRadioGroup).val();
-  }
-
-  function disableFetchType(disable) {
-    $("input[name=fetch-type-radio]", view.fetchTypeRadioGroup).attr('disabled', disable);
   }
 
 
@@ -108,7 +119,8 @@ namespace FetchTabView {
   }
 
   function disableBalanceType(disable) {
-    $("input[name=balance-type-radio]", view.balanceTypeRadioGroup).attr('disabled', disable);
+    let el = $("input[name=balance-type-radio]", view.balanceTypeRadioGroup);
+    disableInput(disable, el);
   }
 
   function getExpanded(): boolean {
@@ -130,7 +142,15 @@ namespace FetchTabView {
   }
 
   export function disableQueryInput(disable) {
-    view.queryInput.attr('disabled', disable);
+    disableInput(disable, view.queryInput);    
+  }
+
+  function disableInput(disable: any, el: any) {
+    if (disable) {
+      el.parent().css('visibility', 'hidden');
+    } else {
+      el.parent().css('visibility', 'visible');
+    }
   }
 
   export function hideQueryAutocomplete() {

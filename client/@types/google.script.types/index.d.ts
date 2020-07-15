@@ -42,7 +42,9 @@ declare namespace google {
 
             expanded?: boolean;
 
-            fetchType?: "transactions" | "balances";
+            fetchType?: "transactions" | "balances" | "accounts";
+
+            hideDates?: boolean;
 
             lastUpdate?: number;
 
@@ -73,6 +75,30 @@ declare namespace google {
             title: string;
 
         }
+
+        export var AUTORECORD_TRIGGER_FUNCTION: string;
+
+        export var AUTO_RECORD_BINDER_PREFIX: string;
+
+        export var BALANCE_TYPE_CUMULATIVE_: string;
+
+        export var BALANCE_TYPE_PERIOD_: string;
+
+        export var BALANCE_TYPE_TOTAL_: string;
+
+        export var LAST_UPDATE_KEY: string;
+
+        export var LEDGER_LAST_UPDATE_PREFIX_: string;
+
+        export var QUERY_CATEGORY_ACCOUNT_: string;
+
+        export var QUERY_CATEGORY_GROUP_: string;
+
+        export var QUERY_CATEGORY_SAVED_: string;
+
+        export var RECORD_BACKGROUND_: string;
+
+        export var STATEMENT_PREFIX: string;
 
         export var run: Runner;
 

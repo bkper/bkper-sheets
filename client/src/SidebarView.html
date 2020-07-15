@@ -21,73 +21,102 @@
   <div id="contentWrapper" class="hiddenContent">
     <!-- TAB TITLE -->
     <div class="block" id="tab-bar">
-      <div class="tab-bar-item tab-bar-item-1 tab-bar-item-selected" id="tabBarItem1">Record</div>
+      <div class="tab-bar-item tab-bar-item-1 tab-bar-item-selected" id="tabBarItem1">Save</div>
       <div class="tab-bar-item tab-bar-item-2" id="tabBarItem2">Fetch</div>
     </div>
 
 
-    <!-- RECORD TAB -->
+    <!-- SAVE TAB -->
     <div class="block" id="tab2Content">
-      <div class="tabContent">
-        <input type="checkbox" id="highlight" checked="checked" tabindex="2" />Highlight
+      <div class="block form-group tabContent">
+
+        <div class="block form-group" id='save-type-radio-group'>
+          <div>
+            <div class="inline">
+              <input type="radio" name="save-type-radio" id="save-type-radio-transactions" value="transactions">
+              <label for="save-type-radio-transactions" class="bold">Transactions</label>
+            </div>
+            <div class="inline">
+              <input type="radio" name="save-type-radio" id="save-type-radio-accounts"  value="accounts">
+              <label for="save-type-radio-accounts" class="bold">Accounts</label>
+            </div>                        
+          </div>
+        </div>
+
+        <div class="block form-group">
+          <input type="checkbox" id="highlight" checked="checked" tabindex="2" />
+          <label for="highlight">Highlight</label>
+        </div>
+
       </div>
-      <button class="create" id="recordButton" disabled="disabled" tabindex="3">Record</button>
-      <div id="recordedStatus">Transaction(s) Recorded!</div>
+      <div class="block">
+        <button class="create" id="recordButton" disabled="disabled" tabindex="3">SAVE</button>
+      </div>
+      <div id="recordedStatus">Saved!</div>
     </div>
 
     <!--FETCH TAB -->
     <div class="block hiddenContent" id="tab1Content">
       <div class="block form-group tabContent">
-        <input placeholder='Query...' type="text" id="queryInput" class="width-100" disabled="disabled" tabindex="2">
-        <div class="queryErrorPanel">
-          <div id="queryError">* Network Error</div>
-        </div>
 
         <div class="block form-group" id='fetch-type-radio-group'>
           <div>
             <div class="inline">
-              <input type="radio" name="fetch-type-radio" id="fetch-type-radio-balances"  value="balances" disabled="disabled">
-              <label for="fetch-type-radio-balances" class="bold">Balances</label>
-            </div>
-            <div class="inline">
-              <input type="radio" name="fetch-type-radio" id="fetch-type-radio-transactions" value="transactions" disabled="disabled">
+              <input type="radio" name="fetch-type-radio" id="fetch-type-radio-transactions" value="transactions"/>
               <label for="fetch-type-radio-transactions" class="bold">Transactions</label>
             </div>
+            <div class="inline">
+              <input type="radio" name="fetch-type-radio" id="fetch-type-radio-accounts"  value="accounts"/>
+              <label for="fetch-type-radio-accounts" class="bold">Accounts</label>
+            </div>                        
+            <div class="inline">
+              <input type="radio" name="fetch-type-radio" id="fetch-type-radio-balances"  value="balances"/>
+              <label for="fetch-type-radio-balances" class="bold">Balances</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="block form-group">
+          <input placeholder='Query...' type="text" id="queryInput" class="width-100" tabindex="2">
+          <div class="queryErrorPanel">
+            <div id="queryError">* Network Error</div>
           </div>
         </div>
 
         <div class="block form-group" id='balance-type-radio-group'>
           <div>
             <div class="inline">
-              <input type="radio" name="balance-type-radio" id="balance-type-radio-total"  value="TOTAL" disabled="disabled">
+              <input type="radio" name="balance-type-radio" id="balance-type-radio-total"  value="TOTAL"/>
               <label for="balance-type-radio-total">Total</label>
             </div>
             <div class="inline">
-              <input type="radio" name="balance-type-radio" id="balance-type-radio-period" value="PERIOD" disabled="disabled">
+              <input type="radio" name="balance-type-radio" id="balance-type-radio-period" value="PERIOD"/>
               <label for="balance-type-radio-period">Period</label>
             </div>
             <div class="inline">
-              <input type="radio" name="balance-type-radio" id="balance-type-radio-cumulative" value="CUMULATIVE"  disabled="disabled">
+              <input type="radio" name="balance-type-radio" id="balance-type-radio-cumulative" value="CUMULATIVE"/>
               <label for="balance-type-radio-cumulative">Cumulative</label>
             </div>
           </div>
-        </div>
+        </div> 
 
         <div class="block form-group" id='balance-option-checkbox'>
           <div>
             <div class="inline">
-              <input type="checkbox" id="expanded"  value="false" disabled="disabled">
-              <label for="expanded">Expanded</label>
-            </div>
-            <div class="inline">
-              <input type="checkbox" id="transposed" value="false" disabled="disabled">
+              <input type="checkbox" id="transposed" value="false">
               <label for="transposed">Transposed</label>
             </div>
+            <div class="inline">
+              <input type="checkbox" id="expanded"  value="false">
+              <label for="expanded">Expanded</label>
+            </div>            
           </div>
         </div>
 
       </div>
-      <button class="blue" id="fetchButton" disabled="disabled" tabindex="5">Fetch</button>
+      <div class="block">
+        <button class="blue" id="fetchButton" tabindex="5">Fetch</button>
+      </div>
     </div>
 
 

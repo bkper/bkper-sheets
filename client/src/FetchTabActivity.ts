@@ -13,7 +13,6 @@ namespace FetchTabActivity {
 			var cachedQueries = CacheController.get(ledgerQueriesKey);
 			if (cachedQueries != null) {
 				FetchTabView.setQueries(cachedQueries);
-				FetchTabView.disableQueryInput(false);
 			} else {
 
 				FetchTabView.setQueryInput("");
@@ -27,11 +26,7 @@ namespace FetchTabActivity {
 			}
 			if (DEV_MODE) {
 				FetchTabView.setQueries(cachedQueries);
-				FetchTabView.disableQueryInput(false);
 			}
-		} else {
-			FetchTabView.hideQueryAutocomplete();
-			FetchTabView.disableQueryInput(true);
 		}
 	}
 
@@ -49,8 +44,8 @@ namespace FetchTabActivity {
 		var ledgerQueriesKey = "ledgerQueries_" + ledgerId;
 		CacheController.put(ledgerQueriesKey, queries);
 		FetchTabView.setQueries(queries);
-		FetchTabView.disableQueryInput(false);
 		SidebarView.disableLedgerSelect(false);
+		FetchTabView.verifyFormState();
 		SidebarView.loading(false);
 	}
 
