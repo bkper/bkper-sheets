@@ -103,10 +103,6 @@ input[type="radio"] {
   width: 195px;
 }
 
-
-#highlight {
-}
-
 #recordedStatus {
   margin: 20px auto;
   text-align: center;
@@ -126,8 +122,6 @@ input[type="radio"] {
   color: darkgreen !important;
 }
 
-.queryErrorPanel {
-}
 
 #generalError, #queryError {
  color: red;

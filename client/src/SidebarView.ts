@@ -4,11 +4,11 @@ var DEV_MODE = false;
 
 $(function() {
 	SidebarView.init();
-	RecordTabView.init();
+	SaveTabView.init();
 	FetchTabView.init();
 
 	SidebarActivity.init();
-	RecordTabActivity.init();
+	SaveTabActivity.init();
 	FetchTabActivity.init();
 });
 
@@ -87,7 +87,7 @@ $(function() {
 		disableLedgerSelect(true);
 
 		FetchTabView.disableFetchButton(true);
-		RecordTabView.disableRecordButton(true);
+		SaveTabView.disableRecordButton(true);
 	}
 
 	function onLedgerChange() {
@@ -105,7 +105,7 @@ $(function() {
 			if (ledger.id) {
 				showContentWrapper(true);
 				if (ledger.permission != "VIEWER") {
-					RecordTabView.disableRecordButton(false);
+					SaveTabView.disableRecordButton(false);
 					showTabBar(true);
 				} else {
 					selectFetchTab();
@@ -115,11 +115,11 @@ $(function() {
 					FetchTabActivity.loadQueries(ledger.id);
 				}
 			} else {
-				RecordTabView.disableRecordButton(true);
+				SaveTabView.disableRecordButton(true);
 				showContentWrapper(false);
 			}
 		} else {
-			RecordTabView.disableRecordButton(true);
+			SaveTabView.disableRecordButton(true);
 			showContentWrapper(false);
 		}
 	}

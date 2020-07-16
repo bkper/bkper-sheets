@@ -22,9 +22,9 @@ declare namespace google {
 
             loadQueries(ledgerId: string): void //LedgerQueries;
 
-            recordLines(ledgerId: string, highlight: boolean): void //boolean;
-
             saveLastSelectedLedger(ledgerId: string): void //void;
+
+            saveLines(saveStatement: SaveStatement): void //boolean;
 
         }
 
@@ -76,6 +76,16 @@ declare namespace google {
 
         }
 
+        export interface SaveStatement {
+
+            highlight?: boolean;
+
+            ledgerId: string;
+
+            saveType?: "transactions" | "accounts";
+
+        }
+
         export var AUTORECORD_TRIGGER_FUNCTION: string;
 
         export var AUTO_RECORD_BINDER_PREFIX: string;
@@ -97,8 +107,6 @@ declare namespace google {
         export var QUERY_CATEGORY_SAVED_: string;
 
         export var RECORD_BACKGROUND_: string;
-
-        export var STATEMENT_PREFIX: string;
 
         export var run: Runner;
 

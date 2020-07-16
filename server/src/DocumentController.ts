@@ -4,7 +4,7 @@
 function onOpen() {
   SpreadsheetApp.getUi().createAddonMenu()
     .addItem('Open', 'showSidebar')
-    .addItem('Auto-Record...', 'showAutoRecordPopup')
+    .addItem('Auto-Save...', 'showAutoRecordPopup')
     .addItem('Update', 'update')
     .addToUi();
 }

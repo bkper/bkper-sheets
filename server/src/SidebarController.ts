@@ -40,8 +40,8 @@ function loadLedgers(): {id: string, name: string, permission : Bkper.Permission
 /**
  * @public
  */
-function recordLines(ledgerId: string, highlight: boolean): boolean {
-  return TransactionService.record(ledgerId, highlight);
+function saveLines(saveStatement: SaveStatement): boolean {
+  return SaveService.save(saveStatement);
 }
 
 /**
