@@ -1,7 +1,7 @@
 function showAutoRecordPopup() {
   if (Authorizer.isUserAuthorized()) {
     var bookId = loadLastSelectedLedger();
-    var ui = HtmlService.createTemplateFromFile('AutoRecordView').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setWidth(550).setHeight(155);
+    var ui = HtmlService.createTemplateFromFile('AutoRecordView').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setWidth(680).setHeight(155);
     if (bookId == null) {
       showSidebar();
       Browser.msgBox("Please select a book first.")
