@@ -12,7 +12,7 @@ function showAutoRecordPopup() {
       var book = BookService.getBook(bookId);
       //Check if user has access to book
       book.getName();
-      SpreadsheetApp.getUi().showModalDialog(ui, 'Auto-Save new transactions from sheet [' + sheetName + ']?');
+      SpreadsheetApp.getUi().showModalDialog(ui, 'Auto-Record new transactions from sheet [' + sheetName + ']?');
     } catch (error) {
       Utilities_.logError(error);
       showSidebar();
