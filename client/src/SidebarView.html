@@ -21,24 +21,24 @@
   <div id="contentWrapper" class="hiddenContent">
     <!-- TAB TITLE -->
     <div class="block" id="tab-bar">
-      <div class="tab-bar-item tab-bar-item-1 tab-bar-item-selected" id="tabBarItem1">Save</div>
+      <div class="tab-bar-item tab-bar-item-1 tab-bar-item-selected" id="tabBarItem1">Record</div>
       <div class="tab-bar-item tab-bar-item-2" id="tabBarItem2">Fetch</div>
     </div>
 
 
-    <!-- SAVE TAB -->
+    <!-- RECORD TAB -->
     <div class="block" id="tab2Content">
       <div class="block form-group tabContent">
 
-        <div class="block form-group" id='save-type-radio-group'>
+        <div class="block form-group" id='record-type-radio-group'>
           <div>
             <div class="inline">
-              <input type="radio" name="save-type-radio" id="save-type-radio-transactions" value="transactions">
-              <label for="save-type-radio-transactions" class="bold">Transactions</label>
+              <input type="radio" name="record-type-radio" id="record-type-radio-transactions" value="transactions">
+              <label for="record-type-radio-transactions" class="bold">Transactions</label>
             </div>
             <div class="inline">
-              <input type="radio" name="save-type-radio" id="save-type-radio-accounts"  value="accounts">
-              <label for="save-type-radio-accounts" class="bold">Accounts</label>
+              <input type="radio" name="record-type-radio" id="record-type-radio-accounts"  value="accounts">
+              <label for="record-type-radio-accounts" class="bold">Accounts</label>
             </div>                        
           </div>
         </div>
@@ -50,9 +50,9 @@
 
       </div>
       <div class="block">
-        <button class="create" id="recordButton" disabled="disabled" tabindex="3">SAVE</button>
+        <button class="create" id="recordButton" disabled="disabled" tabindex="3">RECORD</button>
       </div>
-      <div id="recordedStatus">Saved!</div>
+      <div id="recordedStatus">Recorded!</div>
     </div>
 
     <!--FETCH TAB -->
@@ -144,8 +144,8 @@
 
 <script inline src="SidebarView.js"></script>
 <script inline src="FetchTabView.js"></script>
-<script inline src="SaveTabView.js"></script>
+<script inline src="RecordTabView.js"></script>
 <script inline src="SidebarActivity.js"></script>
 <script inline src="FetchTabActivity.js"></script>
-<script inline src="SaveTabActivity.js"></script>
+<script inline src="RecordTabActivity.js"></script>
 <script inline src="CacheController.js"></script>

@@ -12,6 +12,18 @@ function BKPER_TRANSACTIONS(bookId: string, cache: number, query: string): any[]
   return BookService.getBook(bookId).createTransactionsDataTable(query).includeUrls(true).build();
 }
 
+// /**
+//  * Fetch Accounts
+//  *
+//  * @param {string} bookId The universal Book Id.
+//  * @param {number} cache Increase to clean cache and force fetch update.
+//  * 
+//  * @customfunction
+//  */
+// function BKPER_ACCOUNTS(bookId: string, cache: number): any[][] {
+//   return BookService.getBook(bookId).createAccountsDataTable().build();
+// }
+
 /**
  * Fetch Total Balances
  * 

@@ -1,5 +1,5 @@
 
-namespace SaveTabView {
+namespace RecordTabView {
 
   var view;
 
@@ -8,7 +8,7 @@ namespace SaveTabView {
       recordButton: $('#recordButton'),
       highlight: $('#highlight'),
       recordedStatus: $('#recordedStatus'),
-      saveTypeRadioGroup: $('#save-type-radio-group'),
+      recordTypeRadioGroup: $('#record-type-radio-group'),
     }
     bindUIActions();
   }
@@ -18,7 +18,7 @@ namespace SaveTabView {
   }
 
   function onClickRecordButton() {
-    SaveTabActivity.recordLines();
+    RecordTabActivity.recordLines();
   }
 
   function getHighlight() {
@@ -27,9 +27,9 @@ namespace SaveTabView {
 
 
   //fetch type
-  function getSaveType(): "transactions" | "accounts" {
+  function getRecordType(): "transactions" | "accounts" {
     //@ts-ignore
-    return $("input[name=save-type-radio]:checked", view.saveTypeRadioGroup).val();
+    return $("input[name=record-type-radio]:checked", view.recordTypeRadioGroup).val();
   }
 
   export function disableRecordButton(disable) {
@@ -54,7 +54,7 @@ namespace SaveTabView {
   export function getForm(): google.script.SaveStatement {
     var form = SidebarView.getForm() as google.script.SaveStatement;
     form.highlight = getHighlight();
-    form.saveType = getSaveType();
+    form.recordType = getRecordType();
     return form;
   }
 

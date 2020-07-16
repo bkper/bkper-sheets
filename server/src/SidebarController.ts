@@ -41,7 +41,7 @@ function loadLedgers(): {id: string, name: string, permission : Bkper.Permission
  * @public
  */
 function saveLines(saveStatement: SaveStatement): boolean {
-  return SaveService.save(saveStatement);
+  return RecordService.record(saveStatement);
 }
 
 /**

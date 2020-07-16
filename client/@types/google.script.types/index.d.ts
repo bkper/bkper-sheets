@@ -82,7 +82,7 @@ declare namespace google {
 
             ledgerId: string;
 
-            saveType?: "transactions" | "accounts";
+            recordType?: "transactions" | "accounts";
 
         }
 

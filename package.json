@@ -10,6 +10,7 @@
     "test": "yarn --cwd server/ test",
     "clean:dist": "rimraf dist",
     "clean:client": "yarn --cwd client/ clean",
+    "types": "yarn --cwd client/ types",
     "clean:server": "yarn --cwd server/ clean",
     "clean": "run-p clean:*",
     "copy:client": "copyfiles -f client/dist/* dist/",
