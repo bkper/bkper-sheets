@@ -40,7 +40,7 @@ function executeFetch(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, fet
     range = spreadsheet.getActiveCell();
   }
   range = range.getCell(1, 1);
-  if (fetchStatement.query.length > 0) {
+  if (fetchStatement.ledgerId.length > 0) {
     let formula = Formula.parseFetchStatement(fetchStatement, spreadsheet.getSpreadsheetLocale());
     range.setFormula(formula.toString());
   }

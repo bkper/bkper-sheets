@@ -1,4 +1,5 @@
 enum FormulaName {
+  BKPER_ACCOUNTS = "BKPER_ACCOUNTS",
   BKPER_TRANSACTIONS = "BKPER_TRANSACTIONS",
   BKPER_BALANCES_TOTAL = "BKPER_BALANCES_TOTAL",
   BKPER_BALANCES_PERIOD = "BKPER_BALANCES_PERIOD",
@@ -35,7 +36,9 @@ class Formula {
     formula.update = 1;
     formula.bookId = fetchStatement.ledgerId;
     formula.query = fetchStatement.query.replace(/\"/g, "'");;
-    if (fetchStatement.fetchType === 'transactions') {
+    if (fetchStatement.fetchType === 'accounts') {
+      formula.name = FormulaName.BKPER_ACCOUNTS;
+    } else if (fetchStatement.fetchType === 'transactions') {
       formula.name = FormulaName.BKPER_TRANSACTIONS;
     } else if (fetchStatement.fetchType === 'balances') {
       if (fetchStatement.balanceType.toUpperCase() === BALANCE_TYPE_TOTAL_) {
@@ -89,12 +92,14 @@ class Formula {
       formula.isBookIdString = false;
     }
 
-    formula.query = params[2].trim();
-    if (formula.query[0] === "\"" && formula.query[formula.query.length - 1] === "\"") {
-      formula.query = formula.query.replace(/\"/g,"");
-      formula.isQueryString = true;
-    } else {
-      formula.isQueryString = false;
+    if (params.length > 2) {
+      formula.query = params[2].trim();
+      if (formula.query[0] === "\"" && formula.query[formula.query.length - 1] === "\"") {
+        formula.query = formula.query.replace(/\"/g, "");
+        formula.isQueryString = true;
+      } else {
+        formula.isQueryString = false;
+      }
     }
 
     if (params.length > 3) { 
@@ -116,7 +121,9 @@ class Formula {
     }
 
 
-    if (formulaStr.indexOf(FormulaName.BKPER_TRANSACTIONS) >= 0) {
+    if (formulaStr.indexOf(FormulaName.BKPER_ACCOUNTS) >= 0) {
+      formula.name = FormulaName.BKPER_ACCOUNTS;
+    } else if (formulaStr.indexOf(FormulaName.BKPER_TRANSACTIONS) >= 0) {
       formula.name = FormulaName.BKPER_TRANSACTIONS;
     } else if (formulaStr.indexOf(FormulaName.BKPER_BALANCES_TOTAL) >= 0) {
       formula.name = FormulaName.BKPER_BALANCES_TOTAL;
@@ -135,7 +142,10 @@ class Formula {
     let transposed = (''+this.transposed).toUpperCase();
     let expanded = (''+this.expanded).toUpperCase();
     let hideDates = (''+this.hideDates).toUpperCase();
-    if (this.name === FormulaName.BKPER_TRANSACTIONS) {
+
+    if (this.name === FormulaName.BKPER_ACCOUNTS) {
+      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update})`;
+    } else if (this.name === FormulaName.BKPER_TRANSACTIONS) {
       return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update}${sep} ${queryQuotes}${this.query}${queryQuotes})`;
     } else if (this.name === FormulaName.BKPER_BALANCES_TOTAL) {
       return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update}${sep} ${queryQuotes}${this.query}${queryQuotes}${sep} ${expanded}${sep} ${transposed})`;

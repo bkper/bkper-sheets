@@ -11,6 +11,7 @@ describe('Formula', () => {
       expect(Formula.isBkperFormula('= SUM')).to.eql(false);
       expect(Formula.isBkperFormula('=BKPER_TRANSACTIONS(xxx')).to.eql(true);
       expect(Formula.isBkperFormula(' = BKPER_BALANCES_TOTAL(xxx')).to.eql(true);
+      expect(Formula.isBkperFormula(' = BKPER_ACCOUNTS(xxx')).to.eql(true);
     })
   
   });
@@ -36,6 +37,12 @@ describe('Formula', () => {
       expect(Formula.parseFetchStatement(fetchStatement, 'en_US').toString()).to.eql('=BKPER_TRANSACTIONS("xxx", 1, "acc: \'some account\'")');
     })
     
+    it('should parse accounts', () => {
+      fetchStatement.fetchType = "accounts";
+      expect(Formula.parseFetchStatement(fetchStatement, 'pt_BR').toString()).to.eql('=BKPER_ACCOUNTS("xxx"; 1)');
+    })
+
+    
     it('should parse balances query', () => {
       fetchStatement.fetchType = "balances";
       fetchStatement.balanceType = 'CUMULATIVE'
@@ -45,10 +52,16 @@ describe('Formula', () => {
       fetchStatement.balanceType = 'TOTAL'
       expect(Formula.parseFetchStatement(fetchStatement, 'pt_BR').toString()).to.eql('=BKPER_BALANCES_TOTAL("xxx"; 1; "acc: \'some account\'"; TRUE; FALSE)');
     })
+
   
   });  
 
   describe('#parseString()', () => {
+
+    it('should parse accounts', () => {
+      expect(Formula.parseString('= BKPER_ACCOUNTS("xxx"; 1)', 'pt_BR').toString()).to.eql('=BKPER_ACCOUNTS("xxx"; 1)');
+    })
+
     it('should parse transactions', () => {
       expect(Formula.parseString('= BKPER_TRANSACTIONS("xxx"; 1; "yyy"; TRUE; FALSE)', 'pt_BR').toString()).to.eql('=BKPER_TRANSACTIONS("xxx"; 1; "yyy")');
     })
