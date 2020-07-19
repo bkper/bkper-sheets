@@ -21,8 +21,49 @@ namespace RecordService {
   }
 
   function recordAccounts(book: Bkper.Book, selectedRange: GoogleAppsScript.Spreadsheet.Range, highlight: boolean): boolean {
+
+    let values = selectedRange.getValues();
+
+    let groups: string[] = []
+    for (let i = 0; i < values.length; i++) {
+      const row = values[i]
+      if (row.length > 1) {
+        for (let j = 1; j < row.length; j++) {
+          const cell = row[j];
+          if (!isType(cell) && !book.getGroup(cell)) {
+            groups.push(cell);
+          }
+        }
+      }
+    }
+
+    if (groups.length > 0) {
+      book.createGroups(groups);
+    }
+
+    let createdAccounts = book.createAccounts(values);
+
+    //TODO hightlight
+
     return false;
   }
+
+  function isType(groupOrType: string): boolean {
+    if (groupOrType == BkperApp.AccountType.ASSET) {
+      return true;
+    }
+    if (groupOrType == BkperApp.AccountType.LIABILITY) {
+      return true;
+    }
+    if (groupOrType == BkperApp.AccountType.INCOMING) {
+      return true;
+    }
+    if (groupOrType == BkperApp.AccountType.OUTGOING) {
+      return true;
+    }
+    return false;
+  }
+
   function recordTransactions(book: Bkper.Book, selectedRange: GoogleAppsScript.Spreadsheet.Range, activeSS: GoogleAppsScript.Spreadsheet.Spreadsheet, highlight: boolean): boolean {
     TransactionAccountService.createAccountsIfNeeded(book, selectedRange);
 
