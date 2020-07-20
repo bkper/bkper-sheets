@@ -141,3 +141,31 @@ namespace Utilities_ {
 
 }
 
+class Stopwatch {
+  
+  startTime: number;
+
+  constructor() {
+    this.startTime = Date.now();
+  }
+
+  start() {
+    this.startTime = Date.now();
+  };
+
+  stop(log: string) {
+    var elapsed = (Date.now() - this.startTime);
+    Logger.log(log + " [time: " + elapsed + "ms]");
+    return elapsed;
+  };
+  
+
+  elapsed(log: string) {
+    var elapsed = (Date.now() - this.startTime);
+    Logger.log(log + " [time: " + elapsed + "ms]");
+    this.start();
+    return elapsed;
+  };  
+
+}
+
