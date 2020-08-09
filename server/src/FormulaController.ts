@@ -37,7 +37,7 @@ function BKPER_ACCOUNTS(bookId: string, cache: number): any[][] {
  * @customfunction
  */
 function BKPER_BALANCES_TOTAL(bookId: string, cache: number, query: string, expanded?: boolean, transposed?: boolean): any[][] {
-  let balanceReport = BookService.getBook(bookId).getBalanceReport(query);
+  let balanceReport = BookService.getBook(bookId).getBalancesReport(query);
   return balanceReport.createDataTable()
   .type(BkperApp.BalanceType.TOTAL)
   .expanded(expanded)
@@ -58,7 +58,7 @@ function BKPER_BALANCES_TOTAL(bookId: string, cache: number, query: string, expa
  * @customfunction
  */
 function BKPER_BALANCES_PERIOD(bookId: string, cache: number, query: string, expanded?: boolean, transposed?: boolean, hideDates?: boolean): any[][] {
-  let balanceReport = BookService.getBook(bookId).getBalanceReport(query);
+  let balanceReport = BookService.getBook(bookId).getBalancesReport(query);
   return balanceReport.createDataTable()
   .type(BkperApp.BalanceType.PERIOD)
   .expanded(expanded)
@@ -80,7 +80,7 @@ function BKPER_BALANCES_PERIOD(bookId: string, cache: number, query: string, exp
  * @customfunction
  */
 function BKPER_BALANCES_CUMULATIVE(bookId: string, cache: number, query: string, expanded?: boolean, transposed?: boolean, hideDates?: boolean): any[][] {
-  let balanceReport = BookService.getBook(bookId).getBalanceReport(query);
+  let balanceReport = BookService.getBook(bookId).getBalancesReport(query);
   return balanceReport.createDataTable()
   .type(BkperApp.BalanceType.CUMULATIVE)
   .expanded(expanded)

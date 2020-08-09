@@ -6,9 +6,9 @@ var QUERY_CATEGORY_GROUP_ = "Groups";
  * @public
  */
 interface Query {
-  title: string,
-  query: string,
-  category: string
+  title?: string,
+  query?: string,
+  category?: string
 }
 
 /**

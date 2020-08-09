@@ -3,9 +3,9 @@
 
 
 "@bkper/bkper-app-types@^3.0.3":
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/@bkper/bkper-app-types/-/bkper-app-types-3.0.3.tgz#6b9dd49f18311d37f5a4ed73bfb86b08383648e2"
-  integrity sha512-Sbkiv/6Oi+qYdAA/c8pyGJh7h9KSuHuqd20jIEk6EVZCNKiUUMMcuM8Mrs5r27ytrG8/f0Z9R6JACZhZB9gSIw==
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/@bkper/bkper-app-types/-/bkper-app-types-3.0.4.tgz#f1d89c62a16de25082647e04c8024e2befa85fcd"
+  integrity sha512-O5yXNMUVv5Uds0Nuy2qcK/i/WcENDSa9seiKMInRBR0V3yA8EetfzIYIbABmZiuZa6PBZ7l4FtTeQdIZ3DmTKg==
   dependencies:
     "@types/google-apps-script" "*"
 
