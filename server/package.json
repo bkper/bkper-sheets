@@ -4,13 +4,14 @@
   "private": true,
   "scripts": {
     "clean": "rimraf build",
+    "upgrade": "yarn upgrade @bkper/bkper-app-types --latest",
     "build": "yarn test",
     "test": "run-s test:*",
     "test:bundle": "tsc --skipLibCheck --sourcemap --outFile build/test-bundle.js --module system",
     "test:run": "mocha --require source-map-support/register build/test-bundle.js"
   },
   "devDependencies": {
-    "@bkper/bkper-app-types": "^1.10.0",
+    "@bkper/bkper-app-types": "^3.0.3",
     "@types/chai": "^4.2.1",
     "@types/google-apps-script": "^0.0.59",
     "@types/google-apps-script-oauth2": "^24.0.2",
