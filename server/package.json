@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "clean": "rimraf build",
-    "upgrade": "yarn upgrade @bkper/bkper-app-types --latest",
+    "upgrade:app": "yarn upgrade @bkper/bkper-app-types --latest",
     "build": "yarn test",
     "test": "run-s test:*",
     "test:bundle": "tsc --skipLibCheck --sourcemap --outFile build/test-bundle.js --module system",
