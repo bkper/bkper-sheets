@@ -39,12 +39,16 @@ function BKPER_ACCOUNTS(bookId: string, cache: number): any[][] {
  */
 function BKPER_BALANCES_TOTAL(bookId: string, cache: number, query: string, expanded?: boolean, transposed?: boolean, hideNames?: boolean): any[][] {
   let balanceReport = BookService.getBook(bookId).getBalancesReport(query);
-  return balanceReport.createDataTable()
+  let table = balanceReport.createDataTable()
   .type(BkperApp.BalanceType.TOTAL)
   .expanded(expanded)
   .transposed(transposed)
   .hideNames(hideNames)
-  .build();  
+  .build();
+  if (table == null || table.length == 0) {
+    return [['']]
+  }
+  return table;
 }
 
 /**
