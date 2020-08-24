@@ -3,7 +3,7 @@
  * Fetch Transactions
  *
  * @param {string} bookId The universal Book Id.
- * @param {number} cache Increase to clean cache and force fetch update.
+ * @param {number} cache Increase to clean cache and fetch fresh data.
  * @param {string} query The transactions query.
  * 
  * @customfunction
@@ -16,7 +16,7 @@ function BKPER_TRANSACTIONS(bookId: string, cache: number, query: string): any[]
  * Fetch Accounts
  *
  * @param {string} bookId The universal Book Id.
- * @param {number} cache Increase to clean cache and force fetch update.
+ * @param {number} cache Increase to clean cache and fetch fresh data.
  * 
  * @customfunction
  * 
@@ -29,19 +29,21 @@ function BKPER_ACCOUNTS(bookId: string, cache: number): any[][] {
  * Fetch Total Balances
  * 
  * @param {string} bookId The universal Book Id.
- * @param {number} cache Increase to clean cache and force fetch update.
+ * @param {number} cache Increase to clean cache and fetch fresh data.
  * @param {string} query The balances query.
  * @param {boolean=} expanded Expand group accounts
  * @param {boolean=} transposed Transpose the result
+ * @param {boolean=} hideNames Hide account/group names
  * 
  * @customfunction
  */
-function BKPER_BALANCES_TOTAL(bookId: string, cache: number, query: string, expanded?: boolean, transposed?: boolean): any[][] {
+function BKPER_BALANCES_TOTAL(bookId: string, cache: number, query: string, expanded?: boolean, transposed?: boolean, hideNames?: boolean): any[][] {
   let balanceReport = BookService.getBook(bookId).getBalancesReport(query);
   return balanceReport.createDataTable()
   .type(BkperApp.BalanceType.TOTAL)
   .expanded(expanded)
   .transposed(transposed)
+  .hideNames(hideNames)
   .build();  
 }
 
@@ -49,7 +51,7 @@ function BKPER_BALANCES_TOTAL(bookId: string, cache: number, query: string, expa
  * Fetch Period Balances
  *
  * @param {string} bookId The universal Book Id.
- * @param {number} cache Increase to clean cache and force fetch update.
+ * @param {number} cache Increase to clean cache and fetch fresh data.
  * @param {string} query The balances query.
  * @param {boolean=} expanded Expand group accounts
  * @param {boolean=} transposed Transpose the result
@@ -71,7 +73,7 @@ function BKPER_BALANCES_PERIOD(bookId: string, cache: number, query: string, exp
  * Fetch Cumulative Balances
  * 
  * @param {string} bookId The universal Book Id.
- * @param {number} cache Increase to clean cache and force fetch update.
+ * @param {number} cache Increase to clean cache and fetch fresh data.
  * @param {string} query The balances query.
  * @param {boolean=} expanded Expand group accounts
  * @param {boolean=} transposed Transpose the result

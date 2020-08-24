@@ -16,7 +16,7 @@ class Formula {
   isQueryString: boolean;
   expanded: boolean;
   transposed: boolean;
-  hideDates: boolean;
+  hideDatesOrNames: boolean;
   locale: string;
   COMMA_LOCALES = ["en_US", "en_AU", "en_CA", "zh_CN", "ar_EG", "zh_HK", "hi_IN", "bn_IN", "gu_IN", "kn_IN", "ml_IN", "mr_IN", "pa_IN", "ta_IN", "te_IN", "en_IE", "iw_IL", "ja_JP", "es_MX", "mn_MN", "my_MM", "fil_PH", "ko_KR", "de_CH", "zh_TW", "th_TH", "en_GB", "cy_GB"];
 
@@ -51,7 +51,7 @@ class Formula {
     }
     formula.expanded = fetchStatement.expanded ? true : false;
     formula.transposed = fetchStatement.transposed ? true : false;
-    formula.hideDates = fetchStatement.hideDates ? true : false;
+    formula.hideDatesOrNames = fetchStatement.hideDates ? true : false;
     return formula;
   }
 
@@ -115,9 +115,9 @@ class Formula {
     }
 
     if (params.length > 5) {
-      formula.hideDates = this.convertToBoolean(params[5]);
+      formula.hideDatesOrNames = this.convertToBoolean(params[5]);
     } else {
-      formula.hideDates = false;
+      formula.hideDatesOrNames = false;
     }
 
 
@@ -141,16 +141,16 @@ class Formula {
     let sep = this.getSep();
     let transposed = (''+this.transposed).toUpperCase();
     let expanded = (''+this.expanded).toUpperCase();
-    let hideDates = (''+this.hideDates).toUpperCase();
+    let hideDatesOrNames = (''+this.hideDatesOrNames).toUpperCase();
 
     if (this.name === FormulaName.BKPER_ACCOUNTS) {
       return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update})`;
     } else if (this.name === FormulaName.BKPER_TRANSACTIONS) {
       return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update}${sep} ${queryQuotes}${this.query}${queryQuotes})`;
     } else if (this.name === FormulaName.BKPER_BALANCES_TOTAL) {
-      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update}${sep} ${queryQuotes}${this.query}${queryQuotes}${sep} ${expanded}${sep} ${transposed})`;
+      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update}${sep} ${queryQuotes}${this.query}${queryQuotes}${sep} ${expanded}${sep} ${transposed}${sep} ${hideDatesOrNames})`;
     } else {
-      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update}${sep} ${queryQuotes}${this.query}${queryQuotes}${sep} ${expanded}${sep} ${transposed}${sep} ${hideDates})`;
+      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update}${sep} ${queryQuotes}${this.query}${queryQuotes}${sep} ${expanded}${sep} ${transposed}${sep} ${hideDatesOrNames})`;
     }
   }
 
