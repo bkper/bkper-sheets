@@ -5,7 +5,8 @@
       {
         "userSymbol": "BkperApp",
         "libraryId": "1hMJszJGSUVZDB3vmsWrUZfRhY1UWbhS0SQ6Lzl06gm1zhBF3ioTM7mpJ",
-        "version": "60"
+        "version": "67",
+        "developmentMode": false
       },
       {
         "userSymbol": "OAuth2",

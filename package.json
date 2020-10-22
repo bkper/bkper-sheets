@@ -13,6 +13,7 @@
     "types": "yarn --cwd client/ types",
     "clean:server": "yarn --cwd server/ clean",
     "clean": "run-p clean:*",
+    "upgrade:app": "yarn --cwd server/ upgrade:app", 
     "copy:client": "copyfiles -f client/dist/* dist/",
     "copy:server": "copyfiles -f server/src/* dist/",
     "copy": "run-p copy:*",
