@@ -98,8 +98,6 @@ namespace AutoRecordService {
       var numberOfRowsToRecord = lastRow - currentRow;
       var range = sheet.getRange(currentRow + 1, 1, numberOfRowsToRecord, lastColumn);
       
-      TransactionAccountService.createAccountsIfNeeded(book, range);
-
       const values = range.getValues();
 
       if (binding.id != null) {
@@ -117,7 +115,8 @@ namespace AutoRecordService {
         }
       }
       
-      book.record(values, timeZone);
+      RecordTransactionsService.batchCreateTransactions(book, range, timeZone);
+
       range.setBackground(RECORD_BACKGROUND_);
       binding.currentRow = lastRow;
       binding.retries = 0;
