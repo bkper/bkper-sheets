@@ -8,7 +8,7 @@ The Bkper add-on for Google Sheets lets you record transactions from Google Shee
 
 ## Installation
 
-Install from the [G Suite Marketplace](https://gsuite.google.com/marketplace/app/bkper/360398463400) with one click on the install button on the top right, then:
+Install from the [Gooble Workspace Marketplace](https://workspace.google.com/marketplace/app/bkper/360398463400) with one click on the install button on the top right, then:
 
 1. On your computer, open a Google spreadsheet.
 2. Click [Add-ons](https://support.google.com/docs/answer/2942256?co=GENIE.Platform%3DDesktop&hl=en) and then "Bkper".
