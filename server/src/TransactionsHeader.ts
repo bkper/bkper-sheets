@@ -26,13 +26,6 @@ class TransactionsHeader {
     }
     if (frozenRows > 0) {
       this.valid = true;
-    } else {
-      for (const column of this.columns) {
-        if (column.getGroup() || column.isDate() || column.isDescription() || column.isAttachment() || column.isCreditAccount() || column.isDebitAccount()) {
-          this.valid = true;
-          break
-        }
-      }
     }
   }
 
