@@ -52,10 +52,10 @@ namespace RecordAccountsService {
       if (row.length > 1) {
         for (let j = 1; j < row.length; j++) {
           const cell = row[j];
-          if (this.isType(cell)) {
+          if (isType(cell)) {
             account.setType(cell as Bkper.AccountType);
           } else {
-            let group = this.getGroup(cell);
+            let group = book.getGroup(cell);
             if (group != null) {
               account.addGroup(group);
             }
