@@ -1,6 +1,6 @@
 {
   "name": "bkper-sheets",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "Bkper Sheets Add-on",
   "repository": "https://github.com/bkper/bkper-sheets",
   "author": "Bkper Inc.",
@@ -13,7 +13,7 @@
     "types": "yarn --cwd client/ types",
     "clean:server": "yarn --cwd server/ clean",
     "clean": "run-p clean:*",
-    "upgrade:app": "yarn --cwd server/ upgrade:app", 
+    "upgrade:app": "yarn --cwd server/ upgrade:app",
     "copy:client": "copyfiles -f client/dist/* dist/",
     "copy:server": "copyfiles -f server/src/* dist/",
     "copy": "run-p copy:*",
