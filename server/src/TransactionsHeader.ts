@@ -1,6 +1,5 @@
 class TransactionsHeader {
 
-  private book: Bkper.Book;
   private range: GoogleAppsScript.Spreadsheet.Range;
 
   private valid = false;
@@ -8,8 +7,9 @@ class TransactionsHeader {
   private columns: TransactionsHeaderColumn[];
   private rowNum: number;
 
-  constructor(book: Bkper.Book, range: GoogleAppsScript.Spreadsheet.Range) {
-    this.book = book;
+  private bookIdHeaderColumn: TransactionsHeaderColumn;
+
+  constructor(range: GoogleAppsScript.Spreadsheet.Range) {
     this.range = range;
     this.parse();
   }
@@ -21,7 +21,11 @@ class TransactionsHeader {
     this.columns = [];
     for (var i = 0; i < headerValues.length; i++) {
       for (var j = 0; j < headerValues[i].length; j++) {
-        this.columns.push(new TransactionsHeaderColumn(this.book, headerValues[i][j], j))
+        const header = new TransactionsHeaderColumn(headerValues[i][j], j);
+        this.columns.push(header)
+        if (header.isBookId()) {
+          this.bookIdHeaderColumn = header;
+        }
       }
     }
     if (frozenRows > 0) {
@@ -29,9 +33,10 @@ class TransactionsHeader {
     }
   }
 
-  getBook(): Bkper.Book {
-    return this.book;
+  getBookIdHeaderColumn(): TransactionsHeaderColumn {
+    return this.bookIdHeaderColumn;
   }
+
 
   getRange(): GoogleAppsScript.Spreadsheet.Range {
     return this.range;
@@ -52,16 +57,13 @@ class TransactionsHeader {
 
 class TransactionsHeaderColumn {
 
-  private book: Bkper.Book;
   private name: any;
   private group: Bkper.Group;
   private index: number;
 
-  constructor(book: Bkper.Book, name: any, index: number) {
-    this.book = book;
+  constructor(name: any, index: number) {
     this.name = name;
     this.index = index;
-    this.group = this.book.getGroup(this.name);
   }
 
 
@@ -95,7 +97,10 @@ class TransactionsHeaderColumn {
   
   isAttachment(): boolean {
     return this.isValid() && this.name.toLowerCase() == 'attachment';
+  }
 
+  isBookId(): boolean {
+    return this.isValid() && this.name.toLowerCase() == 'bookid';
   }
 
   isCreditAccount(): boolean {
@@ -115,6 +120,7 @@ class TransactionsHeaderColumn {
       && !this.isDescription()
       && !this.isAmount()
       && !this.isAttachment()
+      && !this.isBookId()
       && !this.isCreditAccount()
       && !this.isDebitAccount()
       ;

@@ -17,18 +17,45 @@ namespace RecordTransactionsService {
 
   export function batchCreateTransactions(book: Bkper.Book, range: GoogleAppsScript.Spreadsheet.Range, timezone: string) {
 
-    let header = new TransactionsHeader(book, range);
-    TransactionAccountService.createAccountsIfNeeded(header);
-    
+    let header = new TransactionsHeader(range);
     let values = range.getValues();
-    let transactions: Bkper.Transaction[] = [];
-    for (var i = 0; i < values.length; i++) {
-      var row = values[i];
-      transactions.push(arrayToTransaction_(row, book, header, timezone));
-    }
+    let bookIdHeaderColumn = header.getBookIdHeaderColumn();
+    
+    if (bookIdHeaderColumn) {
+      //MAP
+      let transactionsBatch: {[bookId: string]: RecordTransactionBatch} = {}
+      transactionsBatch[book.getId()] = new RecordTransactionBatch(book);
+      for (const row of values) {
+        let bookId = row[bookIdHeaderColumn.getIndex()];
+        if (bookId != null && typeof bookId == "string" && bookId.trim() != '') {
+          let batch = transactionsBatch[bookId];
+          if (batch == null) {
+            let rowBook = BkperApp.getBook(bookId);
+            batch = new RecordTransactionBatch(rowBook);
+            transactionsBatch[bookId] = batch;
+          }
+          batch.push(arrayToTransaction_(row, batch.getBook(), header, timezone))
+        } else {
+          let batch = transactionsBatch[book.getId()];
+          batch.push(arrayToTransaction_(row, batch.getBook(), header, timezone))
+        }
+      }
 
-    book.batchCreateTransactions(transactions);
+      //REDUCE
+      for (const key in transactionsBatch) {
+        let batch = transactionsBatch[key];
+        batch.getBook().batchCreateTransactions(batch.getTransactions());
+      }
+      
+    } else {
+      let transactions: Bkper.Transaction[] = [];
+      for (const row of values) {
+        transactions.push(arrayToTransaction_(row, book, header, timezone));
+      }
+      book.batchCreateTransactions(transactions);
+    }
   }
+
 
   function arrayToTransaction_(row: any[], book: Bkper.Book, header: TransactionsHeader, timezone?: string): Bkper.Transaction {
     for (var j = 0; j < row.length; j++) {
@@ -47,9 +74,12 @@ namespace RecordTransactionsService {
     if (header.isValid()) {
       for (const column of header.getColumns()) {
         let value = row[column.getIndex()];
-        if (column.isProperty()) {
+
+        if (createAccountIfNeeded(book, column, value)) {
+          descriptionRow.push(value)
+        } else if (column.isProperty()) {
           transaction.setProperty(column.getName(), value);
-        } else {
+        } else if (!column.isBookId()) {
           //TODO parse others?
           descriptionRow.push(value)
         }
@@ -63,4 +93,19 @@ namespace RecordTransactionsService {
     return transaction;
   }
 
+
+  function createAccountIfNeeded(book: Bkper.Book, column: TransactionsHeaderColumn, value: any): boolean {
+    let group = book.getGroup(column.getName());
+    if (group) {
+      try {
+        book.createAccount(value, group.getName());
+      } catch (error) {
+        //Ok! Maybe account already exists
+        Logger.log(error);
+      }
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
