@@ -2,13 +2,11 @@
  * @OnlyCurrentDoc
  */
 function onOpen() {
-  return Utilities_.retry(function () {
     SpreadsheetApp.getUi().createAddonMenu()
     .addItem('Open', 'showSidebar')
     .addItem('Auto-Record', 'showAutoRecordPopup')
     .addItem('Update', 'update')
     .addToUi();
-  });
 }
 
 function onInstall() {
