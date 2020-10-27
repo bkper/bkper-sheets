@@ -84,33 +84,39 @@ class TransactionsHeaderColumn {
   }
 
   isDate(): boolean {
-    return this.isValid() && this.name.toLowerCase() == 'date';
+    return this.isValid() && this.name.trim().toLowerCase() == 'date';
   }
 
   isDescription(): boolean {
-    return this.isValid() && this.name.toLowerCase() == 'description';
+    return this.isValid() && this.name.trim().toLowerCase() == 'description';
   }
 
   isAmount(): boolean {
-    return this.isValid() && this.name.toLowerCase() == 'amount';
+    return this.isValid() && this.name.trim().toLowerCase() == 'amount';
   }
   
   isAttachment(): boolean {
-    return this.isValid() && this.name.toLowerCase() == 'attachment';
+    return this.isValid() && this.name.trim().toLowerCase() == 'attachment';
   }
 
   isBookId(): boolean {
-    return this.isValid() && this.name.toLowerCase() == 'bookid';
+    return this.isValid() && this.name.trim().toLowerCase() == 'bookid';
   }
 
   isCreditAccount(): boolean {
-    const nameLower = this.name.toLowerCase();
-    return this.isValid() && (nameLower == 'credit account' || nameLower == 'origin' || nameLower == 'from');
+    if (!this.isValid()) {
+      return false;
+    }
+    const nameLower = this.name.trim().toLowerCase();
+    return nameLower == 'credit account' || nameLower == 'origin' || nameLower == 'from';
   }
 
   isDebitAccount(): boolean {
-    const nameLower = this.name.toLowerCase();
-    return this.isValid() && (nameLower == 'debit account' || nameLower == 'destination' || nameLower == 'to') 
+    if (!this.isValid()) {
+      return false;
+    }    
+    const nameLower = this.name.trim().toLowerCase();
+    return nameLower == 'debit account' || nameLower == 'destination' || nameLower == 'to'; 
   }
 
   isProperty(): boolean {
