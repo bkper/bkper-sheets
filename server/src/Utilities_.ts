@@ -8,6 +8,10 @@ namespace Utilities_ {
     return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
   }
 
+  export function isDate(date: any): boolean {
+    return date != null && Object.prototype.toString.call(date) === '[object Date]';
+  }
+
   export function getRangeForTable(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, table: any[][], range: GoogleAppsScript.Spreadsheet.Range): GoogleAppsScript.Spreadsheet.Range {
     var row = range.getRow();
     var firstColumn = range.getColumn();

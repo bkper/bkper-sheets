@@ -131,7 +131,7 @@ namespace AutoRecordService {
     }
     let firstValue = row[0];
     for (var i = 1; i < row.length; i++) {
-      if (firstValue instanceof Date && row[i] instanceof Date) {
+      if (Utilities_.isDate(firstValue) && Utilities_.isDate(row[i])) {
         return true;
       }
     }

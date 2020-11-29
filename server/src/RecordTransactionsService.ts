@@ -63,7 +63,7 @@ namespace RecordTransactionsService {
       if (typeof cell == "string" || typeof cell == "boolean") {
         row[j] = cell;
       }
-      else if (Object.prototype.toString.call(cell) === '[object Date]') {
+      else if (Utilities_.isDate(cell)) {
         row[j] = book.formatDate(cell, timezone);
       } else if (!isNaN(cell)) {
         row[j] = book.formatValue(cell);
