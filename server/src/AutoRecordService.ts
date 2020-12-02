@@ -103,14 +103,17 @@ namespace AutoRecordService {
       if (binding.id != null) {
         for (var i = 0; i < values.length; i++) {
           let row = values[i];
-          let rowNum = currentRow + 1 + i;
-          let id = `auto_record_${binding.id}_row_${rowNum}`;
-          row.push(`id:${id}`)
-
+          
           if (hasMoreThanOneDate_(row)) {
             //Hack to avoid record form response date, when other dates were provided
             row[0] = '';
           }
+
+          let rowNum = currentRow + 1 + i;
+          let id = `auto_record_${binding.id}_row_${rowNum}`;
+          row.push(`id:${id}`)
+
+
 
         }
       }
@@ -132,7 +135,6 @@ namespace AutoRecordService {
     let firstValue = row[0];
     for (var i = 1; i < row.length; i++) {
       if (Utilities_.isDate(firstValue) && Utilities_.isDate(row[i])) {
-        
         return true;
       }
     }
