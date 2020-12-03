@@ -103,7 +103,7 @@ namespace AutoRecordService {
       if (binding.id != null) {
         for (var i = 0; i < values.length; i++) {
           let row = values[i];
-          
+
           if (hasMoreThanOneDate_(row)) {
             //Hack to avoid record form response date, when other dates were provided
             row[0] = '';
@@ -113,12 +113,10 @@ namespace AutoRecordService {
           let id = `auto_record_${binding.id}_row_${rowNum}`;
           row.push(`id:${id}`)
 
-
-
         }
       }
       
-      RecordTransactionsService.batchCreateTransactions(book, range, timeZone);
+      RecordTransactionsService.batchCreateTransactions(book, range, values, timeZone);
 
       range.setBackground(RECORD_BACKGROUND_);
       binding.currentRow = lastRow;

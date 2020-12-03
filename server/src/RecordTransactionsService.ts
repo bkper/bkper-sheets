@@ -6,7 +6,7 @@ namespace RecordTransactionsService {
     
     const timezone = activeSS.getSpreadsheetTimeZone();
     
-    batchCreateTransactions(book, selectedRange, timezone);
+    batchCreateTransactions(book, selectedRange, selectedRange.getValues(), timezone);
 
     if (highlight) {
       selectedRange.setBackground(RECORD_BACKGROUND_);
@@ -15,10 +15,10 @@ namespace RecordTransactionsService {
     return true;
   }
 
-  export function batchCreateTransactions(book: Bkper.Book, range: GoogleAppsScript.Spreadsheet.Range, timezone: string) {
+  export function batchCreateTransactions(book: Bkper.Book, range: GoogleAppsScript.Spreadsheet.Range,  values: any[][], timezone: string) {
 
     let header = new TransactionsHeader(range);
-    let values = range.getValues();
+
     let bookIdHeaderColumn = header.getBookIdHeaderColumn();
     
     if (bookIdHeaderColumn) {
