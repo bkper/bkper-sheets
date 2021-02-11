@@ -4,7 +4,6 @@ namespace Authorizer {
 
   const clientIdKey = "CLIENT_ID"
   const clientSecretKey = "CLIENT_SECRET"  
-  let service: GoogleAppsScriptOAuth2.OAuth2Service = null;
 
   export function initAuth() {
     try {
@@ -71,8 +70,7 @@ namespace Authorizer {
   }
 
   function getBkperService(): GoogleAppsScriptOAuth2.OAuth2Service {
-    if (service == null) {
-      service = OAuth2.createService('bkper')
+      return OAuth2.createService('bkperauth')
       .setAuthorizationBaseUrl('https://accounts.google.com/o/oauth2/auth')
       .setTokenUrl('https://accounts.google.com/o/oauth2/token')
       .setClientId(CachedProperties_.getCachedProperty(CacheService.getScriptCache(), PropertiesService.getScriptProperties(), clientIdKey))
@@ -83,8 +81,6 @@ namespace Authorizer {
       .setScope('email')
       .setParam('access_type', 'offline')
       .setParam('prompt', 'consent');     
-    }
-    return service;
   }  
   
 }
