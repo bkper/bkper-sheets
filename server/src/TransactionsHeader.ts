@@ -22,7 +22,6 @@ class TransactionsHeader {
     for (var i = 0; i < headerValues.length; i++) {
       for (var j = 0; j < headerValues[i].length; j++) {
         const header = new TransactionsHeaderColumn(headerValues[i][j], j);
-        Logger.log(header.getName())
         this.columns.push(header)
         if (header.isBookId()) {
           this.bookIdHeaderColumn = header;
