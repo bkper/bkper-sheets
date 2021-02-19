@@ -17,11 +17,12 @@ class TransactionsHeader {
   private parse() {
     var frozenRows = this.range.getSheet().getFrozenRows();
     this.rowNum = frozenRows > 0 ? frozenRows : 1;
-    var headerValues = this.range.getSheet().getSheetValues(1, this.range.getColumn(), this.rowNum, this.range.getNumColumns());
+    var headerValues = this.range.getSheet().getSheetValues(this.rowNum, this.range.getColumn(), 1, this.range.getNumColumns());
     this.columns = [];
     for (var i = 0; i < headerValues.length; i++) {
       for (var j = 0; j < headerValues[i].length; j++) {
         const header = new TransactionsHeaderColumn(headerValues[i][j], j);
+        Logger.log(header.getName())
         this.columns.push(header)
         if (header.isBookId()) {
           this.bookIdHeaderColumn = header;
@@ -108,7 +109,7 @@ class TransactionsHeaderColumn {
       return false;
     }
     const nameLower = this.name.trim().toLowerCase();
-    return nameLower == 'credit account' || nameLower == 'origin' || nameLower == 'from';
+    return nameLower == 'credit account' || nameLower == 'origin' || nameLower == 'from' || nameLower == 'from account';
   }
 
   isDebitAccount(): boolean {
@@ -116,7 +117,7 @@ class TransactionsHeaderColumn {
       return false;
     }    
     const nameLower = this.name.trim().toLowerCase();
-    return nameLower == 'debit account' || nameLower == 'destination' || nameLower == 'to'; 
+    return nameLower == 'debit account' || nameLower == 'destination' || nameLower == 'to'|| nameLower == 'to account'; 
   }
 
   isProperty(): boolean {
