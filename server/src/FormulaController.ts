@@ -5,11 +5,16 @@
  * @param {string} bookId The universal Book Id.
  * @param {number} cache Increase to clean cache and fetch fresh data.
  * @param {string} query The transactions query.
+ * @param {boolean} showProperties The transactions query.
  * 
  * @customfunction
  */
-function BKPER_TRANSACTIONS(bookId: string, cache: number, query: string): any[][] {
-  return BookService.getBook(bookId).createTransactionsDataTable(query).includeUrls(true).build();
+function BKPER_TRANSACTIONS(bookId: string, cache: number, query: string, showProperties: boolean): any[][] {
+  return BookService.getBook(bookId)
+  .createTransactionsDataTable(query)
+  .includeUrls(true)
+  .includeProperties(showProperties)
+  .build();
 }
 
 /**
