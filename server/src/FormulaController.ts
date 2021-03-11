@@ -5,7 +5,7 @@
  * @param {string} bookId The universal Book Id.
  * @param {number} cache Increase to clean cache and fetch fresh data.
  * @param {string} query The transactions query.
- * @param {boolean} showProperties The transactions query.
+ * @param {boolean} showProperties Include transaction properties.
  * 
  * @customfunction
  */
