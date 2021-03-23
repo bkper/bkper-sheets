@@ -39,16 +39,18 @@ function BKPER_ACCOUNTS(bookId: string, cache: number): any[][] {
  * @param {boolean=} expanded Expand group accounts
  * @param {boolean=} transposed Transpose the result
  * @param {boolean=} hideNames Hide account/group names
+ * @param {boolean=} trial Split balances into debit/credit
  * 
  * @customfunction
  */
-function BKPER_BALANCES_TOTAL(bookId: string, cache: number, query: string, expanded?: boolean, transposed?: boolean, hideNames?: boolean): any[][] {
+function BKPER_BALANCES_TOTAL(bookId: string, cache: number, query: string, expanded?: boolean, transposed?: boolean, hideNames?: boolean, trial?:boolean): any[][] {
   let balanceReport = BookService.getBook(bookId).getBalancesReport(query);
   let table = balanceReport.createDataTable()
   .type(BkperApp.BalanceType.TOTAL)
   .expanded(expanded)
   .transposed(transposed)
   .hideNames(hideNames)
+  .trial(trial)
   .build();
   if (table == null || table.length == 0) {
     return [['']]

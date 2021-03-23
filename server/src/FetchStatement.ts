@@ -10,5 +10,6 @@ interface FetchStatement {
   expanded?: boolean,
   transposed?: boolean,
   hideDates?: boolean,
+  trial?: boolean,
   lastUpdate?: number
 }

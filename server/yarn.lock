@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@bkper/bkper-app-types@^3.8.7":
-  version "3.8.7"
-  resolved "https://registry.yarnpkg.com/@bkper/bkper-app-types/-/bkper-app-types-3.8.7.tgz#98a1971e8b7722987e8ac3f3178c56207d7e0367"
-  integrity sha512-7a5EfoadihBHhCPzvqFUvyOLUPY+eOP+O9KKSGLf810WBSpYSgG1IUFc1odEcOOOzIu7XLbbkuuzhBvgEVvHww==
+"@bkper/bkper-app-types@^3.9.1":
+  version "3.9.1"
+  resolved "https://registry.yarnpkg.com/@bkper/bkper-app-types/-/bkper-app-types-3.9.1.tgz#482595763989e545610eb71681eee839f77cf979"
+  integrity sha512-4jUFme2DSfAknQd/cEBhVP9giriUFEUeOX1pZgGMH4Bsf27Ezj1SGZKqImFeej7+JJc8g1euHmGopIFQ/9ivIg==
   dependencies:
     "@types/google-apps-script" "*"
 
