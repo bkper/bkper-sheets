@@ -45,11 +45,21 @@ function BKPER_ACCOUNTS(bookId: string, cache: number): any[][] {
  */
 function BKPER_BALANCES_TOTAL(bookId: string, cache: number, query: string, expanded?: boolean, transposed?: boolean, hideNames?: boolean, trial?:boolean): any[][] {
   let balanceReport = BookService.getBook(bookId).getBalancesReport(query);
+
+  query = query.toLowerCase();
+
+  let period = false;
+
+  if (query.indexOf('after:') >= 0) {
+    period = true;
+  }
+
   let table = balanceReport.createDataTable()
   .type(BkperApp.BalanceType.TOTAL)
   .expanded(expanded)
   .transposed(transposed)
   .hideNames(hideNames)
+  .period(period)
   .trial(trial)
   .build();
   if (table == null || table.length == 0) {
