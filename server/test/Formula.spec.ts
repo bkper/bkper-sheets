@@ -25,16 +25,18 @@ describe('Formula', () => {
       fetchType: "transactions",
       expanded: true,
       transposed: undefined,
+      properties: true,
+      ids: true,
       lastUpdate: 1121
     }
 
     it('should parse transactions', () => {
-      expect(Formula.parseFetchStatement(fetchStatement, 'pt_BR').toString()).to.eql('=BKPER_TRANSACTIONS("xxx"; 1; "yyy")');
+      expect(Formula.parseFetchStatement(fetchStatement, 'pt_BR').toString()).to.eql('=BKPER_TRANSACTIONS("xxx"; 1; "yyy"; TRUE; FALSE)');
     })
 
     it('should replace query double quotes', () => {
       fetchStatement.query = 'acc: "some account"'
-      expect(Formula.parseFetchStatement(fetchStatement, 'en_US').toString()).to.eql('=BKPER_TRANSACTIONS("xxx", 1, "acc: \'some account\'")');
+      expect(Formula.parseFetchStatement(fetchStatement, 'en_US').toString()).to.eql('=BKPER_TRANSACTIONS("xxx", 1, "acc: \'some account\'", TRUE, FALSE)');
     })
     
     it('should parse accounts', () => {
@@ -63,11 +65,11 @@ describe('Formula', () => {
     })
 
     it('should parse transactions', () => {
-      expect(Formula.parseString('= BKPER_TRANSACTIONS("xxx"; 1; "yyy"; TRUE; FALSE)', 'pt_BR').toString()).to.eql('=BKPER_TRANSACTIONS("xxx"; 1; "yyy")');
+      expect(Formula.parseString('= BKPER_TRANSACTIONS("xxx"; 1; "yyy"; TRUE; FALSE)', 'pt_BR').toString()).to.eql('=BKPER_TRANSACTIONS("xxx"; 1; "yyy"; TRUE; FALSE)');
     })
 
     it('should replace query double quotes', () => {
-      expect(Formula.parseString('=BKPER_TRANSACTIONS("xxx"; 1; "acc: \'some account\'"; TRUE; true)', 'en_US').toString()).to.eql('=BKPER_TRANSACTIONS("xxx", 1, "acc: \'some account\'")');
+      expect(Formula.parseString('=BKPER_TRANSACTIONS("xxx"; 1; "acc: \'some account\'"; TRUE; true)', 'en_US').toString()).to.eql('=BKPER_TRANSACTIONS("xxx", 1, "acc: \'some account\'", TRUE, TRUE)');
     })
     
     it('should parse balances query', () => {
@@ -77,11 +79,11 @@ describe('Formula', () => {
     })
 
     it('should preserve references', () => {
-      expect(Formula.parseString('= BKPER_TRANSACTIONS(H1; 1; H3)', 'pt_BR').toString()).to.eql('=BKPER_TRANSACTIONS(H1; 1; H3)');
+      expect(Formula.parseString('= BKPER_TRANSACTIONS(H1; 1; H3)', 'pt_BR').toString()).to.eql('=BKPER_TRANSACTIONS(H1; 1; H3; FALSE; FALSE)');
     })
 
     it('should not parse comma inside quotes', () => {
-      expect(Formula.parseString('=BKPER_TRANSACTIONS(H1; 1; "account: \'Account, bla\'")', 'pt_BR').toString()).to.eql('=BKPER_TRANSACTIONS(H1; 1; "account: \'Account, bla\'")');
+      expect(Formula.parseString('=BKPER_TRANSACTIONS(H1; 1; "account: \'Account, bla\'")', 'pt_BR').toString()).to.eql('=BKPER_TRANSACTIONS(H1; 1; "account: \'Account, bla\'"; FALSE; FALSE)');
       expect(Formula.parseString(' =BKPER_BALANCES_PERIOD("xxx"; 1; "acc: \'some, account\'"; false; false; false)', 'pt_BR').toString()).to.eql('=BKPER_BALANCES_PERIOD("xxx"; 1; "acc: \'some, account\'"; FALSE; FALSE; FALSE)');
     })
 

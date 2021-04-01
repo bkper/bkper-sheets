@@ -6,14 +6,16 @@
  * @param {number} cache Increase to clean cache and fetch fresh data.
  * @param {string} query The transactions query.
  * @param {boolean} properties True to include transaction properties.
+ * @param {boolean} ids True to include transaction ids.
  * 
  * @customfunction
  */
-function BKPER_TRANSACTIONS(bookId: string, cache: number, query: string, properties: boolean): any[][] {
+function BKPER_TRANSACTIONS(bookId: string, cache: number, query: string, properties: boolean, ids: boolean): any[][] {
   return BookService.getBook(bookId)
   .createTransactionsDataTable(query)
   .includeUrls(true)
   .includeProperties(properties)
+  .includeIds(ids)
   .build();
 }
 

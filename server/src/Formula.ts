@@ -14,8 +14,8 @@ class Formula {
   query: string;
   isBookIdString: boolean;
   isQueryString: boolean;
-  expanded: boolean;
-  transposed: boolean;
+  expandedOrProperties: boolean;
+  transposedOrIds: boolean;
   hideDatesOrNames: boolean;
   trial: boolean;
   locale: string;
@@ -50,8 +50,8 @@ class Formula {
         formula.name = FormulaName.BKPER_BALANCES_CUMULATIVE;
       }
     }
-    formula.expanded = fetchStatement.expanded ? true : false;
-    formula.transposed = fetchStatement.transposed ? true : false;
+    formula.expandedOrProperties = fetchStatement.expanded ? true : false;
+    formula.transposedOrIds = fetchStatement.transposed ? true : false;
     formula.hideDatesOrNames = fetchStatement.hideDates ? true : false;
     formula.trial = fetchStatement.trial ? true : false;
     return formula;
@@ -105,15 +105,15 @@ class Formula {
     }
 
     if (params.length > 3) { 
-      formula.expanded = this.convertToBoolean(params[3]);
+      formula.expandedOrProperties = this.convertToBoolean(params[3]);
     } else {
-      formula.expanded = false;
+      formula.expandedOrProperties = false;
     }
 
     if (params.length > 4) {
-      formula.transposed = this.convertToBoolean(params[4]);
+      formula.transposedOrIds = this.convertToBoolean(params[4]);
     } else {
-      formula.transposed = false;
+      formula.transposedOrIds = false;
     }
 
     if (params.length > 5) {
@@ -147,19 +147,20 @@ class Formula {
     let bookIdQuotes = this.isBookIdString ? '"' : '';
     let queryQuotes = this.isQueryString ? '"' : '';
     let sep = this.getSep();
-    let transposed = (''+this.transposed).toUpperCase();
-    let expanded = (''+this.expanded).toUpperCase();
+    let expandedOrProperties = (''+this.expandedOrProperties).toUpperCase();
+    let transposedOrIds = (''+this.transposedOrIds).toUpperCase();
     let hideDatesOrNames = (''+this.hideDatesOrNames).toUpperCase();
     let trial = (''+this.trial).toUpperCase();
+
 
     if (this.name === FormulaName.BKPER_ACCOUNTS) {
       return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update})`;
     } else if (this.name === FormulaName.BKPER_TRANSACTIONS) {
-      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update}${sep} ${queryQuotes}${this.query}${queryQuotes})`;
+      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update}${sep} ${queryQuotes}${this.query}${queryQuotes}${sep} ${expandedOrProperties}${sep} ${transposedOrIds})`;
     } else if (this.name === FormulaName.BKPER_BALANCES_TOTAL) {
-      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update}${sep} ${queryQuotes}${this.query}${queryQuotes}${sep} ${expanded}${sep} ${transposed}${sep} ${hideDatesOrNames}${sep} ${trial})`;
+      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update}${sep} ${queryQuotes}${this.query}${queryQuotes}${sep} ${expandedOrProperties}${sep} ${transposedOrIds}${sep} ${hideDatesOrNames}${sep} ${trial})`;
     } else {
-      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update}${sep} ${queryQuotes}${this.query}${queryQuotes}${sep} ${expanded}${sep} ${transposed}${sep} ${hideDatesOrNames})`;
+      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update}${sep} ${queryQuotes}${this.query}${queryQuotes}${sep} ${expandedOrProperties}${sep} ${transposedOrIds}${sep} ${hideDatesOrNames})`;
     }
   }
 
