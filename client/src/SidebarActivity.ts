@@ -52,7 +52,7 @@ namespace SidebarActivity {
 			saveRetries++;
 			saveLastSelectedLedger();
 		} else {
-			SidebarView.showError();
+			SidebarView.showError('Error. Refresh pressing button below.');
 		}
 	}
 

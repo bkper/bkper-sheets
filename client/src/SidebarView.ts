@@ -169,9 +169,10 @@ $(function() {
 		}
 	}
 
-	export function showError() {
+	export function showError(error) {
 		disableLedgerSelect(true);
 		loading(false);
+    view.generalError.text(error)
 		view.generalError.show();
 	}
 
