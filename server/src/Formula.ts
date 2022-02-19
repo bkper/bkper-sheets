@@ -3,6 +3,7 @@ enum FormulaName {
   BKPER_TRANSACTIONS = "BKPER_TRANSACTIONS",
   BKPER_BALANCES_TOTAL = "BKPER_BALANCES_TOTAL",
   BKPER_BALANCES_PERIOD = "BKPER_BALANCES_PERIOD",
+  BKPER_BALANCES_TRIAL = "BKPER_BALANCES_TRIAL",
   BKPER_BALANCES_CUMULATIVE = "BKPER_BALANCES_CUMULATIVE"
 }
 
@@ -17,7 +18,6 @@ class Formula {
   expandedOrProperties: boolean;
   transposedOrIds: boolean;
   hideDatesOrNames: boolean;
-  trial: boolean;
   locale: string;
   COMMA_LOCALES = ["en_US", "en_AU", "en_CA", "zh_CN", "ar_EG", "zh_HK", "hi_IN", "bn_IN", "gu_IN", "kn_IN", "ml_IN", "mr_IN", "pa_IN", "ta_IN", "te_IN", "en_IE", "iw_IL", "ja_JP", "es_MX", "mn_MN", "my_MM", "fil_PH", "ko_KR", "de_CH", "zh_TW", "th_TH", "en_GB", "cy_GB"];
 
@@ -44,6 +44,8 @@ class Formula {
     } else if (fetchStatement.fetchType === 'balances') {
       if (fetchStatement.balanceType.toUpperCase() === BALANCE_TYPE_TOTAL_) {
         formula.name = FormulaName.BKPER_BALANCES_TOTAL;
+      } else if (fetchStatement.balanceType.toUpperCase() === BALANCE_TYPE_TRIAL_) {
+        formula.name = FormulaName.BKPER_BALANCES_TRIAL;
       } else if (fetchStatement.balanceType.toUpperCase() === BALANCE_TYPE_PERIOD_) {
         formula.name = FormulaName.BKPER_BALANCES_PERIOD;
       } else if (fetchStatement.balanceType.toUpperCase() === BALANCE_TYPE_CUMULATIVE_) {
@@ -53,7 +55,6 @@ class Formula {
     formula.expandedOrProperties = fetchStatement.expanded ? true : false;
     formula.transposedOrIds = fetchStatement.transposed ? true : false;
     formula.hideDatesOrNames = fetchStatement.hideDates ? true : false;
-    formula.trial = fetchStatement.trial ? true : false;
     return formula;
   }
 
@@ -122,11 +123,6 @@ class Formula {
       formula.hideDatesOrNames = false;
     }
 
-    if (params.length > 6) {
-      formula.trial = this.convertToBoolean(params[6]);
-    } else {
-      formula.trial = false;
-    }
 
 
     if (formulaStr.indexOf(FormulaName.BKPER_ACCOUNTS) >= 0) {
@@ -135,6 +131,8 @@ class Formula {
       formula.name = FormulaName.BKPER_TRANSACTIONS;
     } else if (formulaStr.indexOf(FormulaName.BKPER_BALANCES_TOTAL) >= 0) {
       formula.name = FormulaName.BKPER_BALANCES_TOTAL;
+    } else if (formulaStr.indexOf(FormulaName.BKPER_BALANCES_TRIAL) >= 0) {
+      formula.name = FormulaName.BKPER_BALANCES_TRIAL;
     } else if (formulaStr.indexOf(FormulaName.BKPER_BALANCES_PERIOD) >= 0) {
       formula.name = FormulaName.BKPER_BALANCES_PERIOD;
     } else if (formulaStr.indexOf(FormulaName.BKPER_BALANCES_CUMULATIVE) >= 0) {
@@ -150,15 +148,12 @@ class Formula {
     let expandedOrProperties = (''+this.expandedOrProperties).toUpperCase();
     let transposedOrIds = (''+this.transposedOrIds).toUpperCase();
     let hideDatesOrNames = (''+this.hideDatesOrNames).toUpperCase();
-    let trial = (''+this.trial).toUpperCase();
 
 
     if (this.name === FormulaName.BKPER_ACCOUNTS) {
       return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update})`;
     } else if (this.name === FormulaName.BKPER_TRANSACTIONS) {
       return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update}${sep} ${queryQuotes}${this.query}${queryQuotes}${sep} ${expandedOrProperties}${sep} ${transposedOrIds})`;
-    } else if (this.name === FormulaName.BKPER_BALANCES_TOTAL) {
-      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update}${sep} ${queryQuotes}${this.query}${queryQuotes}${sep} ${expandedOrProperties}${sep} ${transposedOrIds}${sep} ${hideDatesOrNames}${sep} ${trial})`;
     } else {
       return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.update}${sep} ${queryQuotes}${this.query}${queryQuotes}${sep} ${expandedOrProperties}${sep} ${transposedOrIds}${sep} ${hideDatesOrNames})`;
     }

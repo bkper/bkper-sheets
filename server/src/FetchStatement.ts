@@ -6,11 +6,10 @@ interface FetchStatement {
   query?: string,
   rangeName?: string,
   fetchType?: "transactions" | "balances" | "accounts",
-  balanceType?: "CUMULATIVE" | "PERIOD" | "TOTAL",
+  balanceType?: "CUMULATIVE" | "PERIOD" | "TOTAL" | "TRIAL",
   expanded?: boolean,
   transposed?: boolean,
   hideDates?: boolean,
-  trial?: boolean,
   properties?: boolean,
   ids?: boolean,
   lastUpdate?: number
