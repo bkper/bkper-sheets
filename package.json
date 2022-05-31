@@ -1,13 +1,13 @@
 {
   "name": "bkper-sheets",
-  "version": "1.7.2",
+  "version": "1.8.0",
   "description": "Bkper Sheets Add-on",
   "repository": "https://github.com/bkper/bkper-sheets",
   "author": "Bkper Inc.",
   "private": true,
   "scripts": {
     "clasp:store": "cp ~/.clasprc.json ~/.clasprc-bkper.json",
-    "clasp:activate": "cp ~/.clasprc-bkper.json ~/.clasprc.json",      
+    "clasp:activate": "cp ~/.clasprc-bkper.json ~/.clasprc.json",
     "open": "clasp open",
     "test": "yarn --cwd server/ test",
     "clean:dist": "rimraf dist",
