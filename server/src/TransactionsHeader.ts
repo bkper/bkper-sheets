@@ -103,6 +103,10 @@ class TransactionsHeaderColumn {
     return this.isValid() && this.name.trim().toLowerCase() == 'bookid';
   }
 
+  isId(): boolean {
+    return this.isValid() && this.name.trim().toLowerCase() == 'id';
+  }
+
   isCreditAccount(): boolean {
     if (!this.isValid()) {
       return false;
@@ -127,6 +131,7 @@ class TransactionsHeaderColumn {
       && !this.isAmount()
       && !this.isAttachment()
       && !this.isBookId()
+      && !this.isId()
       && !this.isCreditAccount()
       && !this.isDebitAccount()
       ;

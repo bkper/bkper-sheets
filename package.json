@@ -6,6 +6,8 @@
   "author": "Bkper Inc.",
   "private": true,
   "scripts": {
+    "clasp:store": "cp ~/.clasprc.json ~/.clasprc-bkper.json",
+    "clasp:activate": "cp ~/.clasprc-bkper.json ~/.clasprc.json",      
     "open": "clasp open",
     "test": "yarn --cwd server/ test",
     "clean:dist": "rimraf dist",
@@ -27,6 +29,7 @@
     "watch:client:dist": "watch 'yarn copy:client' ./client/dist",
     "watch:server": "watch 'yarn copy:server' ./server/src",
     "watch:push": "watch 'yarn push' ./dist --wait 5",
+    "prepush": "yarn clasp:activate",
     "push": "yarn clasp push --force",
     "patch": "yarn version --patch",
     "minor": "yarn version --minor",

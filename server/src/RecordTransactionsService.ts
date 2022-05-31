@@ -66,7 +66,7 @@ namespace RecordTransactionsService {
       else if (Utilities_.isDate(cell)) {
         row[j] = book.formatDate(cell, timezone);
       } else if (!isNaN(cell)) {
-        row[j] = book.formatValue(cell);
+        row[j] = cell + "";
       }
     }
     let transaction = book.newTransaction();
@@ -79,6 +79,8 @@ namespace RecordTransactionsService {
           descriptionRow.push(value)
         } else if (column.isProperty()) {
           transaction.setProperty(column.getName(), value);
+        } else if (column.isId()) {
+            transaction.addRemoteId(value);
         } else if (!column.isBookId()) {
           //TODO parse others?
           descriptionRow.push(value)
