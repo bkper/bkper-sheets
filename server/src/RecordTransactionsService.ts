@@ -65,6 +65,13 @@ namespace RecordTransactionsService {
         return cell;
     }
 
+    function formatProperty(book: Bkper.Book, cell: any, timezone?: string) {
+        if (Utilities_.isDate(cell)) {
+            return book.formatDate(cell, timezone);
+        }
+        return cell;
+    }
+
   function arrayToTransaction_(row: any[], book: Bkper.Book, header: TransactionsHeader, timezone?: string): Bkper.Transaction {
     let transaction = book.newTransaction();
     let descriptionRow = []
@@ -74,7 +81,7 @@ namespace RecordTransactionsService {
         if (createAccountIfNeeded(book, column, value)) {
           descriptionRow.push(value)
         } else if (column.isProperty()) {
-          transaction.setProperty(column.getName(), value+"");
+          transaction.setProperty(column.getName(), formatProperty(book, value, timezone));
         } else if (column.isId()) {
             transaction.addRemoteId(value);
         } else if (!column.isBookId()) {
