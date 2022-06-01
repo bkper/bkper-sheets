@@ -56,38 +56,36 @@ namespace RecordTransactionsService {
     }
   }
 
+    function formatValue(book: Bkper.Book, cell: any, timezone?: string) {
+        if (Utilities_.isDate(cell)) {
+            return book.formatDate(cell, timezone);
+        } else if (!isNaN(cell)) {
+            return book.formatAmount(cell);
+        }
+        return cell;
+    }
 
   function arrayToTransaction_(row: any[], book: Bkper.Book, header: TransactionsHeader, timezone?: string): Bkper.Transaction {
-    for (var j = 0; j < row.length; j++) {
-      var cell = row[j];
-      if (typeof cell == "string" || typeof cell == "boolean") {
-        row[j] = cell;
-      }
-      else if (Utilities_.isDate(cell)) {
-        row[j] = book.formatDate(cell, timezone);
-      } else if (!isNaN(cell)) {
-        row[j] = cell + "";
-      }
-    }
     let transaction = book.newTransaction();
     let descriptionRow = []
     if (header.isValid()) {
       for (const column of header.getColumns()) {
         let value = row[column.getIndex()];
-
         if (createAccountIfNeeded(book, column, value)) {
           descriptionRow.push(value)
         } else if (column.isProperty()) {
-          transaction.setProperty(column.getName(), value);
+          transaction.setProperty(column.getName(), value+"");
         } else if (column.isId()) {
             transaction.addRemoteId(value);
         } else if (!column.isBookId()) {
-          //TODO parse others?
-          descriptionRow.push(value)
+          descriptionRow.push(formatValue(book, value, timezone))
         }
       }
     } else {
-      descriptionRow = row;
+        for (var j = 0; j < row.length; j++) {
+            var cell = row[j];
+            descriptionRow.push(formatValue(book, cell, timezone))
+        }
     }
 
     transaction.setDescription(descriptionRow.join(" "))
