@@ -32,7 +32,8 @@ function loadLedgers(): {id: string, name: string, permission : Bkper.Permission
   } catch (err) {
     if (!Authorizer.isUserAuthorized()) {
       showAuthorizeView_();
-      throw err;
+    } else {
+      return [];
     }
   }  
 }
