@@ -2,6 +2,8 @@ var NO_DATA_URL = "https://storage.googleapis.com/bkper-public/addons/notada-280
 
 var DEV_MODE = false;
 
+var cachedLedgers = {};
+
 $(function() {
 	SidebarView.init();
 	RecordTabView.init();
@@ -16,14 +18,29 @@ $(function() {
 
 	var selectedTab = 0;
 
-	var view;
+     var view: {
+         sidebarWrapper: JQuery,
+         ledgerSelect: JQuery,
+         newLedgerButton: JQuery,
+         openLinkFetch: JQuery,
+         openLinkRecord: JQuery,
+         opeButton: JQuery,
+         tabBar: JQuery,
+         tabBarItem1: JQuery,
+         tabBarItem2: JQuery,
+         tab2Content: JQuery,
+         tab1Content: JQuery,
+         contentWrapper: JQuery,
+         generalError: JQuery,
+         loadPanel: JQuery
+     };
 
 	export function init() {
 
-		view = {
+	view = {
       sidebarWrapper: $('#sidebarWrapper'),
       ledgerSelect: $('#ledgerSelect'),
-      createOpenLedgerLink: $('#createOpenLedgerLink'),
+      newLedgerButton: $('#newLedgerButton'),
       openLinkFetch: $('#openLinkFetch'),
       openLinkRecord: $('#openLinkRecord'),
       opeButton: $('#opeButton'),
@@ -41,21 +58,28 @@ $(function() {
 	}
 
 	function bindUIActions() {
-		view.ledgerSelect.change(onLedgerChange);
-		view.loadPanel.click(onClickReload);
-		view.tabBarItem1.click(onClickTabBarItem1);
-		view.tabBarItem2.click(onClickTabBarItem2);
+		view.newLedgerButton.on("mouseenter", onMouseEnterOpenCreateButton);
+		view.newLedgerButton.on("mouseleave", onMouseLeaveOpenCreateButton);
+		view.newLedgerButton.on("click", onClickOpenCreateButton);
+		view.ledgerSelect.on("change", onLedgerChange);
+		view.loadPanel.on("click", onClickReload);
+		view.tabBarItem1.on("click", onClickTabBarItem1);
+		view.tabBarItem2.on("click", onClickTabBarItem2);
 	}
 
-	export function setLedgers(ledgers?) {
+	export function setLedgers(ledgers: google.script.ClientBook[]) {
 
 		if (DEV_MODE) {
 			ledgers = [
-			           {id : 'id1', name:'My ledger', permission : 'EDITOR', selected: false},
-			           {id : 'id2', name:'Company ledger', permission: 'OWNER', selected: true},
-			           {id : 'id3', name:'blablabla', permission: 'VIEWER'}
+			           {id : 'id1', name:'My ledger', viewer : false, selected: false},
+			           {id : 'id2', name:'Company ledger', viewer: false, selected: true},
+			           {id : 'id3', name:'blablabla', viewer: true, selected: false}
 			           ];
 		}
+        cachedLedgers = {}
+        for (const ledger of ledgers) {
+            cachedLedgers[ledger.id] = ledger;
+        }
 
 
 		$("option", view.ledgerSelect).remove();
@@ -64,8 +88,7 @@ $(function() {
 		var ledgerSelected = false;
 
 		$.each(ledgers, function(index, value) {
-      var valueJSON = JSON.stringify(value);
-			var opt = new Option(value.name, valueJSON);
+			var opt = new Option(value.name, value.id);
 			if (value.selected) {
 				opt.selected = value.selected;
 				ledgerSelected = true;
@@ -90,41 +113,46 @@ $(function() {
 		RecordTabView.disableRecordButton(true);
 	}
 
+    export function setSelectedLedger(ledgerId: string) {
+        disableLedgerSelect(false)
+        if (!ledgerId) {
+            return;
+        }
+        if (view.ledgerSelect.find(`option[value="${ledgerId}"]`).length > 0) {
+            view.ledgerSelect.val(ledgerId).trigger("change");
+        }
+    }
+
 	function onLedgerChange() {
 		SidebarActivity.saveLastSelectedLedger();
 		configureSelectedLedger();
 	}
 
 	function configureSelectedLedger() {
-		var ledger = getSelectedLedger();
+		var ledgerId = getSelectedLedgerId();
 
 		FetchTabView.disableFetchButton(true);
 		configureOpenCreateButton();
 
-		if (ledger) {
-			if (ledger.id) {
-				showContentWrapper(true);
-				if (ledger.permission != "VIEWER") {
-					RecordTabView.disableRecordButton(false);
-					showTabBar(true);
-				} else {
-					selectFetchTab();
-					showTabBar(false);
+        if (ledgerId) {
+                showContentWrapper(true);
+                if (cachedLedgers[ledgerId] && cachedLedgers[ledgerId].viewer) {
+                    RecordTabView.disableRecordButton(false);
+                    showTabBar(true);
+                } else {
+                    selectFetchTab();
+                    showTabBar(false);
+                }
+                if (FetchTabView.isQuerySearchEnabled()) {
+                    FetchTabActivity.loadQueries(ledgerId);
+                }
+        } else {
+            RecordTabView.disableRecordButton(true);
+            showContentWrapper(false);
         }
-        if (FetchTabView.isQuerySearchEnabled()) {
-					FetchTabActivity.loadQueries(ledger.id);
-				}
-			} else {
-				RecordTabView.disableRecordButton(true);
-				showContentWrapper(false);
-			}
-		} else {
-			RecordTabView.disableRecordButton(true);
-			showContentWrapper(false);
-		}
 	}
 
-	export function loading(loading) {
+	export function loading(loading: boolean) {
 		if (loading) {
 			view.loadPanel.removeClass("loadPanelLoadingLink");
 			view.loadPanel.addClass("loadPanelLoading");
@@ -142,30 +170,62 @@ $(function() {
 
 	// GENERAL
 
-	function configureOpenButton(form) {
-		var appendQuery = (selectedTab == 1);
-		var url = SidebarActivity.getOpenURL(form, appendQuery);
-		view.createOpenLedgerLink.attr('href', url);
-		$("button", view.createOpenLedgerLink).text('Open');
-		$("button", view.createOpenLedgerLink).removeClass('create');
+    function onMouseEnterOpenCreateButton(event: JQuery.Event) {
+        if (event.shiftKey) {
+            var ledgerId = FetchTabView.getForm().ledgerId;
+            if (ledgerId != null && ledgerId.trim() != "") {
+                view.newLedgerButton.text('Insert');
+                view.newLedgerButton.removeClass('create');
+            }
+        } else if (event.altKey) {
+            view.newLedgerButton.text('Load');
+            view.newLedgerButton.removeClass('create');
+        }
+    }
 
-	}
+    function onMouseLeaveOpenCreateButton(event: JQuery.Event) {
+        configureOpenCreateButton();
+    }
 
-	function configureCreateButton() {
-		view.createOpenLedgerLink.attr('href',
-				'https://app.bkper.com/create');
-		$("button", view.createOpenLedgerLink).text('Create');
-		$("button", view.createOpenLedgerLink).addClass('create');
-	}
 
-	export function configureOpenCreateButton() {
-		var form = FetchTabView.getForm();
+    function onClickOpenCreateButton(event: JQuery.Event) {
+        var form = FetchTabView.getForm();
 		var ledgerId = form.ledgerId;
 
+        if (event.shiftKey) {
+            if (ledgerId != null && ledgerId.trim() != "") {
+                event.preventDefault();
+                SidebarActivity.insertBookId(ledgerId);
+            }
+        } else if (event.altKey) {
+            event.preventDefault();
+            SidebarActivity.loadBookId();
+        } else {
+            if (ledgerId != null && ledgerId.trim() != "") {
+                var appendQuery = (selectedTab == 1);
+                var url = SidebarActivity.getOpenURL(form, appendQuery);
+                openInNewTab(url)
+            } else {
+                var url = 'https://app.bkper.com/create';
+                openInNewTab(url)
+            }
+        }
+
+
+    }
+
+    function openInNewTab(url: string) {
+        window.open(url, '_blank').focus();
+       }
+
+	export function configureOpenCreateButton() {
+		var ledgerId = FetchTabView.getForm().ledgerId;
 		if (ledgerId != null && ledgerId.trim() != "") {
-			configureOpenButton(form);
+            view.newLedgerButton.text('Open');
+            view.newLedgerButton.removeClass('create');
 		} else {
-			configureCreateButton();
+            view.newLedgerButton.text('Create');
+            view.newLedgerButton.addClass('create');
 		}
 	}
 
@@ -195,9 +255,9 @@ $(function() {
 
 	function selectFetchTab() {
 		selectedTab = 1;
-		var ledger = getSelectedLedger();
+		var ledgerId = getSelectedLedgerId();
     FetchTabView.verifyFormState();
-		if (ledger) {
+		if (ledgerId) {
 			view.tabBarItem2.addClass("tab-bar-item-selected");
 			view.tabBarItem1.removeClass("tab-bar-item-selected");
 			view.tab1Content.removeClass("hiddenContent");
@@ -205,13 +265,8 @@ $(function() {
 		}
 	}
 
-	export function getSelectedLedger() {
-		var ledgerJSON = view.ledgerSelect.val();
-		if (ledgerJSON) {
-			var ledger = JSON.parse(ledgerJSON);
-			return ledger;
-		}
-		return null;
+	export function getSelectedLedgerId(): string {
+		return view.ledgerSelect.val() as string;
 	}
 
 
@@ -241,13 +296,8 @@ $(function() {
 
 
 	export function getForm(): {ledgerId: string} {
-		var ledger = getSelectedLedger();
-		var ledgerkey = "";
-		if (ledger != null) {
-			ledgerkey = ledger.id;
-		}
 		var form = {
-			ledgerId : ledgerkey,
+			ledgerId : getSelectedLedgerId(),
 		}
 		return form;
 	}

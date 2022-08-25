@@ -16,7 +16,11 @@ declare namespace google {
 
             fetchQuery(fetchStatement: FetchStatement): void //void;
 
+            insertBookId(bookId: string): void //void;
+
             loadAutoRecordConfig(): void //AutorecordConfig;
+
+            loadBookId(): void //string;
 
             loadLedgers(): void;
 
@@ -36,9 +40,21 @@ declare namespace google {
 
         }
 
+        export interface ClientBook {
+
+            id: string;
+
+            name: string;
+
+            selected: boolean;
+
+            viewer: boolean;
+
+        }
+
         export interface FetchStatement {
 
-            balanceType?: "CUMULATIVE" | "PERIOD" | "TOTAL";
+            balanceType?: "CUMULATIVE" | "PERIOD" | "TOTAL" | "TRIAL";
 
             expanded?: boolean;
 
@@ -46,9 +62,13 @@ declare namespace google {
 
             hideDates?: boolean;
 
+            ids?: boolean;
+
             lastUpdate?: number;
 
             ledgerId: string;
+
+            properties?: boolean;
 
             query?: string;
 
@@ -68,11 +88,11 @@ declare namespace google {
 
         export interface Query {
 
-            category: string;
+            category?: string;
 
-            query: string;
+            query?: string;
 
-            title: string;
+            title?: string;
 
         }
 
@@ -95,6 +115,8 @@ declare namespace google {
         export var BALANCE_TYPE_PERIOD_: string;
 
         export var BALANCE_TYPE_TOTAL_: string;
+
+        export var BALANCE_TYPE_TRIAL_: string;
 
         export var LAST_UPDATE_KEY: string;
 

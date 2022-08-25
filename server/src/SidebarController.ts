@@ -24,11 +24,21 @@ function checkUserAuthorized() {
 /**
  * @public
  */
-function loadLedgers(): {id: string, name: string, permission : Bkper.Permission, selected: boolean}[] {
+interface ClientBook {
+    id: string, 
+    name: string, 
+    viewer: boolean,
+    selected: boolean
+}
+
+/**
+ * @public
+ */
+function loadLedgers(): ClientBook[] {
   try {
     var ledgers = BookService.loadBooks();
     var lastSelectedLedger = loadLastSelectedLedger();
-    return ledgers.map((book => {return {id: book.getId(), name: book.getName(),  permission: book.getPermission(), selected: book.getId() == lastSelectedLedger}}));
+    return ledgers.map((book => {return {id: book.getId(), name: book.getName(),  viewer: book.getPermission() == BkperApp.Permission.VIEWER, selected: book.getId() == lastSelectedLedger}}));
   } catch (err) {
     if (!Authorizer.isUserAuthorized()) {
       showAuthorizeView_();
@@ -36,6 +46,20 @@ function loadLedgers(): {id: string, name: string, permission : Bkper.Permission
       return [];
     }
   }  
+}
+
+/**
+ * @public
+ */
+function insertBookId(bookId: string) {
+    BookService.insertBookId(bookId);
+}
+
+/**
+ * @public
+ */
+function loadBookId(): string {
+    return BookService.loadBookId();
 }
 
 /**

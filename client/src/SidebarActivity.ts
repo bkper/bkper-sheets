@@ -5,7 +5,7 @@ namespace SidebarActivity {
 
 	export function init() {
 		if (DEV_MODE) {
-			SidebarView.setLedgers();
+			SidebarView.setLedgers([]);
 			SidebarView.showSidebarWrapper(true);
 			SidebarView.disableLedgerSelect(false);
 		} else {
@@ -16,14 +16,20 @@ namespace SidebarActivity {
 	//SERVICE FUNCTIONS
 	function loadLedgers() {
 		google.script.run.withSuccessHandler(ledgersLoaded).withFailureHandler(SidebarView.showError).loadLedgers();
-  }
+    }
+
+    export function insertBookId(bookId: string) {
+        SidebarView.loading(true);
+        google.script.run.withSuccessHandler(() => SidebarView.loading(false)).withFailureHandler(SidebarView.showError).insertBookId(bookId);
+    }
+
+    export function loadBookId() {
+        SidebarView.disableLedgerSelect(true)
+        google.script.run.withSuccessHandler(SidebarView.setSelectedLedger).withFailureHandler(SidebarView.showError).loadBookId()
+    }
   
 	export function saveLastSelectedLedger() {
-		var ledger = SidebarView.getSelectedLedger();
-		var ledgerId = null;
-		if (ledger != null) {
-			ledgerId = ledger.id;
-		}
+		var ledgerId = SidebarView.getSelectedLedgerId();
 		google.script.run.withSuccessHandler(lastSelectedLedgerSaved).withFailureHandler(lastSelectedLedgerSavedError).saveLastSelectedLedger(ledgerId);
 	}
 

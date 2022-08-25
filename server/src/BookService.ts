@@ -29,5 +29,17 @@ namespace BookService {
         return book;
     }
 
+    export function insertBookId(bookId: string): void {
+        var activeSS = SpreadsheetApp.getActiveSpreadsheet();
+        var selectedRange = activeSS.getActiveRange();
+        selectedRange.setValue(bookId);
+    }
+
+    export function loadBookId(): string {
+        var activeSS = SpreadsheetApp.getActiveSpreadsheet();
+        var selectedRange = activeSS.getActiveRange();
+        return selectedRange.getValue();
+    }
+
 }
 

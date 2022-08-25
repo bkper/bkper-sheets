@@ -26,8 +26,8 @@ namespace FetchTabView {
   }
 
   function fetchTypeRadioChanged() {
-    var ledger = SidebarView.getSelectedLedger();
-    FetchTabActivity.loadQueries(ledger.id);
+    var ledgerId = SidebarView.getSelectedLedgerId();
+    FetchTabActivity.loadQueries(ledgerId);
   }
 
   function onClickFetchButton() {
