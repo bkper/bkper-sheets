@@ -137,11 +137,11 @@ $(function() {
         if (ledgerId) {
                 showContentWrapper(true);
                 if (cachedLedgers[ledgerId] && cachedLedgers[ledgerId].viewer) {
-                    RecordTabView.disableRecordButton(false);
-                    showTabBar(true);
-                } else {
                     selectFetchTab();
                     showTabBar(false);
+                } else {
+                    RecordTabView.disableRecordButton(false);
+                    showTabBar(true);
                 }
                 if (FetchTabView.isQuerySearchEnabled()) {
                     FetchTabActivity.loadQueries(ledgerId);
