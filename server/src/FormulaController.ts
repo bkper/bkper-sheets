@@ -24,12 +24,18 @@ function BKPER_TRANSACTIONS(bookId: string, cache: number, query: string, proper
  *
  * @param {string} bookId The universal Book Id.
  * @param {number} cache Increase to clean cache and fetch fresh data.
+ * @param {boolean=} groups True to include account groups.
+ * @param {boolean=} properties True to include account properties.
  * 
  * @customfunction
  * 
  */
-function BKPER_ACCOUNTS(bookId: string, cache: number): any[][] {
-  return BookService.getBook(bookId).createAccountsDataTable().build();
+function BKPER_ACCOUNTS(bookId: string, cache: number, groups?: boolean, properties?: boolean): any[][] {
+  return BookService.getBook(bookId)
+  .createAccountsDataTable()
+  .includeGroups(groups)
+  .includeProperties(properties)
+  .build();
 }
 
 /**
