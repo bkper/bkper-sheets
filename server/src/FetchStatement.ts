@@ -10,6 +10,8 @@ interface FetchStatement {
   expanded?: boolean,
   transposed?: boolean,
   hideDates?: boolean,
+  hideNames?: boolean,
+  groups?: boolean,
   properties?: boolean,
   ids?: boolean,
   lastUpdate?: number
