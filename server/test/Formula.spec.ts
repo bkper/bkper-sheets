@@ -32,17 +32,17 @@ describe('Formula', () => {
     }
 
     it('should parse transactions', () => {
-      expect(Formula.parseFetchStatement(fetchStatement, 'pt_BR').toString()).to.eql('=BKPER_TRANSACTIONS("xxx"; 1; "yyy"; TRUE; FALSE)');
+      expect(Formula.parseFetchStatement(fetchStatement, 'pt_BR').toString()).to.eql('=BKPER_TRANSACTIONS("xxx"; 1; "yyy"; TRUE; TRUE)');
     })
 
     it('should replace query double quotes', () => {
       fetchStatement.query = 'acc: "some account"'
-      expect(Formula.parseFetchStatement(fetchStatement, 'en_US').toString()).to.eql('=BKPER_TRANSACTIONS("xxx", 1, "acc: \'some account\'", TRUE, FALSE)');
+      expect(Formula.parseFetchStatement(fetchStatement, 'en_US').toString()).to.eql('=BKPER_TRANSACTIONS("xxx", 1, "acc: \'some account\'", TRUE, TRUE)');
     })
     
     it('should parse accounts', () => {
       fetchStatement.fetchType = "accounts";
-      expect(Formula.parseFetchStatement(fetchStatement, 'pt_BR').toString()).to.eql('=BKPER_ACCOUNTS("xxx"; 1)');
+      expect(Formula.parseFetchStatement(fetchStatement, 'pt_BR').toString()).to.eql('=BKPER_ACCOUNTS("xxx"; 1; FALSE; TRUE)');
     })
 
     
@@ -64,7 +64,8 @@ describe('Formula', () => {
   describe('#parseString()', () => {
 
     it('should parse accounts', () => {
-      expect(Formula.parseString('= BKPER_ACCOUNTS("xxx"; 1)', 'pt_BR').toString()).to.eql('=BKPER_ACCOUNTS("xxx"; 1)');
+      expect(Formula.parseString('= BKPER_ACCOUNTS("xxx"; 1)', 'pt_BR').toString()).to.eql('=BKPER_ACCOUNTS("xxx"; 1; TRUE; FALSE)');
+      expect(Formula.parseString('= BKPER_ACCOUNTS("xxx"; 1; TRUE; TRUE)', 'pt_BR').toString()).to.eql('=BKPER_ACCOUNTS("xxx"; 1; TRUE; TRUE)');
     })
 
     it('should parse transactions', () => {
@@ -84,6 +85,7 @@ describe('Formula', () => {
 
     it('should preserve references', () => {
       expect(Formula.parseString('= BKPER_TRANSACTIONS(H1; 1; H3)', 'pt_BR').toString()).to.eql('=BKPER_TRANSACTIONS(H1; 1; H3; FALSE; FALSE)');
+      expect(Formula.parseString('= BKPER_TRANSACTIONS(H1; 1; H3; G3; FALSE)', 'pt_BR').toString()).to.eql('=BKPER_TRANSACTIONS(H1; 1; H3; G3; FALSE)');
     })
 
     it('should not parse comma inside quotes', () => {
