@@ -53,9 +53,21 @@ namespace FetchTabView {
     disableInput(disable, view.groups);
   }
 
+  function resetOptionalParams() {
+    $('input:checkbox').prop('checked', false);
+  }
+  function resetBalancesOptions() {
+    $("input[name=balance-type-radio]:checked").prop('checked', false);
+  }
+  function resetQuery() {
+    $("#queryInput").val('');
+  }
+
   export function verifyFormState() {
 
     SidebarView.configureOpenCreateButton();
+    
+    resetOptionalParams();
 
     var form: any = getForm();
 
@@ -72,12 +84,18 @@ namespace FetchTabView {
       disableProperties(false);
       disableGroups(false);
       disableFetchButton(false);
+
+      resetBalancesOptions();
+      resetQuery();
       return;
     }
 
     if (form.fetchType == "groups") {
       disableProperties(false);
       disableFetchButton(false);
+
+      resetBalancesOptions();
+      resetQuery();
       return;
     }
 
@@ -85,6 +103,8 @@ namespace FetchTabView {
 
       disableQueryInput(false)
       disableProperties(false);
+
+      resetBalancesOptions();
 
       if (form.query != null && form.query.trim() != "") {
         disableFetchButton(false);
