@@ -11,8 +11,21 @@ body {
   width: 100%;
 }
 
+.function-radio-btn {
+  width: 135px;
+}
+
+.bal-type-radio-btn {
+  margin-right: 10px;
+}
+
+.optional-param-checkbox {
+  width: 100px !important;
+  margin-right: 10px;
+}
+
 .inline + .inline {
-  margin-left: 5px;
+  margin-left: 0px;
 }
 
 input[type="radio"] {

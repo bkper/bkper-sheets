@@ -12,6 +12,8 @@ namespace FetchTabView {
       balanceTypeRadioGroup: $('#balance-type-radio-group'),
       expanded: $('#expanded'),
       transposed: $('#transposed'),
+      properties: $('#properties'),
+      groups: $('#groups')
     }
     bindUIActions();
   }
@@ -44,6 +46,12 @@ namespace FetchTabView {
   function disableTransposed(disable) {
     disableInput(disable, view.transposed);
   }
+  function disableProperties(disable) {
+    disableInput(disable, view.properties);
+  }
+  function disableGroups(disable) {
+    disableInput(disable, view.groups);
+  }
 
   export function verifyFormState() {
 
@@ -56,9 +64,19 @@ namespace FetchTabView {
     disableFetchButton(true);
     disableExpanded(true);
     disableTransposed(true);
+    disableProperties(true);
+    disableGroups(true);
     disableFetchButton(true);
 
     if (form.fetchType == "accounts") {
+      disableProperties(false);
+      disableGroups(false);
+      disableFetchButton(false);
+      return;
+    }
+
+    if (form.fetchType == "groups") {
+      disableProperties(false);
       disableFetchButton(false);
       return;
     }
@@ -66,16 +84,17 @@ namespace FetchTabView {
     if (form.fetchType == "transactions") {
 
       disableQueryInput(false)
+      disableProperties(false);
 
       if (form.query != null && form.query.trim() != "") {
         disableFetchButton(false);
       }
 
-
       return;
     }
 
     if (form.fetchType == "balances") {
+
       disableQueryInput(false)
       disableBalanceType(false);
       disableTransposed(false);
@@ -104,13 +123,11 @@ namespace FetchTabView {
     return form.fetchType == "transactions" || form.fetchType == "balances";
   }
 
-
   //fetch type
-  function getFetchType(): "transactions" | "balances" | "accounts" {
+  function getFetchType(): "transactions" | "balances" | "accounts" | "groups" {
     //@ts-ignore
     return $("input[name=fetch-type-radio]:checked", view.fetchTypeRadioGroup).val();
   }
-
 
   //balance type
   function getBalanceType(): "CUMULATIVE" | "PERIOD" | "TOTAL" {
@@ -126,11 +143,18 @@ namespace FetchTabView {
   function getExpanded(): boolean {
     return view.expanded.is(":checked")
   }
-  
+
   function getTransposed(): boolean {
     return view.transposed.is(":checked")
   }
 
+  function getGroups(): boolean {
+    return view.groups.is(":checked");
+  }
+
+  function getProperties(): boolean {
+    return view.properties.is(":checked");
+  }
 
   //query
   export function setQueryInput(query) {
@@ -147,9 +171,11 @@ namespace FetchTabView {
 
   function disableInput(disable: any, el: any) {
     if (disable) {
-      el.parent().css('visibility', 'hidden');
+      // el.parent().css('visibility', 'hidden');
+      el.attr("disabled", true);
     } else {
-      el.parent().css('visibility', 'visible');
+      // el.parent().css('visibility', 'visible');
+      el.removeAttr("disabled");
     }
   }
 
@@ -164,7 +190,6 @@ namespace FetchTabView {
   function showQueries() {
     view.queryInput.autocomplete("search", "");
   }
-
 
   export function setQueries(queries) {
     if (DEV_MODE) {
@@ -252,6 +277,8 @@ namespace FetchTabView {
     form.balanceType = getBalanceType();
     form.expanded = getExpanded();
     form.transposed = getTransposed();
+    form.groups = getGroups();
+    form.properties = getProperties();
     return form;
   }
 

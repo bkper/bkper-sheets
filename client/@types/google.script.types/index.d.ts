@@ -58,7 +58,7 @@ declare namespace google {
 
             expanded?: boolean;
 
-            fetchType?: "transactions" | "balances" | "accounts";
+            fetchType?: "transactions" | "balances" | "accounts" | "groups";
 
             groups?: boolean;
 
