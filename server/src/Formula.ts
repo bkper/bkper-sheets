@@ -1,5 +1,6 @@
 enum FormulaName {
   BKPER_ACCOUNTS = "BKPER_ACCOUNTS",
+  BKPER_GROUPS = "BKPER_GROUPS",
   BKPER_TRANSACTIONS = "BKPER_TRANSACTIONS",
   BKPER_BALANCES_TOTAL = "BKPER_BALANCES_TOTAL",
   BKPER_BALANCES_PERIOD = "BKPER_BALANCES_PERIOD",
@@ -38,7 +39,10 @@ class Formula {
     formula.bookId = fetchStatement.ledgerId;
     formula.cache = 1;
     
-    if (fetchStatement.fetchType === 'accounts') {
+    if (fetchStatement.fetchType === 'groups') {
+      formula.name = FormulaName.BKPER_GROUPS;
+      formula.param1 = fetchStatement.properties ? true : false;
+    } else if (fetchStatement.fetchType === 'accounts') {
       formula.name = FormulaName.BKPER_ACCOUNTS;
       formula.param1 = fetchStatement.groups ? true : false;
       formula.param2 = fetchStatement.properties ? true : false;
@@ -137,6 +141,8 @@ class Formula {
 
     if (formulaStr.indexOf(FormulaName.BKPER_ACCOUNTS) >= 0) {
       formula.name = FormulaName.BKPER_ACCOUNTS;
+    } else if (formulaStr.indexOf(FormulaName.BKPER_GROUPS) >= 0) {
+      formula.name = FormulaName.BKPER_GROUPS;
     } else if (formulaStr.indexOf(FormulaName.BKPER_TRANSACTIONS) >= 0) {
       formula.name = FormulaName.BKPER_TRANSACTIONS;
     } else if (formulaStr.indexOf(FormulaName.BKPER_BALANCES_TOTAL) >= 0) {
@@ -160,7 +166,13 @@ class Formula {
     let param4 = (''+this.param4).toUpperCase();
 
 
-    if (this.name === FormulaName.BKPER_ACCOUNTS) {
+    if (this.name === FormulaName.BKPER_GROUPS) {
+      if (this.param1 == undefined) {
+        this.param1 = false;
+      }
+      let param1 = (''+this.param1).toUpperCase();
+      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.cache}${sep} ${param1})`;
+    } else if (this.name === FormulaName.BKPER_ACCOUNTS) {
       if (this.param1 == undefined) {
         this.param1 = true;
       }

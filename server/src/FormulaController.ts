@@ -39,6 +39,23 @@ function BKPER_ACCOUNTS(bookId: string, cache: number, groups?: boolean, propert
 }
 
 /**
+ * Fetch Groups
+ *
+ * @param {string} bookId The universal Book Id.
+ * @param {number} cache Increase to clean cache and fetch fresh data.
+ * @param {boolean=} properties True to include group properties.
+ * 
+ * @customfunction
+ * 
+ */
+function BKPER_GROUPS(bookId: string, cache: number, properties?: boolean): any[][] {
+  return BookService.getBook(bookId)
+  .createGroupsDataTable()
+  .includeProperties(properties)
+  .build();
+}
+
+/**
  * Fetch Trial Balances
  * 
  * @param {string} bookId The universal Book Id.

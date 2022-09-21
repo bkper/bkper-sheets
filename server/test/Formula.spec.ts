@@ -13,6 +13,7 @@ describe('Formula', () => {
       expect(Formula.isBkperFormula(' = BKPER_BALANCES_TOTAL(xxx')).to.eql(true);
       expect(Formula.isBkperFormula(' = BKPER_BALANCES_TRIAL(xxx')).to.eql(true);
       expect(Formula.isBkperFormula(' = BKPER_ACCOUNTS(xxx')).to.eql(true);
+      expect(Formula.isBkperFormula('=BKPER_GROUPS(xxx')).to.eql(true);
     })
   
   });
@@ -45,6 +46,10 @@ describe('Formula', () => {
       expect(Formula.parseFetchStatement(fetchStatement, 'pt_BR').toString()).to.eql('=BKPER_ACCOUNTS("xxx"; 1; FALSE; TRUE)');
     })
 
+    it('should parse groups', () => {
+      fetchStatement.fetchType = "groups";
+      expect(Formula.parseFetchStatement(fetchStatement, 'pt_BR').toString()).to.eql('=BKPER_GROUPS("xxx"; 1; TRUE)');
+    })
     
     it('should parse balances query', () => {
       fetchStatement.fetchType = "balances";
@@ -66,6 +71,12 @@ describe('Formula', () => {
     it('should parse accounts', () => {
       expect(Formula.parseString('= BKPER_ACCOUNTS("xxx"; 1)', 'pt_BR').toString()).to.eql('=BKPER_ACCOUNTS("xxx"; 1; TRUE; FALSE)');
       expect(Formula.parseString('= BKPER_ACCOUNTS("xxx"; 1; TRUE; TRUE)', 'pt_BR').toString()).to.eql('=BKPER_ACCOUNTS("xxx"; 1; TRUE; TRUE)');
+    })
+
+    it('should parse groups', () => {
+      expect(Formula.parseString('= BKPER_GROUPS("xxx"; 1)', 'pt_BR').toString()).to.eql('=BKPER_GROUPS("xxx"; 1; FALSE)');
+      expect(Formula.parseString('= BKPER_GROUPS("xxx"; 1; FALSE)', 'pt_BR').toString()).to.eql('=BKPER_GROUPS("xxx"; 1; FALSE)');
+      expect(Formula.parseString('= BKPER_GROUPS("xxx"; 1; TRUE)', 'pt_BR').toString()).to.eql('=BKPER_GROUPS("xxx"; 1; TRUE)');
     })
 
     it('should parse transactions', () => {
