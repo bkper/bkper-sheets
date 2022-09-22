@@ -187,6 +187,10 @@ namespace FetchTabView {
     return view.properties.is(":checked");
   }
 
+  function getIds(): boolean {
+    return $("input[name=fetch-type-radio]:checked", view.fetchTypeRadioGroup).val() === "transactions";
+  }
+
   export function shouldFetchValues(): boolean {
     return $("input[name=fetch-option-radio]:checked", view.fetchOptionRadioGroup).val() === "VALUES" ? true : false;
   }
@@ -314,6 +318,7 @@ namespace FetchTabView {
     form.transposed = getTransposed();
     form.groups = getGroups();
     form.properties = getProperties();
+    form.ids = getIds();
     return form;
   }
 
