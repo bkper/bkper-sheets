@@ -34,6 +34,7 @@ describe('Formula', () => {
 
     it('should parse transactions', () => {
       expect(Formula.parseFetchStatement(fetchStatement, 'pt_BR').toString()).to.eql('=BKPER_TRANSACTIONS("xxx"; 1; "yyy"; TRUE; TRUE)');
+      expect(Formula.parseFetchStatement(fetchStatement, 'pt_BR').toJavascript()).to.eql('BKPER_TRANSACTIONS("xxx", 1, "yyy", true, true)');
     })
 
     it('should replace query double quotes', () => {

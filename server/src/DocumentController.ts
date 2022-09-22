@@ -35,13 +35,19 @@ function update() {
   }
 }
 
-function executeFetch(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, fetchStatement: FetchStatement, range: GoogleAppsScript.Spreadsheet.Range): void {
+function executeFetch(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, fetchStatement: FetchStatement, range: GoogleAppsScript.Spreadsheet.Range, fetchValues: boolean): void {
   if (range == null) {
     range = spreadsheet.getActiveCell();
   }
-  range = range.getCell(1, 1);
   if (fetchStatement.ledgerId.length > 0) {
     let formula = Formula.parseFetchStatement(fetchStatement, spreadsheet.getSpreadsheetLocale());
-    range.setFormula(formula.toString());
+    if (fetchValues) {
+      let values: any[][] = eval(formula.toJavascript());
+      range = spreadsheet.getActiveSheet().getRange(range.getRow(), range.getColumn(), values.length, values[0].length);
+      range.setValues(values);
+    } else {
+      range = range.getCell(1, 1);
+      range.setFormula(formula.toString());
+    }
   }
 }

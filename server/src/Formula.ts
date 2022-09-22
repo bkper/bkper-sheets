@@ -185,6 +185,11 @@ class Formula {
     }
   }
 
+  toJavascript(): string {
+    this.locale = "en_US";
+    return this.toString().replaceAll("TRUE", "true").replaceAll("FALSE", "false").replace("=", "").trim();
+  }
+
   getSep() {
     for (const locale of this.COMMA_LOCALES) {
       if (locale === this.locale) {

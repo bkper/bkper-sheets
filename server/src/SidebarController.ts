@@ -79,9 +79,9 @@ function loadQueries(ledgerId: string): LedgerQueries {
 /**
  * @public
  */
-function fetchQuery(fetchStatement: FetchStatement) {
+function fetchQuery(fetchStatement: FetchStatement, fetchValues: boolean) {
   var spreadsheet = getActiveSpreadsheet();
-  executeFetch(spreadsheet, fetchStatement, null);
+  executeFetch(spreadsheet, fetchStatement, null, fetchValues);
 }
 
 function getRecordTemplatesKey() {
