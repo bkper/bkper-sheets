@@ -24,6 +24,11 @@ body {
   margin-right: 10px;
 }
 
+.fetch-option-radio-btn {
+  margin-bottom: 8px;
+  margin-right: 10px;
+}
+
 .inline + .inline {
   margin-left: 0px;
 }

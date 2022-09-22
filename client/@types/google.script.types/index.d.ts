@@ -14,7 +14,7 @@ declare namespace google {
 
             enableAutoRecord(enable: boolean): void //AutorecordConfig;
 
-            fetchQuery(fetchStatement: FetchStatement): void //void;
+            fetchQuery(fetchStatement: FetchStatement, fetchValues: boolean): void //void;
 
             insertBookId(bookId: string): void //void;
 

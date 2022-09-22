@@ -13,7 +13,8 @@ namespace FetchTabView {
       expanded: $('#expanded'),
       transposed: $('#transposed'),
       properties: $('#properties'),
-      groups: $('#groups')
+      groups: $('#groups'),
+      fetchOptionRadioGroup: $('#fetch-option-radio-group')
     }
     bindUIActions();
   }
@@ -53,6 +54,10 @@ namespace FetchTabView {
     disableInput(disable, view.groups);
   }
 
+  function disableFetchOption(disable) {
+    disableInput(disable, view.fetchOptionRadioGroup);
+  }
+
   function resetOptionalParams() {
     $('input:checkbox').prop('checked', false);
   }
@@ -73,16 +78,17 @@ namespace FetchTabView {
 
     disableQueryInput(true)
     disableBalanceType(true);
-    disableFetchButton(true);
     disableExpanded(true);
     disableTransposed(true);
     disableProperties(true);
     disableGroups(true);
+    disableFetchOption(true);
     disableFetchButton(true);
 
     if (form.fetchType == "accounts") {
       disableProperties(false);
       disableGroups(false);
+      disableFetchOption(false);
       disableFetchButton(false);
 
       resetBalancesOptions();
@@ -92,6 +98,7 @@ namespace FetchTabView {
 
     if (form.fetchType == "groups") {
       disableProperties(false);
+      disableFetchOption(false);
       disableFetchButton(false);
 
       resetBalancesOptions();
@@ -107,6 +114,7 @@ namespace FetchTabView {
       resetBalancesOptions();
 
       if (form.query != null && form.query.trim() != "") {
+        disableFetchOption(false);
         disableFetchButton(false);
       }
 
@@ -130,6 +138,7 @@ namespace FetchTabView {
       }
       
       if (form.balanceType != null) {
+        disableFetchOption(false);
         disableFetchButton(false);
       }
       
@@ -174,6 +183,10 @@ namespace FetchTabView {
 
   function getProperties(): boolean {
     return view.properties.is(":checked");
+  }
+
+  export function shouldFetchValues(): boolean {
+    return $("input[name=fetch-option-radio]:checked", view.fetchOptionRadioGroup).val() === "VALUES" ? true : false;
   }
 
   //query

@@ -34,7 +34,8 @@ namespace FetchTabActivity {
 		FetchTabView.showQueryError(false);
 		SidebarView.loading(true);
 		var form = FetchTabView.getForm();
-		google.script.run.withSuccessHandler(fetched).withFailureHandler(FetchTabView.showQueryError).fetchQuery(form);
+		var fetchValues = FetchTabView.shouldFetchValues();
+		google.script.run.withSuccessHandler(fetched).withFailureHandler(FetchTabView.showQueryError).fetchQuery(form, fetchValues);
 	}
 
 	//CALLBACKS
