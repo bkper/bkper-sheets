@@ -180,6 +180,10 @@ input[type="radio"] {
   padding-top: 25px;
 }
 
+.fetch-button, .record-button {
+  margin-top: 20px;
+  text-align: center;
+}
 
 
 
