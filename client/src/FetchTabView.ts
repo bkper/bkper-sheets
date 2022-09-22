@@ -68,6 +68,10 @@ namespace FetchTabView {
     $("#queryInput").val('');
   }
 
+  function autoSelectBalanceOption() {
+    $("#balance-type-radio-total").prop('checked', true);
+  }
+
   export function verifyFormState() {
 
     SidebarView.configureOpenCreateButton();
@@ -127,21 +131,19 @@ namespace FetchTabView {
       disableBalanceType(false);
       disableTransposed(false);
 
-      if (form.query == null || form.query.trim() == "") {
-        return;
-      }
-      
       if (form.query.indexOf("group:") >= 0) {
         disableExpanded(false);
       } else {
         view.expanded.prop('checked', false);
       }
-      
-      if (form.balanceType != null) {
-        disableFetchOption(false);
-        disableFetchButton(false);
+
+      if (form.balanceType == null) {
+        autoSelectBalanceOption();
       }
-      
+
+      disableFetchOption(false);
+      disableFetchButton(false);
+
       return;
     }
 
