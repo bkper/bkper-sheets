@@ -1,86 +1,99 @@
 namespace RecordAccountsService {
 
   export function recordAccounts(book: Bkper.Book, selectedRange: GoogleAppsScript.Spreadsheet.Range, highlight: boolean): boolean {
+    batchCreateAccounts(book, selectedRange, selectedRange.getValues(), highlight);
+    return true;
+  }
 
-    let values = selectedRange.getValues();
+  export function batchCreateAccounts(book: Bkper.Book, range: GoogleAppsScript.Spreadsheet.Range, values: any[][], highlight: boolean) {
 
-    let nameRowIndexMap: any = {};
-    let maxLength = 0;
+    const header = new AccountsHeader(range);
+    const bookIdHeaderColumn = header.getBookIdHeaderColumn();
 
-    let groups: Bkper.Group[] = []
-    for (let i = 0; i < values.length; i++) {
-      const row = values[i]
-      const name = row[0] + '';
-      nameRowIndexMap[name] = i;
-      if (row.length >= maxLength) {
-        maxLength = row.length;
-      }
+    let accountsMap: Bkper.Account[] = [];
 
-      if (row.length > 1) {
-        for (let j = 1; j < row.length; j++) {
-          const cell = row[j];
-          if (!isType(cell) && !book.getGroup(cell)) {
-            let group = book.newGroup().setName(cell);
-            groups.push(group);
+    if (bookIdHeaderColumn) {
+      // MAP
+      let accountsBatch: { [bookId: string]: RecordAccountBatch } = {};
+      accountsBatch[book.getId()] = new RecordAccountBatch(book);
+      for (const row of values) {
+        let bookId = row[bookIdHeaderColumn.getIndex()];
+        if (bookId != null && typeof bookId == "string" && bookId.trim() != '') {
+          let batch = accountsBatch[bookId];
+          if (batch == null) {
+            const book = BkperApp.getBook(bookId);
+            batch = new RecordAccountBatch(book);
+            accountsBatch[bookId] = batch;
           }
+          batch.push(arrayToAccount_(row, batch.getBook(), header));
+        } else {
+          let batch = accountsBatch[book.getId()];
+          batch.push(arrayToAccount_(row, batch.getBook(), header));
         }
       }
-    }
-
-    if (groups.length > 0) {
-      book.batchCreateGroups(groups);
-    }
-
-    let accounts: Bkper.Account[] = []
-
-    for (let i = 0; i < values.length; i++) {
-      const row = values[i]
-      // const account: bkper.Account = {
-      //   name: row[0],
-      //   type: AccountType.ASSET,
-      //   groups: []
-      // }
-      let account = book.newAccount()
-      .setName(row[0])
-      .setType(BkperApp.AccountType.ASSET)
-
-      if (book.getAccount(account.getName())) {
-        //Account already created. Skip.
-        continue;
+      // REDUCE
+      for (const key in accountsBatch) {
+        let batch = accountsBatch[key];
+        accountsMap = accountsMap.concat(batch.getAccounts());
+        batch.getBook().batchCreateAccounts(batch.getAccounts());
       }
-
-      if (row.length > 1) {
-        for (let j = 1; j < row.length; j++) {
-          const cell = row[j];
-          if (isType(cell)) {
-            account.setType(cell as Bkper.AccountType);
-          } else {
-            let group = book.getGroup(cell);
-            if (group != null) {
-              account.addGroup(group);
-            }
-          }
-        }
+    } else {
+      let accounts: Bkper.Account[] = [];
+      for (const row of values) {
+        accounts.push(arrayToAccount_(row, book, header));
       }
-      accounts.push(account)
+      accountsMap = accountsMap.concat(accounts);
+      book.batchCreateAccounts(accounts);
     }
-    
-    book.batchCreateAccounts(accounts);
 
+    // if (highlight) {
+    //   let backgrounds: any[][] = initilizeMatrix(new Array(values.length), header.getColumns().length);
+    //   for (let i = 0; i < accountsMap.length; i++) {
+    //     backgrounds[i] = fill(new Array(header.getColumns().length), getTypeColor(accountsMap[i].getType()));
+    //   }
+    //   range.setBackgrounds(backgrounds);
+    // }
 
-    if (highlight) {
-      let backgrounds: any[][] = initilizeMatrix(new Array(values.length), maxLength);
-      let accounts = book.getAccounts();
-      for (const account of accounts) {
-        const index = nameRowIndexMap[account.getName()];
-        if (index != null) {
-          backgrounds[index] = fill(new Array(maxLength), getTypeColor(account.getType()));
-        }
-      }
-      selectedRange.setBackgrounds(backgrounds);
-    }
     return false;
   }
+
+  function arrayToAccount_(row: any[], book: Bkper.Book, header: AccountsHeader): Bkper.Account {
+    let account = book.newAccount().setType(BkperApp.AccountType.ASSET);
+    if (header.isValid()) {
+      let groupNames: string[] = [];
+      for (const column of header.getColumns()) {
+        let value = row[column.getIndex()];
+        if (column.isName()) {
+          if (book.getAccount(value)) {
+            // Account already exists
+            return;
+          }
+          account.setName(value);
+        } else if (column.isType() && isValidType(value)) {
+          account.setType(value as Bkper.AccountType);
+        } else if (column.isGroup()) {
+          groupNames.push(value as string);
+        }
+      }
+      const groups = validateGroups(book, groupNames);
+      account.setGroups(groups);
+    }
+    return account;
+  }
+
+  //   if (highlight) {
+  //     let backgrounds: any[][] = initilizeMatrix(new Array(values.length), maxLength);
+  //     let accounts = book.getAccounts();
+  //     for (const account of accounts) {
+  //       const index = nameRowIndexMap[account.getName()];
+  //       if (index != null) {
+  //         backgrounds[index] = fill(new Array(maxLength), getTypeColor(account.getType()));
+  //       }
+  //     }
+  //     selectedRange.setBackgrounds(backgrounds);
+  //   }
+  //   return false;
+  // }
 
   function fill(array: any[], value: string): any[] {
     for (let i = 0; i < array.length; i++) {
@@ -109,20 +122,37 @@ namespace RecordAccountsService {
     return '#f6deda';
   }
 
-  function isType(groupOrType: string): boolean {
-    if (groupOrType == BkperApp.AccountType.ASSET) {
+  function isValidType(type: string): boolean {
+    if (type == BkperApp.AccountType.ASSET) {
       return true;
     }
-    if (groupOrType == BkperApp.AccountType.LIABILITY) {
+    if (type == BkperApp.AccountType.LIABILITY) {
       return true;
     }
-    if (groupOrType == BkperApp.AccountType.INCOMING) {
+    if (type == BkperApp.AccountType.INCOMING) {
       return true;
     }
-    if (groupOrType == BkperApp.AccountType.OUTGOING) {
+    if (type == BkperApp.AccountType.OUTGOING) {
       return true;
     }
     return false;
+  }
+
+  function validateGroups(book: Bkper.Book, groupNames: string[]): Bkper.Group[] {
+    let groups: Bkper.Group[] = [];
+    let newGroups: Bkper.Group[] = [];
+    for (const groupName of groupNames) {
+      const group = book.getGroup(groupName);
+      if (group) {
+        if (group.getChildren().length === 0) {
+          groups.push(group);
+        }
+      } else {
+        newGroups.push(book.newGroup().setName(groupName));
+      }
+    }
+    newGroups = book.batchCreateGroups(newGroups);
+    return groups.concat(newGroups);
   }
 
 }
