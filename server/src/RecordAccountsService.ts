@@ -1,11 +1,12 @@
 namespace RecordAccountsService {
 
-  export function recordAccounts(book: Bkper.Book, selectedRange: GoogleAppsScript.Spreadsheet.Range, highlight: boolean): boolean {
-    batchCreateAccounts(book, selectedRange, selectedRange.getValues(), highlight);
+  export function recordAccounts(book: Bkper.Book, selectedRange: GoogleAppsScript.Spreadsheet.Range, activeSS: GoogleAppsScript.Spreadsheet.Spreadsheet, highlight: boolean): boolean {
+    const timezone = activeSS.getSpreadsheetTimeZone();
+    batchCreateAccounts(book, selectedRange, selectedRange.getValues(), highlight, timezone);
     return true;
   }
 
-  export function batchCreateAccounts(book: Bkper.Book, range: GoogleAppsScript.Spreadsheet.Range, values: any[][], highlight: boolean) {
+  export function batchCreateAccounts(book: Bkper.Book, range: GoogleAppsScript.Spreadsheet.Range, values: any[][], highlight: boolean, timezone: string) {
 
     const header = new AccountsHeader(range);
     const bookIdHeaderColumn = header.getBookIdHeaderColumn();
@@ -25,10 +26,10 @@ namespace RecordAccountsService {
             batch = new RecordAccountBatch(book);
             accountsBatch[bookId] = batch;
           }
-          batch.push(arrayToAccount_(row, batch.getBook(), header));
+          batch.push(arrayToAccount_(row, batch.getBook(), header, timezone));
         } else {
           let batch = accountsBatch[book.getId()];
-          batch.push(arrayToAccount_(row, batch.getBook(), header));
+          batch.push(arrayToAccount_(row, batch.getBook(), header, timezone));
         }
       }
       // REDUCE
@@ -40,7 +41,7 @@ namespace RecordAccountsService {
     } else {
       let accounts: Bkper.Account[] = [];
       for (const row of values) {
-        accounts.push(arrayToAccount_(row, book, header));
+        accounts.push(arrayToAccount_(row, book, header, timezone));
       }
       accountsMap = accountsMap.concat(accounts);
       book.batchCreateAccounts(accounts);
@@ -57,7 +58,7 @@ namespace RecordAccountsService {
     return false;
   }
 
-  function arrayToAccount_(row: any[], book: Bkper.Book, header: AccountsHeader): Bkper.Account {
+  function arrayToAccount_(row: any[], book: Bkper.Book, header: AccountsHeader, timezone: string): Bkper.Account {
     let account = book.newAccount().setType(BkperApp.AccountType.ASSET);
     if (header.isValid()) {
       let groupNames: string[] = [];
@@ -74,7 +75,7 @@ namespace RecordAccountsService {
         } else if (column.isGroup()) {
           groupNames.push(value as string);
         } else if (column.isProperty()) {
-          account.setProperty(column.getName(), formatProperty(book, value));
+          account.setProperty(column.getName(), formatProperty(book, value, timezone));
         }
       }
       const groups = validateGroups(book, groupNames);
