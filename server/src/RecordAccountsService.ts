@@ -47,13 +47,13 @@ namespace RecordAccountsService {
       book.batchCreateAccounts(accounts);
     }
 
-    // if (highlight) {
-    //   let backgrounds: any[][] = initilizeMatrix(new Array(values.length), header.getColumns().length);
-    //   for (let i = 0; i < accountsMap.length; i++) {
-    //     backgrounds[i] = fill(new Array(header.getColumns().length), getTypeColor(accountsMap[i].getType()));
-    //   }
-    //   range.setBackgrounds(backgrounds);
-    // }
+    if (highlight) {
+      let backgrounds: any[][] = initilizeMatrix(new Array(values.length), header.getColumns().length);
+      for (let i = 0; i < accountsMap.length; i++) {
+        backgrounds[i] = fill(new Array(header.getColumns().length), getTypeColor(accountsMap[i].getType()));
+      }
+      range.setBackgrounds(backgrounds);
+    }
 
     return false;
   }
@@ -83,20 +83,6 @@ namespace RecordAccountsService {
     }
     return account;
   }
-
-  //   if (highlight) {
-  //     let backgrounds: any[][] = initilizeMatrix(new Array(values.length), maxLength);
-  //     let accounts = book.getAccounts();
-  //     for (const account of accounts) {
-  //       const index = nameRowIndexMap[account.getName()];
-  //       if (index != null) {
-  //         backgrounds[index] = fill(new Array(maxLength), getTypeColor(account.getType()));
-  //       }
-  //     }
-  //     selectedRange.setBackgrounds(backgrounds);
-  //   }
-  //   return false;
-  // }
 
   function fill(array: any[], value: string): any[] {
     for (let i = 0; i < array.length; i++) {
