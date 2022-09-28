@@ -59,7 +59,7 @@ namespace FetchTabView {
   }
 
   function resetOptionalParams() {
-    $('input:checkbox').prop('checked', false);
+    $('input:checkbox:not("#highlight")').prop('checked', false);
   }
   function resetBalancesOptions() {
     $("input[name=balance-type-radio]:checked").prop('checked', false);
