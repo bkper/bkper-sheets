@@ -73,6 +73,8 @@ namespace RecordAccountsService {
           account.setType(value as Bkper.AccountType);
         } else if (column.isGroup()) {
           groupNames.push(value as string);
+        } else if (column.isProperty()) {
+          account.setProperty(column.getName(), formatProperty(book, value));
         }
       }
       const groups = validateGroups(book, groupNames);
@@ -136,6 +138,13 @@ namespace RecordAccountsService {
       return true;
     }
     return false;
+  }
+
+  function formatProperty(book: Bkper.Book, cell: any, timezone?: string) {
+    if (Utilities_.isDate(cell)) {
+      return book.formatDate(cell, timezone);
+    }
+    return cell;
   }
 
   function validateGroups(book: Bkper.Book, groupNames: string[]): Bkper.Group[] {
