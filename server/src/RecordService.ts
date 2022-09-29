@@ -17,6 +17,8 @@ namespace RecordService {
       return RecordTransactionsService.recordTransactions(book, selectedRange, activeSS, recordStatement.highlight);
     } else if (recordStatement.recordType == 'accounts') {
       return RecordAccountsService.recordAccounts(book, selectedRange, activeSS, recordStatement.highlight);
+    } else if (recordStatement.recordType == 'groups') {
+      return RecordGroupsService.recordGroups(book, selectedRange, activeSS, recordStatement.highlight);
     }
 
   }

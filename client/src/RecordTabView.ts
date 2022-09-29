@@ -27,7 +27,7 @@ namespace RecordTabView {
 
 
   //fetch type
-  function getRecordType(): "transactions" | "accounts" {
+  function getRecordType(): "transactions" | "accounts" | "groups" {
     //@ts-ignore
     return $("input[name=record-type-radio]:checked", view.recordTypeRadioGroup).val();
   }
