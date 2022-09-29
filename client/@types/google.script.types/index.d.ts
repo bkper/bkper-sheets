@@ -106,7 +106,7 @@ declare namespace google {
 
             ledgerId: string;
 
-            recordType?: "transactions" | "accounts";
+            recordType?: "transactions" | "accounts" | "groups";
 
         }
 

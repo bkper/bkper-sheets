@@ -3,6 +3,6 @@
  */
 interface SaveStatement {
   ledgerId: string,
-  recordType?: "transactions" | "accounts",
+  recordType?: "transactions" | "accounts" | "groups",
   highlight?: boolean
 }
