@@ -81,20 +81,28 @@ class GroupsHeaderColumn {
         return this.isValid() && this.name.trim().toLowerCase() == 'name';
     }
 
-    // isType(): boolean {
-    //     return this.isValid() && this.name.trim().toLowerCase() == 'type';
-    // }
+    isType(): boolean {
+        return this.isValid() && this.name.trim().toLowerCase() == 'type';
+    }
 
-    // isGroup(): boolean {
-    //     return this.isValid() && this.name.trim().toLowerCase() == 'group';
-    // }
+    isParent(): boolean {
+        return this.isValid() && this.name.trim().toLowerCase() == 'parent';
+    }
+
+    isChildren(): boolean {
+        return this.isValid() && this.name.trim().toLowerCase() == 'children';
+    }
+
+    isAccounts(): boolean {
+        return this.isValid() && this.name.trim().toLowerCase() == 'accounts';
+    }
 
     isBookId(): boolean {
         return this.isValid() && this.name.trim().toLowerCase() == 'bookid';
     }
 
-    // isProperty(): boolean {
-    //     return this.isValid() && !this.isName() && !this.isType() && !this.isGroup() && !this.isBookId();
-    // }
+    isProperty(): boolean {
+        return this.isValid() && !this.isName() && !this.isType() && !this.isParent() && !this.isChildren() && !this.isAccounts() && !this.isBookId();
+    }
 
 }
