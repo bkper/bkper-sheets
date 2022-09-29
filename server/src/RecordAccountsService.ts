@@ -80,6 +80,31 @@ namespace RecordAccountsService {
       }
       const groups = validateGroups(book, groupNames);
       account.setGroups(groups);
+    } else {
+      let groupNames: string[] = [];
+      // row[0] should be the Name
+      const name = row[0];
+      if (name) {
+        if (book.getAccount(name)) {
+          // Account already exists
+          return;
+        }
+        account.setName(name);
+      }
+      // row[1] should be the Type
+      const type = row[1];
+      if (isValidType(type)) {
+        account.setType(type as Bkper.AccountType);
+      }
+      // Every other cell should be a Group name
+      for (let i = 2; i < row.length; i++) {
+        const groupName = row[i];
+        if (groupName) {
+          groupNames.push(groupName as string);
+        }
+      }
+      const groups = validateGroups(book, groupNames);
+      account.setGroups(groups);
     }
     return account;
   }
