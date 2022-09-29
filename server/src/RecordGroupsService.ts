@@ -26,10 +26,10 @@ namespace RecordGroupsService {
             batch = new RecordGroupBatch(book);
             groupsBatch[bookId] = batch;
           }
-          // batch.push(arrayToAccount_(row, batch.getBook(), header, timezone));
+          batch.push(arrayToGroup_(row, batch.getBook(), header, timezone));
         } else {
           let batch = groupsBatch[book.getId()];
-          // batch.push(arrayToAccount_(row, batch.getBook(), header, timezone));
+          batch.push(arrayToGroup_(row, batch.getBook(), header, timezone));
         }
       }
       // REDUCE
@@ -41,7 +41,7 @@ namespace RecordGroupsService {
     } else {
       let groups: Bkper.Group[] = [];
       for (const row of values) {
-        // groups.push(arrayToAccount_(row, book, header, timezone));
+        groups.push(arrayToGroup_(row, book, header, timezone));
       }
       GroupsMap = GroupsMap.concat(groups);
       book.batchCreateGroups(groups);
@@ -58,56 +58,43 @@ namespace RecordGroupsService {
     return false;
   }
 
-  // function arrayToAccount_(row: any[], book: Bkper.Book, header: AccountsHeader, timezone: string): Bkper.Account {
-  //   let account = book.newAccount().setType(BkperApp.AccountType.ASSET);
-  //   if (header.isValid()) {
-  //     let groupNames: string[] = [];
-  //     for (const column of header.getColumns()) {
-  //       let value = row[column.getIndex()];
-  //       if (column.isName()) {
-  //         if (book.getAccount(value)) {
-  //           // Account already exists
-  //           return;
-  //         }
-  //         account.setName(value);
-  //       } else if (column.isType() && isValidType(value)) {
-  //         account.setType(value as Bkper.AccountType);
-  //       } else if (column.isGroup()) {
-  //         groupNames.push(value as string);
-  //       } else if (column.isProperty()) {
-  //         account.setProperty(column.getName(), formatProperty(book, value, timezone));
-  //       }
-  //     }
-  //     const groups = validateGroups(book, groupNames);
-  //     account.setGroups(groups);
-  //   } else {
-  //     let groupNames: string[] = [];
-  //     // row[0] should be the Name
-  //     const name = row[0];
-  //     if (name) {
-  //       if (book.getAccount(name)) {
-  //         // Account already exists
-  //         return;
-  //       }
-  //       account.setName(name);
-  //     }
-  //     // row[1] should be the Type
-  //     const type = row[1];
-  //     if (isValidType(type)) {
-  //       account.setType(type as Bkper.AccountType);
-  //     }
-  //     // Every other cell should be a Group name
-  //     for (let i = 2; i < row.length; i++) {
-  //       const groupName = row[i];
-  //       if (groupName) {
-  //         groupNames.push(groupName as string);
-  //       }
-  //     }
-  //     const groups = validateGroups(book, groupNames);
-  //     account.setGroups(groups);
-  //   }
-  //   return account;
-  // }
+  function arrayToGroup_(row: any[], book: Bkper.Book, header: GroupsHeader, timezone: string): Bkper.Group {
+    let group = book.newGroup();
+    if (header.isValid()) {
+      for (const column of header.getColumns()) {
+        let value = row[column.getIndex()];
+        if (column.isName()) {
+          if (book.getGroup(value)) {
+            // Group already exists
+            return;
+          }
+          group.setName(value);
+        } else if (column.isParent()) {
+          const parentGroup = validateParent(book, value);
+          group.setParent(parentGroup);
+        } else if (column.isProperty()) {
+          group.setProperty(column.getName(), formatProperty(book, value, timezone));
+        }
+      }
+    } else {
+      // row[0] should be the Name
+      const name = row[0];
+      if (name) {
+        if (book.getGroup(name)) {
+          // Group already exists
+          return;
+        }
+        group.setName(name);
+      }
+      // row[2] should be the Parent name
+      const parentName = row[2];
+      if (parentName) {
+        const parentGroup = validateParent(book, parentName);
+        group.setParent(parentGroup);
+      }
+    }
+    return group;
+  }
 
   function fill(array: any[], value: string): any[] {
     for (let i = 0; i < array.length; i++) {
@@ -136,22 +123,6 @@ namespace RecordGroupsService {
     return '#f6deda';
   }
 
-  function isValidType(type: string): boolean {
-    if (type == BkperApp.AccountType.ASSET) {
-      return true;
-    }
-    if (type == BkperApp.AccountType.LIABILITY) {
-      return true;
-    }
-    if (type == BkperApp.AccountType.INCOMING) {
-      return true;
-    }
-    if (type == BkperApp.AccountType.OUTGOING) {
-      return true;
-    }
-    return false;
-  }
-
   function formatProperty(book: Bkper.Book, cell: any, timezone?: string) {
     if (Utilities_.isDate(cell)) {
       return book.formatDate(cell, timezone);
@@ -159,21 +130,12 @@ namespace RecordGroupsService {
     return cell;
   }
 
-  function validateGroups(book: Bkper.Book, groupNames: string[]): Bkper.Group[] {
-    let groups: Bkper.Group[] = [];
-    let newGroups: Bkper.Group[] = [];
-    for (const groupName of groupNames) {
-      const group = book.getGroup(groupName);
-      if (group) {
-        if (group.getChildren().length === 0) {
-          groups.push(group);
-        }
-      } else {
-        newGroups.push(book.newGroup().setName(groupName));
-      }
+  function validateParent(book: Bkper.Book, parentName: string): Bkper.Group {
+    const parentGroup = book.getGroup(parentName);
+    if (parentGroup) {
+      return parentGroup;
     }
-    newGroups = book.batchCreateGroups(newGroups);
-    return groups.concat(newGroups);
+    return book.newGroup().setName(parentName).create();
   }
 
 }
