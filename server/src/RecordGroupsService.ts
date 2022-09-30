@@ -1,12 +1,17 @@
 namespace RecordGroupsService {
 
+  const RECORD_GROUPS_BACKGROUND = '#E9EAED';
+
   export function recordGroups(book: Bkper.Book, selectedRange: GoogleAppsScript.Spreadsheet.Range, activeSS: GoogleAppsScript.Spreadsheet.Spreadsheet, highlight: boolean): boolean {
     const timezone = activeSS.getSpreadsheetTimeZone();
-    batchCreateGroups(book, selectedRange, selectedRange.getValues(), highlight, timezone);
+    batchCreateGroups(book, selectedRange, selectedRange.getValues(), timezone);
+    if (highlight) {
+      selectedRange.setBackground(RECORD_GROUPS_BACKGROUND);
+    }
     return true;
   }
 
-  export function batchCreateGroups(book: Bkper.Book, range: GoogleAppsScript.Spreadsheet.Range, values: any[][], highlight: boolean, timezone: string) {
+  export function batchCreateGroups(book: Bkper.Book, range: GoogleAppsScript.Spreadsheet.Range, values: any[][], timezone: string) {
 
     const header = new GroupsHeader(range);
     const bookIdHeaderColumn = header.getBookIdHeaderColumn();
@@ -47,14 +52,6 @@ namespace RecordGroupsService {
       book.batchCreateGroups(groups);
     }
 
-    // if (highlight) {
-    //   let backgrounds: any[][] = initilizeMatrix(new Array(values.length), header.getColumns().length);
-    //   for (let i = 0; i < GroupsMap.length; i++) {
-    //     backgrounds[i] = fill(new Array(header.getColumns().length), getTypeColor(GroupsMap[i].getType()));
-    //   }
-    //   range.setBackgrounds(backgrounds);
-    // }
-
     return false;
   }
 
@@ -94,33 +91,6 @@ namespace RecordGroupsService {
       }
     }
     return group;
-  }
-
-  function fill(array: any[], value: string): any[] {
-    for (let i = 0; i < array.length; i++) {
-      array[i] = value;
-    }
-    return array;
-  }
-
-  function initilizeMatrix(matrix: any[], columns: number): any[] {
-    for (let i = 0; i < matrix.length; i++) {
-      matrix[i] = new Array(columns);
-    }
-    return matrix;
-  }
-
-  function getTypeColor(type: Bkper.AccountType): string {
-    if (type == BkperApp.AccountType.ASSET) {
-      return '#dfedf6';
-    }
-    if (type == BkperApp.AccountType.LIABILITY) {
-      return '#fef3d8';
-    }
-    if (type == BkperApp.AccountType.INCOMING) {
-      return '#e2f3e7';
-    }
-    return '#f6deda';
   }
 
   function formatProperty(book: Bkper.Book, cell: any, timezone?: string) {
