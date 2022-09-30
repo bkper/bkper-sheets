@@ -16,8 +16,6 @@ namespace RecordGroupsService {
     const header = new GroupsHeader(range);
     const bookIdHeaderColumn = header.getBookIdHeaderColumn();
 
-    let GroupsMap: Bkper.Group[] = [];
-
     if (bookIdHeaderColumn) {
       // MAP
       let groupsBatch: { [bookId: string]: RecordGroupBatch } = {};
@@ -31,31 +29,41 @@ namespace RecordGroupsService {
             batch = new RecordGroupBatch(book);
             groupsBatch[bookId] = batch;
           }
-          batch.push(arrayToGroup_(row, batch.getBook(), header, timezone));
+          batch = arrayToBatch_(row, batch.getBook(), batch, header, timezone);
         } else {
           let batch = groupsBatch[book.getId()];
-          batch.push(arrayToGroup_(row, batch.getBook(), header, timezone));
+          batch = arrayToBatch_(row, batch.getBook(), batch, header, timezone);
         }
       }
       // REDUCE
       for (const key in groupsBatch) {
         let batch = groupsBatch[key];
-        GroupsMap = GroupsMap.concat(batch.getGroups());
+        // Create groups
         batch.getBook().batchCreateGroups(batch.getGroups());
+        // Set parents
+        let parentGroupsMap = batch.getParentMap();
+        for (const key of Object.keys(parentGroupsMap)) {
+          setParent(batch.getBook(), key, parentGroupsMap[key]);
+        }
       }
     } else {
-      let groups: Bkper.Group[] = [];
+      let batch = new RecordGroupBatch(book);
       for (const row of values) {
-        groups.push(arrayToGroup_(row, book, header, timezone));
+        batch = arrayToBatch_(row, batch.getBook(), batch, header, timezone);
       }
-      GroupsMap = GroupsMap.concat(groups);
-      book.batchCreateGroups(groups);
+      // Create groups
+      book.batchCreateGroups(batch.getGroups());
+      // Set parents
+      let parentGroupsMap = batch.getParentMap();
+      for (const key of Object.keys(parentGroupsMap)) {
+        setParent(book, key, parentGroupsMap[key]);
+      }
     }
 
     return false;
   }
 
-  function arrayToGroup_(row: any[], book: Bkper.Book, header: GroupsHeader, timezone: string): Bkper.Group {
+  function arrayToBatch_(row: any[], book: Bkper.Book, batch: RecordGroupBatch, header: GroupsHeader, timezone: string): RecordGroupBatch {
     let group = book.newGroup();
     if (header.isValid()) {
       for (const column of header.getColumns()) {
@@ -67,45 +75,56 @@ namespace RecordGroupsService {
           }
           group.setName(value);
         } else if (column.isParent()) {
-          const parentGroup = validateParent(book, value);
-          group.setParent(parentGroup);
+          batch = updateBatchWithParent(batch, value);
+          batch.addParent(group.getName(), value);
         } else if (column.isProperty()) {
           group.setProperty(column.getName(), formatProperty(book, value, timezone));
         }
       }
     } else {
-      // row[0] should be the Name
-      const name = row[0];
-      if (name) {
-        if (book.getGroup(name)) {
-          // Group already exists
-          return;
-        }
-        group.setName(name);
-      }
-      // row[2] should be the Parent name
-      const parentName = row[2];
-      if (parentName) {
-        const parentGroup = validateParent(book, parentName);
-        group.setParent(parentGroup);
-      }
+      // // row[0] should be the Name
+      // const name = row[0];
+      // if (name) {
+      //   if (book.getGroup(name)) {
+      //     // Group already exists
+      //     return;
+      //   }
+      //   group.setName(name);
+      // }
+      // // row[2] should be the Parent name
+      // const parentName = row[2];
+      // if (parentName) {
+      //   const parentGroup = updateBatchWithParent(book, parentName);
+      //   group.setParent(parentGroup);
+      // }
     }
-    return group;
+    batch.push(group);
+    return batch;
   }
 
-  function formatProperty(book: Bkper.Book, cell: any, timezone?: string) {
+  function formatProperty(book: Bkper.Book, cell: any, timezone?: string): any {
     if (Utilities_.isDate(cell)) {
       return book.formatDate(cell, timezone);
     }
     return cell;
   }
 
-  function validateParent(book: Bkper.Book, parentName: string): Bkper.Group {
-    const parentGroup = book.getGroup(parentName);
-    if (parentGroup) {
-      return parentGroup;
+  function updateBatchWithParent(batch: RecordGroupBatch, parentName: string): RecordGroupBatch {
+    const parentGroup = batch.getBook().getGroup(parentName);
+    if (parentGroup || batch.getGroups().map(g => g.getName()).indexOf(parentName) > 0) {
+      return batch;
     }
-    return book.newGroup().setName(parentName).create();
+    batch.push(batch.getBook().newGroup().setName(parentName));
+    return batch;
+  }
+
+  function setParent(book: Bkper.Book, groupName: string, parentName: string): void {
+    const group = book.getGroup(groupName);
+    const parentGroup = book.getGroup(parentName);
+    if (!group || !parentGroup) {
+      return;
+    }
+    group.setParent(parentGroup).update();
   }
 
 }
