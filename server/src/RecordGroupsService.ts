@@ -49,7 +49,7 @@ namespace RecordGroupsService {
     } else {
       let batch = new RecordGroupBatch(book);
       for (const row of values) {
-        batch = arrayToBatch_(row, batch.getBook(), batch, header, timezone);
+        batch = arrayToBatch_(row, book, batch, header, timezone);
       }
       // Create groups
       book.batchCreateGroups(batch.getGroups());
@@ -71,7 +71,7 @@ namespace RecordGroupsService {
         if (column.isName()) {
           if (book.getGroup(value)) {
             // Group already exists
-            return;
+            return batch;
           }
           group.setName(value);
         } else if (column.isParent()) {
@@ -89,21 +89,15 @@ namespace RecordGroupsService {
         }
       }
     } else {
-      // // row[0] should be the Name
-      // const name = row[0];
-      // if (name) {
-      //   if (book.getGroup(name)) {
-      //     // Group already exists
-      //     return;
-      //   }
-      //   group.setName(name);
-      // }
-      // // row[2] should be the Parent name
-      // const parentName = row[2];
-      // if (parentName) {
-      //   const parentGroup = updateBatchWithParent(book, parentName);
-      //   group.setParent(parentGroup);
-      // }
+      // row[0] should be the Name
+      const name = row[0];
+      if (name) {
+        if (book.getGroup(name)) {
+          // Group already exists
+          return batch;
+        }
+        group.setName(name);
+      }
     }
     batch.push(group);
     return batch;
