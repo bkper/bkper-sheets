@@ -29,41 +29,47 @@ namespace RecordGroupsService {
             batch = new RecordGroupBatch(book);
             groupsBatch[bookId] = batch;
           }
-          batch = arrayToBatch_(row, batch.getBook(), batch, header, timezone);
+          batch = arrayToBatch_(row, batch, header, timezone);
         } else {
           let batch = groupsBatch[book.getId()];
-          batch = arrayToBatch_(row, batch.getBook(), batch, header, timezone);
+          batch = arrayToBatch_(row, batch, header, timezone);
         }
       }
       // REDUCE
       for (const key in groupsBatch) {
         let batch = groupsBatch[key];
         // Create groups
-        batch.getBook().batchCreateGroups(batch.getGroups());
+        const newGroups = batch.getGroups();
+        if (newGroups && newGroups.length > 0) {
+          batch.getBook().batchCreateGroups(newGroups);
+          // Set parents
+          let parentGroupsMap = batch.getParentGroupsMap();
+          for (const key of Object.keys(parentGroupsMap)) {
+            setParent(batch.getBook(), key, parentGroupsMap[key]);
+          }
+        }
+      }
+    } else {
+      let batch = new RecordGroupBatch(book);
+      for (const row of values) {
+        batch = arrayToBatch_(row, batch, header, timezone);
+      }
+      // Create groups
+      const newGroups = batch.getGroups();
+      if (newGroups && newGroups.length > 0) {
+        batch.getBook().batchCreateGroups(newGroups);
         // Set parents
         let parentGroupsMap = batch.getParentGroupsMap();
         for (const key of Object.keys(parentGroupsMap)) {
           setParent(batch.getBook(), key, parentGroupsMap[key]);
         }
       }
-    } else {
-      let batch = new RecordGroupBatch(book);
-      for (const row of values) {
-        batch = arrayToBatch_(row, book, batch, header, timezone);
-      }
-      // Create groups
-      book.batchCreateGroups(batch.getGroups());
-      // Set parents
-      let parentGroupsMap = batch.getParentGroupsMap();
-      for (const key of Object.keys(parentGroupsMap)) {
-        setParent(book, key, parentGroupsMap[key]);
-      }
     }
 
-    return false;
   }
 
-  function arrayToBatch_(row: any[], book: Bkper.Book, batch: RecordGroupBatch, header: GroupsHeader, timezone: string): RecordGroupBatch {
+  function arrayToBatch_(row: any[], batch: RecordGroupBatch, header: GroupsHeader, timezone: string): RecordGroupBatch {
+    const book = batch.getBook();
     let group = book.newGroup();
     if (header.isValid()) {
       for (const column of header.getColumns()) {
