@@ -26,34 +26,36 @@ namespace RecordAccountsService {
             batch = new RecordAccountBatch(book);
             accountsBatch[bookId] = batch;
           }
-          batch = arrayToBatch_(row, batch.getBook(), batch, header, timezone);
-          // batch.push(arrayToAccount_(row, batch.getBook(), header, timezone));
+          batch = arrayToBatch_(row, batch, header, timezone);
         } else {
           let batch = accountsBatch[book.getId()];
-          batch = arrayToBatch_(row, batch.getBook(), batch, header, timezone);
-          // batch.push(arrayToAccount_(row, batch.getBook(), header, timezone));
+          batch = arrayToBatch_(row, batch, header, timezone);
         }
       }
       // REDUCE
       for (const key in accountsBatch) {
         let batch = accountsBatch[key];
-        accountsMap = accountsMap.concat(batch.getAccounts());
-        batch.getBook().batchCreateAccounts(batch.getAccounts());
+        const newAccounts = batch.getAccounts();
+        // Create accounts
+        if (newAccounts && newAccounts.length > 0) {
+          accountsMap = accountsMap.concat(newAccounts);
+          batch.getBook().batchCreateAccounts(newAccounts);
+        }
       }
     } else {
       let batch = new RecordAccountBatch(book);
       for (const row of values) {
-        batch = arrayToBatch_(row, batch.getBook(), batch, header, timezone);
+        batch = arrayToBatch_(row, batch, header, timezone);
       }
-      // let accounts: Bkper.Account[] = [];
-      // for (const row of values) {
-      //   accounts.push(arrayToAccount_(row, book, header, timezone));
-      // }
       const newAccounts = batch.getAccounts();
-      accountsMap = accountsMap.concat(newAccounts);
-      book.batchCreateAccounts(newAccounts);
+      // Create accounts
+      if (newAccounts && newAccounts.length > 0) {
+        accountsMap = accountsMap.concat(newAccounts);
+        batch.getBook().batchCreateAccounts(newAccounts);
+      }
     }
 
+    // Set backgrounds
     if (highlight && accountsMap.length > 0) {
       let backgrounds: any[][] = initilizeMatrix(new Array(values.length), header.getColumns().length);
       for (let i = 0; i < accountsMap.length; i++) {
@@ -62,10 +64,10 @@ namespace RecordAccountsService {
       range.setBackgrounds(backgrounds);
     }
 
-    return false;
   }
 
-  function arrayToBatch_(row: any[], book: Bkper.Book, batch: RecordAccountBatch, header: AccountsHeader, timezone: string): RecordAccountBatch {
+  function arrayToBatch_(row: any[], batch: RecordAccountBatch, header: AccountsHeader, timezone: string): RecordAccountBatch {
+    const book = batch.getBook();
     let account = book.newAccount().setType(BkperApp.AccountType.ASSET);
     if (header.isValid()) {
       let groupNames: string[] = [];
@@ -160,7 +162,7 @@ namespace RecordAccountsService {
     return false;
   }
 
-  function formatProperty(book: Bkper.Book, cell: any, timezone?: string) {
+  function formatProperty(book: Bkper.Book, cell: any, timezone?: string): any {
     if (Utilities_.isDate(cell)) {
       return book.formatDate(cell, timezone);
     }
@@ -173,9 +175,7 @@ namespace RecordAccountsService {
     for (const groupName of groupNames) {
       const group = book.getGroup(groupName);
       if (group) {
-        if (group.getChildren().length === 0) {
-          groups.push(group);
-        }
+        groups.push(group);
       } else {
         newGroups.push(book.newGroup().setName(groupName));
       }
