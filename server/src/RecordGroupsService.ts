@@ -41,7 +41,7 @@ namespace RecordGroupsService {
         // Create groups
         batch.getBook().batchCreateGroups(batch.getGroups());
         // Set parents
-        let parentGroupsMap = batch.getParentMap();
+        let parentGroupsMap = batch.getParentGroupsMap();
         for (const key of Object.keys(parentGroupsMap)) {
           setParent(batch.getBook(), key, parentGroupsMap[key]);
         }
@@ -54,7 +54,7 @@ namespace RecordGroupsService {
       // Create groups
       book.batchCreateGroups(batch.getGroups());
       // Set parents
-      let parentGroupsMap = batch.getParentMap();
+      let parentGroupsMap = batch.getParentGroupsMap();
       for (const key of Object.keys(parentGroupsMap)) {
         setParent(book, key, parentGroupsMap[key]);
       }
@@ -75,8 +75,15 @@ namespace RecordGroupsService {
           }
           group.setName(value);
         } else if (column.isParent()) {
-          batch = updateBatchWithParent(batch, value);
-          batch.addParent(group.getName(), value);
+          const parentGroup = book.getGroup(value);
+          if (parentGroup) {
+            group.setParent(parentGroup);
+          } else {
+            if (batch.getGroups().map(g => g.getName()).indexOf(value) < 0) {
+              batch.push(book.newGroup().setName(value));
+            }
+            batch.addToParentGroupsMap(group.getName(), value);
+          }
         } else if (column.isProperty()) {
           group.setProperty(column.getName(), formatProperty(book, value, timezone));
         }
@@ -107,15 +114,6 @@ namespace RecordGroupsService {
       return book.formatDate(cell, timezone);
     }
     return cell;
-  }
-
-  function updateBatchWithParent(batch: RecordGroupBatch, parentName: string): RecordGroupBatch {
-    const parentGroup = batch.getBook().getGroup(parentName);
-    if (parentGroup || batch.getGroups().map(g => g.getName()).indexOf(parentName) > 0) {
-      return batch;
-    }
-    batch.push(batch.getBook().newGroup().setName(parentName));
-    return batch;
   }
 
   function setParent(book: Bkper.Book, groupName: string, parentName: string): void {

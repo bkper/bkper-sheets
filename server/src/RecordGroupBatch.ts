@@ -3,6 +3,7 @@ class RecordGroupBatch {
     private book: Bkper.Book;
     private groups: Bkper.Group[] = [];
 
+    // Parent groups map - [groupName]: parentName
     private parentGroupsMap: { [groupName: string]: string } = {};
 
     constructor(book: Bkper.Book) {
@@ -21,13 +22,13 @@ class RecordGroupBatch {
         return this.groups;
     }
 
-    addParent(groupName: string, parentName: string) {
+    addToParentGroupsMap(groupName: string, parentName: string) {
         if (!this.parentGroupsMap[groupName]) {
             this.parentGroupsMap[groupName] = parentName;
         }
     }
 
-    getParentMap() {
+    getParentGroupsMap() {
         return this.parentGroupsMap;
     }
 
