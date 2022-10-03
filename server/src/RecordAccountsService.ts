@@ -11,13 +11,14 @@ namespace RecordAccountsService {
     const header = new AccountsHeader(range);
     const bookIdHeaderColumn = header.getBookIdHeaderColumn();
 
-    let accountsMap: Bkper.Account[] = [];
+    let backgrounds: any[][] = initilizeMatrix(new Array(values.length), header.getColumns().length);
 
     if (bookIdHeaderColumn) {
       // MAP
       let accountsBatch: { [bookId: string]: RecordAccountBatch } = {};
       accountsBatch[book.getId()] = new RecordAccountBatch(book);
-      for (const row of values) {
+      for (let i = 0; i < values.length; i++) {
+        const row = values[i];
         let bookId = row[bookIdHeaderColumn.getIndex()];
         if (bookId != null && typeof bookId == "string" && bookId.trim() != '') {
           let batch = accountsBatch[bookId];
@@ -26,10 +27,10 @@ namespace RecordAccountsService {
             batch = new RecordAccountBatch(book);
             accountsBatch[bookId] = batch;
           }
-          batch = arrayToBatch_(row, batch, header, timezone);
+          batch = arrayToBatch_(row, batch, header, timezone, highlight, i);
         } else {
           let batch = accountsBatch[book.getId()];
-          batch = arrayToBatch_(row, batch, header, timezone);
+          batch = arrayToBatch_(row, batch, header, timezone, highlight, i);
         }
       }
       // REDUCE
@@ -38,35 +39,43 @@ namespace RecordAccountsService {
         const newAccounts = batch.getAccounts();
         // Create accounts
         if (newAccounts && newAccounts.length > 0) {
-          accountsMap = accountsMap.concat(newAccounts);
           batch.getBook().batchCreateAccounts(newAccounts);
+        }
+        // Update backgrounds array
+        if (highlight) {
+          const accountTypesMap = batch.getAccountTypesMap();
+          for (const key of Object.keys(accountTypesMap)) {
+            backgrounds[+key] = fill(new Array(header.getColumns().length), getTypeColor(accountTypesMap[key]));
+          }
         }
       }
     } else {
       let batch = new RecordAccountBatch(book);
-      for (const row of values) {
-        batch = arrayToBatch_(row, batch, header, timezone);
+      for (let i = 0; i < values.length; i++) {
+        batch = arrayToBatch_(values[i], batch, header, timezone, highlight, i);
       }
       const newAccounts = batch.getAccounts();
       // Create accounts
       if (newAccounts && newAccounts.length > 0) {
-        accountsMap = accountsMap.concat(newAccounts);
         batch.getBook().batchCreateAccounts(newAccounts);
+      }
+      // Update backgrounds array
+      if (highlight) {
+        const accountTypesMap = batch.getAccountTypesMap();
+        for (const key of Object.keys(accountTypesMap)) {
+          backgrounds[+key] = fill(new Array(header.getColumns().length), getTypeColor(accountTypesMap[key]));
+        }
       }
     }
 
     // Set backgrounds
-    if (highlight && accountsMap.length > 0) {
-      let backgrounds: any[][] = initilizeMatrix(new Array(values.length), header.getColumns().length);
-      for (let i = 0; i < accountsMap.length; i++) {
-        backgrounds[i] = fill(new Array(header.getColumns().length), getTypeColor(accountsMap[i].getType()));
-      }
+    if (highlight) {
       range.setBackgrounds(backgrounds);
     }
 
   }
 
-  function arrayToBatch_(row: any[], batch: RecordAccountBatch, header: AccountsHeader, timezone: string): RecordAccountBatch {
+  function arrayToBatch_(row: any[], batch: RecordAccountBatch, header: AccountsHeader, timezone: string, highlight: boolean, rowIndex: number): RecordAccountBatch {
     const book = batch.getBook();
     let account = book.newAccount().setType(BkperApp.AccountType.ASSET);
     if (header.isValid()) {
@@ -74,8 +83,12 @@ namespace RecordAccountsService {
       for (const column of header.getColumns()) {
         let value = row[column.getIndex()];
         if (column.isName()) {
-          if (book.getAccount(value)) {
+          const acc = book.getAccount(value);
+          if (acc) {
             // Account already exists
+            if (highlight) {
+              batch.addToAccountTypesMap(rowIndex + '', acc.getType() as string);
+            }
             return batch;
           }
           account.setName(value);
@@ -94,8 +107,12 @@ namespace RecordAccountsService {
       // row[0] should be the Name
       const name = row[0];
       if (name) {
-        if (book.getAccount(name)) {
+        const acc = book.getAccount(name);
+        if (acc) {
           // Account already exists
+          if (highlight) {
+            batch.addToAccountTypesMap(rowIndex + '', acc.getType() as string);
+          }
           return batch;
         }
         account.setName(name);
@@ -115,6 +132,9 @@ namespace RecordAccountsService {
       const groups = validateGroups(book, groupNames);
       account.setGroups(groups);
     }
+    if (highlight) {
+      batch.addToAccountTypesMap(rowIndex + '', account.getType() as string);
+    }
     batch.push(account);
     return batch;
   }
@@ -133,7 +153,7 @@ namespace RecordAccountsService {
     return matrix;
   }
 
-  function getTypeColor(type: Bkper.AccountType): string {
+  function getTypeColor(type: string): string {
     if (type == BkperApp.AccountType.ASSET) {
       return '#dfedf6';
     }
