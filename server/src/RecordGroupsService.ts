@@ -4,23 +4,30 @@ namespace RecordGroupsService {
 
   export function recordGroups(book: Bkper.Book, selectedRange: GoogleAppsScript.Spreadsheet.Range, activeSS: GoogleAppsScript.Spreadsheet.Spreadsheet, highlight: boolean): boolean {
     const timezone = activeSS.getSpreadsheetTimeZone();
-    batchCreateGroups(book, selectedRange, selectedRange.getValues(), timezone);
-    if (highlight) {
-      selectedRange.setBackground(RECORD_GROUPS_BACKGROUND);
-    }
+    batchCreateGroups(book, selectedRange, selectedRange.getValues(), highlight, timezone);
     return true;
   }
 
-  export function batchCreateGroups(book: Bkper.Book, range: GoogleAppsScript.Spreadsheet.Range, values: any[][], timezone: string) {
+  export function batchCreateGroups(book: Bkper.Book, range: GoogleAppsScript.Spreadsheet.Range, values: any[][], highlight: boolean, timezone: string) {
 
     const header = new GroupsHeader(range);
     const bookIdHeaderColumn = header.getBookIdHeaderColumn();
+
+    let shouldIgnoreFirstRow = false;
+    let backgrounds: any[][] = initilizeMatrix(new Array(values.length), header.getColumns().length);
+
+    // Ignore first row if it's a header
+    if (isFirstRowHeader(values)) {
+      shouldIgnoreFirstRow = true;
+    }
 
     if (bookIdHeaderColumn) {
       // MAP
       let groupsBatch: { [bookId: string]: RecordGroupBatch } = {};
       groupsBatch[book.getId()] = new RecordGroupBatch(book);
-      for (const row of values) {
+      const startAt = shouldIgnoreFirstRow ? 1 : 0;
+      for (let i = startAt; i < values.length; i++) {
+        const row = values[i];
         let bookId = row[bookIdHeaderColumn.getIndex()];
         if (bookId != null && typeof bookId == "string" && bookId.trim() != '') {
           let batch = groupsBatch[bookId];
@@ -51,7 +58,9 @@ namespace RecordGroupsService {
       }
     } else {
       let batch = new RecordGroupBatch(book);
-      for (const row of values) {
+      const startAt = shouldIgnoreFirstRow ? 1 : 0;
+      for (let i = startAt; i < values.length; i++) {
+        const row = values[i];
         batch = arrayToBatch_(row, batch, header, timezone);
       }
       // Create groups
@@ -64,6 +73,17 @@ namespace RecordGroupsService {
           setParent(batch.getBook(), key, parentGroupsMap[key]);
         }
       }
+    }
+
+    if (highlight) {
+      const numOfColumns = header.getColumns().length;
+      for (let i = 0; i < values.length; i++) {
+        backgrounds[i] = fill(new Array(numOfColumns), RECORD_GROUPS_BACKGROUND);
+      }
+      if (shouldIgnoreFirstRow) {
+        backgrounds[0] = fill(new Array(numOfColumns), undefined);
+      }
+      range.setBackgrounds(backgrounds);
     }
 
   }
@@ -123,6 +143,24 @@ namespace RecordGroupsService {
       return;
     }
     group.setParent(parentGroup).update();
+  }
+
+  function initilizeMatrix(matrix: any[], columns: number): any[] {
+    for (let i = 0; i < matrix.length; i++) {
+      matrix[i] = new Array(columns);
+    }
+    return matrix;
+  }
+
+  function fill(array: any[], value: string): any[] {
+    for (let i = 0; i < array.length; i++) {
+      array[i] = value;
+    }
+    return array;
+  }
+
+  function isFirstRowHeader(values: any[][]): boolean {
+    return values[0][0].trim().toLowerCase() == 'name' ? true : false;
   }
 
 }
