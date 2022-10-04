@@ -11,13 +11,21 @@ namespace RecordAccountsService {
     const header = new AccountsHeader(range);
     const bookIdHeaderColumn = header.getBookIdHeaderColumn();
 
+    let shouldIgnoreFirstRow = false;
     let backgrounds: any[][] = initilizeMatrix(new Array(values.length), header.getColumns().length);
+
+    // Ignore first row if it's a header
+    if (isFirstRowHeader(values)) {
+      shouldIgnoreFirstRow = true;
+      backgrounds[0] = fill(new Array(header.getColumns().length), undefined);
+    }
 
     if (bookIdHeaderColumn) {
       // MAP
       let accountsBatch: { [bookId: string]: RecordAccountBatch } = {};
       accountsBatch[book.getId()] = new RecordAccountBatch(book);
-      for (let i = 0; i < values.length; i++) {
+      const startAt = shouldIgnoreFirstRow ? 1 : 0;
+      for (let i = startAt; i < values.length; i++) {
         const row = values[i];
         let bookId = row[bookIdHeaderColumn.getIndex()];
         if (bookId != null && typeof bookId == "string" && bookId.trim() != '') {
@@ -51,7 +59,8 @@ namespace RecordAccountsService {
       }
     } else {
       let batch = new RecordAccountBatch(book);
-      for (let i = 0; i < values.length; i++) {
+      const startAt = shouldIgnoreFirstRow ? 1 : 0;
+      for (let i = startAt; i < values.length; i++) {
         batch = arrayToBatch_(values[i], batch, header, timezone, highlight, i);
       }
       const newAccounts = batch.getAccounts();
@@ -202,6 +211,10 @@ namespace RecordAccountsService {
     }
     newGroups = book.batchCreateGroups(newGroups);
     return groups.concat(newGroups);
+  }
+
+  function isFirstRowHeader(values: any[][]): boolean {
+    return values[0][0].trim().toLowerCase() == 'name' ? true : false;
   }
 
 }
