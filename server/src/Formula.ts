@@ -112,7 +112,8 @@ class Formula {
     if (params.length > 2) {
       formula.param1 = params[2].trim();
       if (formula.param1[0] === "\"" && formula.param1[formula.param1.length - 1] === "\"") {
-        formula.param1 = formula.param1.replace(/\"/g, "");
+        formula.param1 = formula.param1.substring(1, formula.param1.length - 1);
+        // formula.param1 = formula.param1.replace(/\"/g, "");
         formula.isQueryString = true;
       } else {
         formula.isQueryString = false;

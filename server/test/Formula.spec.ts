@@ -108,6 +108,8 @@ describe('Formula', () => {
     it('should preserve inner formulas', () => {
       expect(Formula.parseString('=BKPER_BALANCES_PERIOD(\'Configuração\'!$C$5, 21, "group:\'Receita Provedores Regionais\' after:"&TEXT(\'Configuração\'!$C$6, "mm/yyyy")&" before:"&TEXT(\'Configuração\'!$C$7, "mm/yyyy"), FALSE, TRUE, TRUE)', 'en_US')
       .toString()).to.eql('=BKPER_BALANCES_PERIOD(\'Configuração\'!$C$5, 21, "group:\'Receita Provedores Regionais\' after:"&TEXT(\'Configuração\'!$C$6, "mm/yyyy")&" before:"&TEXT(\'Configuração\'!$C$7, "mm/yyyy"), FALSE, TRUE, TRUE)');
+      
+      expect(Formula.parseString('=BKPER_BALANCES_TOTAL("xxx", 10, "account:\'"& B9 &"\' on:31/12/2021", FALSE, FALSE, TRUE)', 'en_US').toString()).to.eql('=BKPER_BALANCES_TOTAL("xxx", 10, "account:\'"& B9 &"\' on:31/12/2021", FALSE, FALSE, TRUE)');
     })
   
   });  

@@ -16,7 +16,7 @@ namespace FormulaService {
         if (Formula.isBkperFormula(formulaStr)) {
           let formula = Formula.parseString(formulaStr, spreadsheet.getSpreadsheetLocale());
           formula.incrementUpdate();
-          range.setFormula(formula.toString());          
+          range.setFormula(formula.toString());
         }
       });
     }
