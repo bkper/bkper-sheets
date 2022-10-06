@@ -89,32 +89,54 @@ namespace RecordGroupsService {
   }
 
   function arrayToBatch_(row: any[], batch: RecordGroupBatch, header: GroupsHeader, timezone: string): RecordGroupBatch {
+
     const book = batch.getBook();
-    let group = book.newGroup();
+    let newGroup = book.newGroup();
+    let group: Bkper.Group;
+    let groupFound = false;
+
     if (header.isValid()) {
+
+      let properties: { [propKey: string]: string } = {};
+
       for (const column of header.getColumns()) {
         let value = row[column.getIndex()];
         if (column.isName()) {
-          if (book.getGroup(value)) {
+          const grp = book.getGroup(value);
+          if (grp) {
             // Group already exists
-            return batch;
+            groupFound = true;
+            group = grp;
+          } else {
+            newGroup.setName(value);
           }
-          group.setName(value);
-        } else if (column.isParent()) {
+        } else if (!groupFound && column.isParent()) {
           const parentGroup = book.getGroup(value);
           if (parentGroup) {
-            group.setParent(parentGroup);
+            newGroup.setParent(parentGroup);
           } else {
             if (batch.getGroups().map(g => g.getName()).indexOf(value) < 0) {
               batch.push(book.newGroup().setName(value));
             }
-            batch.addToParentGroupsMap(group.getName(), value);
+            batch.addToParentGroupsMap(newGroup.getName(), value);
           }
         } else if (column.isProperty()) {
-          group.setProperty(column.getName(), formatProperty(book, value, timezone));
+          if (!properties[column.getName()]) {
+            properties[column.getName()] = formatPropertyValue(book, value, timezone);
+          }
         }
       }
+
+      if (groupFound) {
+        // Edit group properties
+        editGroupProperties(group, properties);
+      } else {
+        // Set properties
+        newGroup.setProperties(properties);
+      }
+
     } else {
+
       // row[0] should be the Name
       const name = row[0];
       if (name) {
@@ -122,18 +144,37 @@ namespace RecordGroupsService {
           // Group already exists
           return batch;
         }
-        group.setName(name);
+        newGroup.setName(name);
       }
+
     }
-    batch.push(group);
+
+    if (!groupFound) {
+      batch.push(newGroup);
+    }
+
     return batch;
   }
 
-  function formatProperty(book: Bkper.Book, cell: any, timezone?: string): any {
-    if (Utilities_.isDate(cell)) {
-      return book.formatDate(cell, timezone);
+  function formatPropertyValue(book: Bkper.Book, value: any, timezone?: string): string {
+    if (Utilities_.isDate(value)) {
+      return book.formatDate(value, timezone);
     }
-    return cell;
+    return value + '';
+  }
+
+  function editGroupProperties(group: Bkper.Group, newProperties: { [key: string]: string }) {
+    let currentProperties = group.getProperties();
+    let needToUpdate = false;
+    for (const key of Object.keys(newProperties)) {
+      if (currentProperties[key] !== newProperties[key]) {
+        currentProperties[key] = newProperties[key];
+        needToUpdate = true;
+      }
+    }
+    if (needToUpdate) {
+      group.setProperties(currentProperties).update();
+    }
   }
 
   function setParent(book: Bkper.Book, groupName: string, parentName: string): void {
