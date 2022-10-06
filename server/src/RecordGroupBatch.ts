@@ -3,6 +3,9 @@ class RecordGroupBatch {
     private book: Bkper.Book;
     private groups: Bkper.Group[] = [];
 
+    // Groups map - [rowIndex]: groupName
+    private groupsMap: { [rowIndex: string]: string } = {};
+
     // Parent groups map - [groupName]: parentName
     private parentGroupsMap: { [groupName: string]: string } = {};
 
@@ -20,6 +23,16 @@ class RecordGroupBatch {
 
     getGroups() {
         return this.groups;
+    }
+
+    addToGroupsMap(rowIndex: string, groupName: string) {
+        if (!this.groupsMap[rowIndex]) {
+            this.groupsMap[rowIndex] = groupName;
+        }
+    }
+
+    getGroupsMap() {
+        return this.groupsMap;
     }
 
     addToParentGroupsMap(groupName: string, parentName: string) {

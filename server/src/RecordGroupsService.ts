@@ -19,6 +19,7 @@ namespace RecordGroupsService {
     // Ignore first row if it's a header
     if (isFirstRowHeader(values)) {
       shouldIgnoreFirstRow = true;
+      backgrounds[0] = fill(new Array(header.getColumns().length), undefined);
     }
 
     if (bookIdHeaderColumn) {
@@ -36,10 +37,10 @@ namespace RecordGroupsService {
             batch = new RecordGroupBatch(book);
             groupsBatch[bookId] = batch;
           }
-          batch = arrayToBatch_(row, batch, header, timezone);
+          batch = arrayToBatch_(row, batch, header, timezone, highlight, i);
         } else {
           let batch = groupsBatch[book.getId()];
-          batch = arrayToBatch_(row, batch, header, timezone);
+          batch = arrayToBatch_(row, batch, header, timezone, highlight, i);
         }
       }
       // REDUCE
@@ -55,13 +56,17 @@ namespace RecordGroupsService {
             setParent(batch.getBook(), key, parentGroupsMap[key]);
           }
         }
+        // Update backgrounds array
+        if (highlight) {
+          backgrounds = updateBackgroundsArray(backgrounds, batch, header.getColumns().length);
+        }
       }
     } else {
       let batch = new RecordGroupBatch(book);
       const startAt = shouldIgnoreFirstRow ? 1 : 0;
       for (let i = startAt; i < values.length; i++) {
         const row = values[i];
-        batch = arrayToBatch_(row, batch, header, timezone);
+        batch = arrayToBatch_(row, batch, header, timezone, highlight, i);
       }
       // Create groups
       const newGroups = batch.getGroups();
@@ -73,22 +78,29 @@ namespace RecordGroupsService {
           setParent(batch.getBook(), key, parentGroupsMap[key]);
         }
       }
+      // Update backgrounds array
+      if (highlight) {
+        backgrounds = updateBackgroundsArray(backgrounds, batch, header.getColumns().length);
+      }
     }
 
+    // Set backgrounds
     if (highlight) {
-      const numOfColumns = header.getColumns().length;
-      for (let i = 0; i < values.length; i++) {
-        backgrounds[i] = fill(new Array(numOfColumns), RECORD_GROUPS_BACKGROUND);
-      }
-      if (shouldIgnoreFirstRow) {
-        backgrounds[0] = fill(new Array(numOfColumns), undefined);
-      }
       range.setBackgrounds(backgrounds);
     }
 
   }
 
-  function arrayToBatch_(row: any[], batch: RecordGroupBatch, header: GroupsHeader, timezone: string): RecordGroupBatch {
+  function updateBackgroundsArray(backgroundsArray: any[][], batch: RecordGroupBatch, headerLength: number): any[][] {
+    const groupsMap = batch.getGroupsMap();
+    for (const key of Object.keys(groupsMap)) {
+      const color = groupsMap[key] ? RECORD_GROUPS_BACKGROUND : undefined;
+      backgroundsArray[+key] = fill(new Array(headerLength), color);
+    }
+    return backgroundsArray;
+  }
+
+  function arrayToBatch_(row: any[], batch: RecordGroupBatch, header: GroupsHeader, timezone: string, highlight: boolean, rowIndex: number): RecordGroupBatch {
 
     const book = batch.getBook();
     let newGroup = book.newGroup();
@@ -140,13 +152,22 @@ namespace RecordGroupsService {
       // row[0] should be the Name
       const name = row[0];
       if (name) {
-        if (book.getGroup(name)) {
+        const grp = book.getGroup(name);
+        if (grp) {
           // Group already exists
+          if (highlight) {
+            batch.addToGroupsMap(rowIndex + '', grp.getName());
+          }
           return batch;
         }
         newGroup.setName(name);
       }
 
+    }
+
+    if (highlight) {
+      const groupName = groupFound ? group.getName() : newGroup.getName();
+      batch.addToGroupsMap(rowIndex + '', groupName);
     }
 
     if (!groupFound) {
