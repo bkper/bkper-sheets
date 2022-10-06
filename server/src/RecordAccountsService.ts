@@ -85,34 +85,53 @@ namespace RecordAccountsService {
   }
 
   function arrayToBatch_(row: any[], batch: RecordAccountBatch, header: AccountsHeader, timezone: string, highlight: boolean, rowIndex: number): RecordAccountBatch {
+
     const book = batch.getBook();
-    let account = book.newAccount().setType(BkperApp.AccountType.ASSET);
+    let newAccount = book.newAccount().setType(BkperApp.AccountType.ASSET);
+    let account: Bkper.Account;
+    let accountFound = false;
+
     if (header.isValid()) {
+
       let groupNames: string[] = [];
+      let properties: { [propKey: string]: string } = {};
+
       for (const column of header.getColumns()) {
         let value = row[column.getIndex()];
         if (column.isName()) {
           const acc = book.getAccount(value);
           if (acc) {
             // Account already exists
-            if (highlight) {
-              batch.addToAccountTypesMap(rowIndex + '', acc.getType() as string);
-            }
-            return batch;
+            accountFound = true;
+            account = acc;
+          } else {
+            newAccount.setName(value);
           }
-          account.setName(value);
-        } else if (column.isType() && isValidType(value)) {
-          account.setType(value as Bkper.AccountType);
-        } else if (column.isGroup()) {
+        } else if (!accountFound && column.isType() && isValidType(value)) {
+          newAccount.setType(value as Bkper.AccountType);
+        } else if (!accountFound && column.isGroup()) {
           groupNames.push(value as string);
         } else if (column.isProperty()) {
-          account.setProperty(column.getName(), formatProperty(book, value, timezone));
+          if (!properties[column.getName()]) {
+            properties[column.getName()] = formatPropertyValue(book, value, timezone);
+          }
         }
       }
-      const groups = validateGroups(book, groupNames);
-      account.setGroups(groups);
+
+      if (accountFound) {
+        // Edit account properties
+        editAccountProperties(account, properties);
+      } else {
+        // Set groups
+        newAccount.setGroups(validateGroups(book, groupNames));
+        // Set properties
+        newAccount.setProperties(properties);
+      }
+
     } else {
+
       let groupNames: string[] = [];
+
       // row[0] should be the Name
       const name = row[0];
       if (name) {
@@ -124,13 +143,15 @@ namespace RecordAccountsService {
           }
           return batch;
         }
-        account.setName(name);
+        newAccount.setName(name);
       }
+
       // row[1] should be the Type
       const type = row[1];
-      if (isValidType(type)) {
-        account.setType(type as Bkper.AccountType);
+      if (type && isValidType(type)) {
+        newAccount.setType(type as Bkper.AccountType);
       }
+
       // Every other cell should be a Group name
       for (let i = 2; i < row.length; i++) {
         const groupName = row[i];
@@ -138,13 +159,20 @@ namespace RecordAccountsService {
           groupNames.push(groupName as string);
         }
       }
+
       const groups = validateGroups(book, groupNames);
-      account.setGroups(groups);
+      newAccount.setGroups(groups);
     }
+
     if (highlight) {
-      batch.addToAccountTypesMap(rowIndex + '', account.getType() as string);
+      const accountType = accountFound ? account.getType() : newAccount.getType();
+      batch.addToAccountTypesMap(rowIndex + '', accountType as string);
     }
-    batch.push(account);
+
+    if (!accountFound) {
+      batch.push(newAccount);
+    }
+
     return batch;
   }
 
@@ -191,11 +219,25 @@ namespace RecordAccountsService {
     return false;
   }
 
-  function formatProperty(book: Bkper.Book, cell: any, timezone?: string): any {
-    if (Utilities_.isDate(cell)) {
-      return book.formatDate(cell, timezone);
+  function formatPropertyValue(book: Bkper.Book, value: any, timezone?: string): string {
+    if (Utilities_.isDate(value)) {
+      return book.formatDate(value, timezone);
     }
-    return cell;
+    return value + '';
+  }
+
+  function editAccountProperties(account: Bkper.Account, newProperties: { [key: string]: string }) {
+    let properties = account.getProperties();
+    let needToUpdate = false;
+    for (const key of Object.keys(newProperties)) {
+      if (!properties[key] || properties[key] !== newProperties[key]) {
+        properties[key] = newProperties[key];
+        needToUpdate = true;
+      }
+    }
+    if (needToUpdate) {
+      account.setProperties(properties).update();
+    }
   }
 
   function validateGroups(book: Bkper.Book, groupNames: string[]): Bkper.Group[] {
