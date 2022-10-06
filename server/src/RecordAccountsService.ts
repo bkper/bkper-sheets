@@ -51,10 +51,7 @@ namespace RecordAccountsService {
         }
         // Update backgrounds array
         if (highlight) {
-          const accountTypesMap = batch.getAccountTypesMap();
-          for (const key of Object.keys(accountTypesMap)) {
-            backgrounds[+key] = fill(new Array(header.getColumns().length), getTypeColor(accountTypesMap[key]));
-          }
+          backgrounds = updateBackgroundsArray(backgrounds, batch, header.getColumns().length);
         }
       }
     } else {
@@ -70,10 +67,7 @@ namespace RecordAccountsService {
       }
       // Update backgrounds array
       if (highlight) {
-        const accountTypesMap = batch.getAccountTypesMap();
-        for (const key of Object.keys(accountTypesMap)) {
-          backgrounds[+key] = fill(new Array(header.getColumns().length), getTypeColor(accountTypesMap[key]));
-        }
+        backgrounds = updateBackgroundsArray(backgrounds, batch, header.getColumns().length);
       }
     }
 
@@ -82,6 +76,14 @@ namespace RecordAccountsService {
       range.setBackgrounds(backgrounds);
     }
 
+  }
+
+  function updateBackgroundsArray(backgroundsArray: any[][], batch: RecordAccountBatch, headerLength: number): any[][] {
+    const accountTypesMap = batch.getAccountTypesMap();
+    for (const key of Object.keys(accountTypesMap)) {
+      backgroundsArray[+key] = fill(new Array(headerLength), getTypeColor(accountTypesMap[key]));
+    }
+    return backgroundsArray;
   }
 
   function arrayToBatch_(row: any[], batch: RecordAccountBatch, header: AccountsHeader, timezone: string, highlight: boolean, rowIndex: number): RecordAccountBatch {
@@ -165,8 +167,12 @@ namespace RecordAccountsService {
     }
 
     if (highlight) {
-      const accountType = accountFound ? account.getType() : newAccount.getType();
-      batch.addToAccountTypesMap(rowIndex + '', accountType as string);
+      if (accountFound) {
+        batch.addToAccountTypesMap(rowIndex + '', account.getType() as string);
+      } else {
+        const accountType = newAccount.getName() ? newAccount.getType() as string : undefined;
+        batch.addToAccountTypesMap(rowIndex + '', accountType);
+      }
     }
 
     if (!accountFound) {
@@ -190,7 +196,7 @@ namespace RecordAccountsService {
     return matrix;
   }
 
-  function getTypeColor(type: string): string {
+  function getTypeColor(type: string): string | undefined {
     if (type == BkperApp.AccountType.ASSET) {
       return '#dfedf6';
     }
@@ -200,7 +206,10 @@ namespace RecordAccountsService {
     if (type == BkperApp.AccountType.INCOMING) {
       return '#e2f3e7';
     }
-    return '#f6deda';
+    if (type == BkperApp.AccountType.OUTGOING) {
+      return '#f6deda';
+    }
+    return undefined;
   }
 
   function isValidType(type: string): boolean {
