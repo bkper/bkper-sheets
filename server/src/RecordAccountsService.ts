@@ -44,10 +44,8 @@ namespace RecordAccountsService {
       // REDUCE
       for (const key in accountsBatch) {
         let batch = accountsBatch[key];
-        // Create new groups, create new accounts, edit existing accounts
-        batch.createNewGroups();
-        batch.createNewAccounts();
-        batch.editExistingAccounts();
+        // Record batch
+        batch.record();
         // Update backgrounds array
         if (highlight) {
           backgrounds = updateBackgroundsArray(backgrounds, batch, header.getColumns().length);
@@ -59,10 +57,8 @@ namespace RecordAccountsService {
       for (let i = startAt; i < values.length; i++) {
         batch = arrayToBatch_(values[i], batch, header, timezone, highlight, i);
       }
-      // Create new groups, create new accounts, edit existing accounts
-      batch.createNewGroups();
-      batch.createNewAccounts();
-      batch.editExistingAccounts();
+      // Record batch
+      batch.record();
       // Update backgrounds array
       if (highlight) {
         backgrounds = updateBackgroundsArray(backgrounds, batch, header.getColumns().length);
@@ -95,7 +91,7 @@ namespace RecordAccountsService {
 
     if (header.isValid()) {
       for (const column of header.getColumns()) {
-        const value = (row[column.getIndex()] as string).trim();
+        const value = (row[column.getIndex()] + '').trim();
         if (column.isName()) {
           accountName = value;
         } else if (column.isType()) {
@@ -111,13 +107,13 @@ namespace RecordAccountsService {
       }
     } else {
       // row[0] should be the Name
-      accountName = (row[0] as string).trim();
+      accountName = (row[0] + '').trim();
       // row[1] should be the Type
-      const type = (row[1] as string).trim();
+      const type = (row[1] + '').trim();
       accountType = isValidType(type) ? type as Bkper.AccountType : Bkper.AccountType.ASSET;
       // Every other cell should be a Group name
       for (let i = 2; i < row.length; i++) {
-        const value = (row[i] as string).trim();
+        const value = (row[i] + '').trim();
         batch.pushGroupName(value);
         accountGroupNames.push(value);
       }
@@ -134,10 +130,10 @@ namespace RecordAccountsService {
 
     const account = book.getAccount(accountName);
     if (account) {
-      batch.pushExistingAccount(new ExistingAccount(book, account, accountProperties));
+      batch.pushExistingAccount(new BatchExistingAccount(book, account, accountGroupNames, accountProperties));
     } else {
       const newAccount = book.newAccount().setName(accountName).setType(accountType);
-      batch.pushNewAccount(new NewAccount(book, newAccount, accountGroupNames, accountProperties));
+      batch.pushNewAccount(new BatchNewAccount(book, newAccount, accountGroupNames, accountProperties));
     }
 
     return batch;
