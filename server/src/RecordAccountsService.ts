@@ -95,7 +95,7 @@ namespace RecordAccountsService {
         if (column.isName()) {
           accountName = value;
         } else if (column.isType()) {
-          accountType = isValidType(value) ? value as Bkper.AccountType : Bkper.AccountType.ASSET;
+          accountType = isValidType(value) ? value as Bkper.AccountType : BkperApp.AccountType.ASSET;
         } else if (column.isGroup()) {
           batch.pushGroupName(value);
           accountGroupNames.push(value);
@@ -110,7 +110,7 @@ namespace RecordAccountsService {
       accountName = (row[0] + '').trim();
       // row[1] should be the Type
       const type = (row[1] + '').trim();
-      accountType = isValidType(type) ? type as Bkper.AccountType : Bkper.AccountType.ASSET;
+      accountType = isValidType(type) ? type as Bkper.AccountType : BkperApp.AccountType.ASSET;
       // Every other cell should be a Group name
       for (let i = 2; i < row.length; i++) {
         const value = (row[i] + '').trim();
