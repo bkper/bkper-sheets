@@ -46,16 +46,8 @@ namespace RecordGroupsService {
       // REDUCE
       for (const key in groupsBatch) {
         let batch = groupsBatch[key];
-        // Create groups
-        const newGroups = batch.getGroups();
-        if (newGroups && newGroups.length > 0) {
-          batch.getBook().batchCreateGroups(newGroups);
-          // Set parents
-          let parentGroupsMap = batch.getParentGroupsMap();
-          for (const key of Object.keys(parentGroupsMap)) {
-            setParent(batch.getBook(), key, parentGroupsMap[key]);
-          }
-        }
+        // Record batch
+        batch.record();
         // Update backgrounds array
         if (highlight) {
           backgrounds = updateBackgroundsArray(backgrounds, batch, header.getColumns().length);
@@ -68,16 +60,8 @@ namespace RecordGroupsService {
         const row = values[i];
         batch = arrayToBatch_(row, batch, header, timezone, highlight, i);
       }
-      // Create groups
-      const newGroups = batch.getGroups();
-      if (newGroups && newGroups.length > 0) {
-        batch.getBook().batchCreateGroups(newGroups);
-        // Set parents
-        let parentGroupsMap = batch.getParentGroupsMap();
-        for (const key of Object.keys(parentGroupsMap)) {
-          setParent(batch.getBook(), key, parentGroupsMap[key]);
-        }
-      }
+      // Record batch
+      batch.record();
       // Update backgrounds array
       if (highlight) {
         backgrounds = updateBackgroundsArray(backgrounds, batch, header.getColumns().length);
@@ -103,76 +87,39 @@ namespace RecordGroupsService {
   function arrayToBatch_(row: any[], batch: RecordGroupBatch, header: GroupsHeader, timezone: string, highlight: boolean, rowIndex: number): RecordGroupBatch {
 
     const book = batch.getBook();
-    let newGroup = book.newGroup();
-    let group: Bkper.Group;
-    let groupFound = false;
+
+    let groupName: string;
+    let parentName: string;
+    let groupProperties: { [propKey: string]: string } = {};
 
     if (header.isValid()) {
-
-      let properties: { [propKey: string]: string } = {};
-
       for (const column of header.getColumns()) {
-        let value = row[column.getIndex()];
+        const value = (row[column.getIndex()] + '').trim();
         if (column.isName()) {
-          const grp = book.getGroup(value);
-          if (grp) {
-            // Group already exists
-            groupFound = true;
-            group = grp;
-          } else {
-            newGroup.setName(value);
-          }
-        } else if (!groupFound && column.isParent()) {
-          const parentGroup = book.getGroup(value);
-          if (parentGroup) {
-            newGroup.setParent(parentGroup);
-          } else {
-            if (batch.getGroups().map(g => g.getName()).indexOf(value) < 0) {
-              batch.push(book.newGroup().setName(value));
-            }
-            batch.addToParentGroupsMap(newGroup.getName(), value);
-          }
+          groupName = value;
+        } else if (column.isParent()) {
+          batch.pushParentName(value);
+          parentName = value;
         } else if (column.isProperty()) {
-          if (!properties[column.getName()]) {
-            properties[column.getName()] = formatPropertyValue(book, value, timezone);
+          if (!groupProperties[column.getName()]) {
+            groupProperties[column.getName()] = formatPropertyValue(book, value, timezone);
           }
         }
       }
-
-      if (groupFound) {
-        // Edit group properties
-        editGroupProperties(group, properties);
-      } else {
-        // Set properties
-        newGroup.setProperties(properties);
-      }
-
     } else {
-
       // row[0] should be the Name
-      const name = row[0];
-      if (name) {
-        const grp = book.getGroup(name);
-        if (grp) {
-          // Group already exists
-          if (highlight) {
-            batch.addToGroupsMap(rowIndex + '', grp.getName());
-          }
-          return batch;
-        }
-        newGroup.setName(name);
-      }
-
+      groupName = (row[0] + '').trim();
     }
 
     if (highlight) {
-      const groupName = groupFound ? group.getName() : newGroup.getName();
       batch.addToGroupsMap(rowIndex + '', groupName);
     }
 
-    if (!groupFound) {
-      batch.push(newGroup);
+    if (!groupName) {
+      return batch;
     }
+
+    batch.pushGroup(new BatchGroup(book, groupName, parentName, groupProperties));
 
     return batch;
   }
@@ -182,29 +129,6 @@ namespace RecordGroupsService {
       return book.formatDate(value, timezone);
     }
     return value + '';
-  }
-
-  function editGroupProperties(group: Bkper.Group, newProperties: { [key: string]: string }) {
-    let currentProperties = group.getProperties();
-    let needToUpdate = false;
-    for (const key of Object.keys(newProperties)) {
-      if (currentProperties[key] !== newProperties[key]) {
-        currentProperties[key] = newProperties[key];
-        needToUpdate = true;
-      }
-    }
-    if (needToUpdate) {
-      group.setProperties(currentProperties).update();
-    }
-  }
-
-  function setParent(book: Bkper.Book, groupName: string, parentName: string): void {
-    const group = book.getGroup(groupName);
-    const parentGroup = book.getGroup(parentName);
-    if (!group || !parentGroup) {
-      return;
-    }
-    group.setParent(parentGroup).update();
   }
 
   function initilizeMatrix(matrix: any[], columns: number): any[] {
