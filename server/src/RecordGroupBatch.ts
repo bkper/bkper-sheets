@@ -94,7 +94,7 @@ class BatchGroup {
         const group = this.book.getGroup(this.groupName);
         if (group) {
             let currentProperties = group.getProperties();
-            // let currentParent = group.getParent();
+            let currentParent = group.getParent();
             let needToUpdate = false;
             for (const key of Object.keys(this.properties)) {
                 const value = this.properties[key];
@@ -103,13 +103,13 @@ class BatchGroup {
                     needToUpdate = true;
                 }
             }
-            // if (!currentParent || (currentParent && currentParent.getName() !== this.parentName)) {
-            //     const parentGroup = this.book.getGroup(this.parentName);
-            //     if (parentGroup) {
-            //         group.setParent(parentGroup);
-            //         needToUpdate = true;
-            //     }
-            // }
+            if (!currentParent || (currentParent && currentParent.getName() !== this.parentName)) {
+                const parentGroup = this.book.getGroup(this.parentName);
+                if (parentGroup) {
+                    group.setParent(parentGroup);
+                    needToUpdate = true;
+                }
+            }
             return needToUpdate ? group.update() : group;
         }
         return null;
