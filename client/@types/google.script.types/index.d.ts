@@ -56,7 +56,7 @@ declare namespace google {
 
             balanceType?: "CUMULATIVE" | "PERIOD" | "TOTAL" | "TRIAL";
 
-            expanded?: boolean;
+            expanded?: boolean | number;
 
             fetchType?: "transactions" | "balances" | "accounts" | "groups";
 

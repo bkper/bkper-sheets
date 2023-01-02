@@ -14,7 +14,7 @@ class Formula {
   bookId: string;
   cache: number;
   param1: string | boolean;
-  param2: string | boolean;
+  param2: string | boolean | number;
   param3: string | boolean;
   param4: string | boolean;
   isBookIdString: boolean;
@@ -53,7 +53,13 @@ class Formula {
       formula.param3 = fetchStatement.ids ? true : false;
     } else if (fetchStatement.fetchType === 'balances') {
       formula.param1 = fetchStatement.query.replace(/\"/g, "'");
-      formula.param2 = fetchStatement.expanded ? true : false;
+      if (typeof fetchStatement.expanded == "boolean" && fetchStatement.expanded == true) {
+        formula.param2 = true;
+      } else if (typeof fetchStatement.expanded == "number") {
+        formula.param2 = fetchStatement.expanded;
+      } else {
+        formula.param2 = false;
+      }
       formula.param3 = fetchStatement.transposed ? true : false;
       if (fetchStatement.balanceType.toUpperCase() === BALANCE_TYPE_TOTAL_) {
         formula.name = FormulaName.BKPER_BALANCES_TOTAL;

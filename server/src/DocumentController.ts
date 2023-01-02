@@ -39,6 +39,8 @@ function executeFetch(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, fet
   if (range == null) {
     range = spreadsheet.getActiveCell();
   }
+  console.log(`EXPANDED: ${fetchStatement.expanded}`)
+  console.log(`TYPE: ${typeof fetchStatement.expanded}`)
   if (fetchStatement.ledgerId.length > 0) {
     let formula = Formula.parseFetchStatement(fetchStatement, spreadsheet.getSpreadsheetLocale());
     if (fetchValues) {

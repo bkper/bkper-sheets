@@ -134,15 +134,21 @@ namespace FetchTabView {
       if (form.query.indexOf("group:") >= 0) {
         disableExpanded(false);
       } else {
-        view.expanded.prop('checked', false);
+        setExpanded(false)
       }
 
       if (form.balanceType == null) {
         autoSelectBalanceOption();
       }
 
+      if (form.balanceType == 'PERIOD' || form.balanceType == 'CUMULATIVE') {
+        setTransposed(true);
+      }
+
       disableFetchOption(false);
       disableFetchButton(false);
+
+
 
       return;
     }
@@ -171,12 +177,27 @@ namespace FetchTabView {
     disableInput(disable, el);
   }
 
-  function getExpanded(): boolean {
-    return view.expanded.is(":checked")
+  function getExpanded(): boolean | number {
+    var expanded = view.expanded.find(":selected").val();
+    if (expanded == "true") {
+        return true;
+    }
+    if (expanded == "false") {
+        return false;
+    }
+    return +expanded;
+  }
+
+  function setExpanded(expanded: boolean|number):void {
+    view.expanded.val(expanded + '');
   }
 
   function getTransposed(): boolean {
     return view.transposed.is(":checked")
+  }
+
+  function setTransposed(transposed: boolean) {
+    view.transposed.prop('checked', transposed);
   }
 
   function getGroups(): boolean {

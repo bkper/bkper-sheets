@@ -116,8 +116,18 @@
               <label for="transposed">Transposed</label>
             </div>
             <div class="inline optional-param-checkbox">
-              <input type="checkbox" id="expanded" value="false">
-              <label for="expanded">Expanded</label>
+              <select id="expanded" value="false">
+                <option value="false">Collapsed</option>
+                <option value="true">Expanded</option>
+                <option value="-1">Subgroups</option>
+                <option value="-2">Accounts</option>
+                <option value="1">1 level</option>
+                <option value="2">2 levels</option>
+                <option value="3">3 levels</option>
+                <option value="4">4 levels</option>
+                <option value="5">5 levels</option>
+                <option value="6">6 levels</option>
+              </select>              
             </div>
             <div class="inline optional-param-checkbox">
               <input type="checkbox" id="properties" value="false">

@@ -7,7 +7,7 @@ interface FetchStatement {
   rangeName?: string,
   fetchType?: "transactions" | "balances" | "accounts" | "groups",
   balanceType?: "CUMULATIVE" | "PERIOD" | "TOTAL" | "TRIAL",
-  expanded?: boolean,
+  expanded?: boolean | number,
   transposed?: boolean,
   hideDates?: boolean,
   hideNames?: boolean,

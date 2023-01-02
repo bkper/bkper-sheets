@@ -24,8 +24,8 @@ function BKPER_TRANSACTIONS(bookId: string, cache: number, query: string, proper
  *
  * @param {string} bookId The universal Book Id.
  * @param {number} cache Increase to clean cache and fetch fresh data.
- * @param {boolean=} groups True to include account groups.
- * @param {boolean=} properties True to include account properties.
+ * @param {boolean} groups True to include account groups.
+ * @param {boolean} properties True to include account properties.
  * 
  * @customfunction
  * 
@@ -33,8 +33,8 @@ function BKPER_TRANSACTIONS(bookId: string, cache: number, query: string, proper
 function BKPER_ACCOUNTS(bookId: string, cache: number, groups?: boolean, properties?: boolean): any[][] {
   return BookService.getBook(bookId)
   .createAccountsDataTable()
-  .includeGroups(groups)
-  .includeProperties(properties)
+  .groups(groups)
+  .properties(properties)
   .build();
 }
 
@@ -43,7 +43,7 @@ function BKPER_ACCOUNTS(bookId: string, cache: number, groups?: boolean, propert
  *
  * @param {string} bookId The universal Book Id.
  * @param {number} cache Increase to clean cache and fetch fresh data.
- * @param {boolean=} properties True to include group properties.
+ * @param {boolean} properties True to include group properties.
  * 
  * @customfunction
  * 
@@ -51,7 +51,7 @@ function BKPER_ACCOUNTS(bookId: string, cache: number, groups?: boolean, propert
 function BKPER_GROUPS(bookId: string, cache: number, properties?: boolean): any[][] {
   return BookService.getBook(bookId)
   .createGroupsDataTable()
-  .includeProperties(properties)
+  .properties(properties)
   .build();
 }
 
@@ -61,13 +61,13 @@ function BKPER_GROUPS(bookId: string, cache: number, properties?: boolean): any[
  * @param {string} bookId The universal Book Id.
  * @param {number} cache Increase to clean cache and fetch fresh data.
  * @param {string} query The balances query.
- * @param {boolean=} expanded Expand group accounts
- * @param {boolean=} transposed Transpose the result
- * @param {boolean=} hideNames Hide account/group names
+ * @param {boolean} expanded Expand group accounts
+ * @param {boolean} transposed Transpose the result
+ * @param {boolean} hideNames Hide account/group names
  * 
  * @customfunction
  */
-function BKPER_BALANCES_TRIAL(bookId: string, cache: number, query: string, expanded?: boolean, transposed?: boolean, hideNames?: boolean): any[][] {
+function BKPER_BALANCES_TRIAL(bookId: string, cache: number, query: string, expanded?: boolean|number, transposed?: boolean, hideNames?: boolean): any[][] {
   let balanceReport = BookService.getBook(bookId).getBalancesReport(query);
 
   query = query.toLowerCase();
@@ -98,13 +98,13 @@ function BKPER_BALANCES_TRIAL(bookId: string, cache: number, query: string, expa
  * @param {string} bookId The universal Book Id.
  * @param {number} cache Increase to clean cache and fetch fresh data.
  * @param {string} query The balances query.
- * @param {boolean=} expanded Expand group accounts
- * @param {boolean=} transposed Transpose the result
- * @param {boolean=} hideNames Hide account/group names
+ * @param {boolean|number} expanded Expand group accounts
+ * @param {boolean} transposed Transpose the result
+ * @param {boolean} hideNames Hide account/group names
  * 
  * @customfunction
  */
-function BKPER_BALANCES_TOTAL(bookId: string, cache: number, query: string, expanded?: boolean, transposed?: boolean, hideNames?: boolean): any[][] {
+function BKPER_BALANCES_TOTAL(bookId: string, cache: number, query: string, expanded?: boolean|number, transposed?: boolean, hideNames?: boolean): any[][] {
   let balanceReport = BookService.getBook(bookId).getBalancesReport(query);
 
   query = query.toLowerCase();
@@ -134,13 +134,13 @@ function BKPER_BALANCES_TOTAL(bookId: string, cache: number, query: string, expa
  * @param {string} bookId The universal Book Id.
  * @param {number} cache Increase to clean cache and fetch fresh data.
  * @param {string} query The balances query.
- * @param {boolean=} expanded Expand group accounts
- * @param {boolean=} transposed Transpose the result
- * @param {boolean=} hideDates Hide dates row/column
+ * @param {boolean} expanded Expand group accounts
+ * @param {boolean} transposed Transpose the result
+ * @param {boolean} hideDates Hide dates row/column
  * 
  * @customfunction
  */
-function BKPER_BALANCES_PERIOD(bookId: string, cache: number, query: string, expanded?: boolean, transposed?: boolean, hideDates?: boolean): any[][] {
+function BKPER_BALANCES_PERIOD(bookId: string, cache: number, query: string, expanded?: boolean|number, transposed?: boolean, hideDates?: boolean): any[][] {
   let balanceReport = BookService.getBook(bookId).getBalancesReport(query);
   return balanceReport.createDataTable()
   .type(BkperApp.BalanceType.PERIOD)
@@ -156,13 +156,13 @@ function BKPER_BALANCES_PERIOD(bookId: string, cache: number, query: string, exp
  * @param {string} bookId The universal Book Id.
  * @param {number} cache Increase to clean cache and fetch fresh data.
  * @param {string} query The balances query.
- * @param {boolean=} expanded Expand group accounts
- * @param {boolean=} transposed Transpose the result
- * @param {boolean=} hideDates Hide dates row/column
+ * @param {boolean} expanded Expand group accounts
+ * @param {boolean} transposed Transpose the result
+ * @param {boolean} hideDates Hide dates row/column
  * 
  * @customfunction
  */
-function BKPER_BALANCES_CUMULATIVE(bookId: string, cache: number, query: string, expanded?: boolean, transposed?: boolean, hideDates?: boolean): any[][] {
+function BKPER_BALANCES_CUMULATIVE(bookId: string, cache: number, query: string, expanded?: boolean|number, transposed?: boolean, hideDates?: boolean): any[][] {
   let balanceReport = BookService.getBook(bookId).getBalancesReport(query);
   return balanceReport.createDataTable()
   .type(BkperApp.BalanceType.CUMULATIVE)
