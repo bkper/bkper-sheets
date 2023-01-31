@@ -12,6 +12,10 @@ namespace Utilities_ {
     return date != null && Object.prototype.toString.call(date) === '[object Date]';
   }
 
+  export function hasBookIdPrefix(string: string): boolean {
+    return string.startsWith('agtzfmJrcGVyLWhyZHI') ? true : false;
+  }
+
   export function getRangeForTable(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, table: any[][], range: GoogleAppsScript.Spreadsheet.Range): GoogleAppsScript.Spreadsheet.Range {
     var row = range.getRow();
     var firstColumn = range.getColumn();

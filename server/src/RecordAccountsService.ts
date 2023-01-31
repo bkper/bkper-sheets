@@ -29,6 +29,9 @@ namespace RecordAccountsService {
         const row = values[i];
         let bookId = row[bookIdHeaderColumn.getIndex()];
         if (bookId != null && typeof bookId == "string" && bookId.trim() != '') {
+          if (!Utilities_.hasBookIdPrefix(bookId)) {
+            throw `Selected range has invalid book id: '${bookId}'`;
+          }
           let batch = accountsBatch[bookId];
           if (batch == null) {
             const book = BkperApp.getBook(bookId);

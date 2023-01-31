@@ -28,6 +28,9 @@ namespace RecordTransactionsService {
       for (const row of values) {
         let bookId = row[bookIdHeaderColumn.getIndex()];
         if (bookId != null && typeof bookId == "string" && bookId.trim() != '') {
+          if (!Utilities_.hasBookIdPrefix(bookId)) {
+            throw `Selected range has invalid book id: '${bookId}'`;
+          }
           let batch = transactionsBatch[bookId];
           if (batch == null) {
             let rowBook = BkperApp.getBook(bookId);
