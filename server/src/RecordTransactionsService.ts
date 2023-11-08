@@ -83,13 +83,17 @@ namespace RecordTransactionsService {
         let value = row[column.getIndex()];
         if (createAccountIfNeeded(book, column, value)) {
           descriptionRow.push(value)
+        } else if (column.isCreditAccount()) {
+          transaction.setCreditAccount(String(value));
+        } else if (column.isDebitAccount()) {
+          transaction.setDebitAccount(String(value));
         } else if (column.isProperty()) {
           transaction.setProperty(column.getName(), formatProperty(book, value, timezone));
         } else if (column.isId()) {
-            transaction.addRemoteId(value);
+          transaction.addRemoteId(value);
         } else if (!column.isBookId()) {
           descriptionRow.push(formatValue(book, value, timezone))
-        }
+        } 
       }
     } else {
         for (var j = 0; j < row.length; j++) {

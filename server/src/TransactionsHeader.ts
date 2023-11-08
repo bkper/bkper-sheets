@@ -118,7 +118,7 @@ class TransactionsHeaderColumn {
   isDebitAccount(): boolean {
     if (!this.isValid()) {
       return false;
-    }    
+    }
     const nameLower = this.name.trim().toLowerCase();
     return nameLower == 'debit account' || nameLower == 'destination' || nameLower == 'to'|| nameLower == 'to account'; 
   }
@@ -132,8 +132,6 @@ class TransactionsHeaderColumn {
       && !this.isAttachment()
       && !this.isBookId()
       && !this.isId()
-      && !this.isCreditAccount()
-      && !this.isDebitAccount()
       ;
   }
 }
