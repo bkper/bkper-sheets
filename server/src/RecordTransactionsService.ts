@@ -83,11 +83,17 @@ namespace RecordTransactionsService {
         let value = row[column.getIndex()];
         if (createAccountIfNeeded(book, column, value)) {
           descriptionRow.push(value)
-        } else if (column.isCreditAccount()) {
-          transaction.setCreditAccount(String(value));
+        } 
+        
+        else if (column.isCreditAccount()) {
+          transaction.setCreditAccount(value);
         } else if (column.isDebitAccount()) {
-          transaction.setDebitAccount(String(value));
-        } else if (column.isProperty()) {
+          transaction.setDebitAccount(value);
+        } else if (column.isDate()) {
+          transaction.setDate(value);
+        } 
+        
+        else if (column.isProperty()) {
           transaction.setProperty(column.getName(), formatProperty(book, value, timezone));
         } else if (column.isId()) {
           transaction.addRemoteId(value);

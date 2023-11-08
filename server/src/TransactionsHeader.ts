@@ -132,6 +132,8 @@ class TransactionsHeaderColumn {
       && !this.isAttachment()
       && !this.isBookId()
       && !this.isId()
+      && !this.isCreditAccount()
+      && !this.isDebitAccount()
       ;
   }
 }
