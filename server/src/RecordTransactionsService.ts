@@ -91,7 +91,9 @@ namespace RecordTransactionsService {
           transaction.setDebitAccount(value);
         } else if (column.isDate()) {
           transaction.setDate(value);
-        } 
+        } else if (column.isAmount()) {
+          transaction.setAmount(value);
+        }
         
         else if (column.isProperty()) {
           transaction.setProperty(column.getName(), formatProperty(book, value, timezone));
