@@ -93,6 +93,8 @@ namespace RecordTransactionsService {
           transaction.setDate(value);
         } else if (column.isAmount()) {
           transaction.setAmount(value);
+        } else if (column.isDescription()) {
+          transaction.setDescription(value);
         }
         
         else if (column.isProperty()) {
@@ -110,7 +112,9 @@ namespace RecordTransactionsService {
         }
     }
 
-    transaction.setDescription(descriptionRow.join(" "))
+    if (transaction.getDescription() == '') {
+      transaction.setDescription(descriptionRow.join(" "))
+    }
 
     return transaction;
   }
