@@ -1,3 +1,13 @@
+<script>
+  if (window.trustedTypes && window.trustedTypes.createPolicy) {
+    window.trustedTypes.createPolicy('default', {
+      createHTML: string => string,
+      createScriptURL: string => string,
+      createScript: string => string,
+    });
+  }
+</script>
+
 <link rel="stylesheet"href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
 <style>
 .right {

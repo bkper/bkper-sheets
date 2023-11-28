@@ -1,3 +1,13 @@
+<script>
+  if (window.trustedTypes && window.trustedTypes.createPolicy) {
+    window.trustedTypes.createPolicy('default', {
+      createHTML: string => string,
+      createScriptURL: string => string,
+      createScript: string => string,
+    });
+  }
+</script>
+
 <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
 <LINK rel="stylesheet"  href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css" type="text/css">
 
