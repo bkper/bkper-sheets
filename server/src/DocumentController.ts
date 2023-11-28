@@ -2,10 +2,17 @@
  * @OnlyCurrentDoc
  */
 function onOpen() {
-    SpreadsheetApp.getUi().createAddonMenu()
+
+  const idsSubMenu = SpreadsheetApp.getUi().createMenu('Transaction IDs')
+    .addItem('Generate IDs', 'generateIds')
+    .addItem('Find duplicated IDs', 'findDuplicatedIds');
+
+  SpreadsheetApp.getUi().createAddonMenu()
     .addItem('Open', 'showSidebar')
     .addItem('Auto-Record', 'showAutoRecordPopup')
     .addItem('Update', 'update')
+    .addSeparator()
+    .addSubMenu(idsSubMenu)
     .addToUi();
 }
 
