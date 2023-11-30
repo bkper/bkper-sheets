@@ -42,6 +42,15 @@ function update() {
   }
 }
 
+function generateIds(): void {
+  const sheet = getActiveSpreadsheet().getActiveSheet();
+  GenerateIdsService.generate(sheet);
+}
+
+function findDuplicatedIds(): void {
+  GenerateIdsService.findDuplicatedIds();
+}
+
 function executeFetch(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, fetchStatement: FetchStatement, range: GoogleAppsScript.Spreadsheet.Range, fetchValues: boolean): void {
   if (range == null) {
     range = spreadsheet.getActiveCell();
