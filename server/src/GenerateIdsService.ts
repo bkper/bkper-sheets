@@ -2,14 +2,13 @@ namespace GenerateIdsService {
 
     // Generate unique IDs for non-empty rows and returns the ID column starting from 1 = column A
     export function generate(sheet: GoogleAppsScript.Spreadsheet.Sheet): number {
-        // Find ID column if it exists
+        // Try to find ID column
         const idColumn = findIdColumn(sheet);
+        if (!idColumn) {
+            throw "Error: cannot find an 'ID' column header in the first row of this sheet";
+        }
         // Fill ID column with unique IDs and return idColumn index
         return fillIdColumn(sheet, idColumn);
-    }
-
-    export function findDuplicatedIds() {
-
     }
 
     function findIdColumn(sheet: GoogleAppsScript.Spreadsheet.Sheet): number | undefined {
@@ -29,26 +28,22 @@ namespace GenerateIdsService {
     }
 
     // Fill ID column with unique IDs
-    function fillIdColumn(sheet: GoogleAppsScript.Spreadsheet.Sheet, idColumn: number | undefined): number {
-        const columnToFill =  idColumn ? idColumn : sheet.getLastColumn() + 1;
-        const sheetHeader = idColumn ? 1 : 0;
-
-        let idColumnData = sheet.getRange(sheetHeader + 1, columnToFill, sheet.getLastRow(), 1).getValues();
-        let idColumnNewData: any[][] = [];
-
+    function fillIdColumn(sheet: GoogleAppsScript.Spreadsheet.Sheet, idColumn: number): number {        
         // Sheet has an ID header but seems to have no transitions
-        const sheetHasIdHeaderButnoTransactions = (idColumn && idColumnData.length == 0) ? true : false;
-        if (sheetHasIdHeaderButnoTransactions) {
-            throw "Sheet has an ID header but no transitions bellow it";
+        const transactionsRange = sheet.getRange(2, 1, sheet.getLastRow(), sheet.getLastColumn());
+        if (transactionsRange.isBlank()) {
+            throw "Sheet has an 'ID' header but appears to have no transactions in the rows below it";
         }
-
+        
+        let idColumnData = sheet.getRange(2, idColumn, sheet.getLastRow(), 1).getValues();
+        let idColumnNewData: any[][] = [];
         for (let i = 0; i < idColumnData.length; i++) {
             let cellValue = idColumnData[i][0];
             if (cellValue) {
                 idColumnNewData.push([cellValue]);
             } else {
                 // Only generate ID to non-empty rows
-                const emptyRow = sheet.getRange(i + (sheetHeader+1), 1, 1, sheet.getLastColumn()).isBlank();
+                const emptyRow = sheet.getRange(2 + i, 1, 1, sheet.getLastColumn()).isBlank();
                 if (!emptyRow) {
                     const incrementedTimestamp = new Date().getTime() + i;
                     idColumnNewData.push([Utilities.getUuid() + `-${incrementedTimestamp}`]);
@@ -58,9 +53,9 @@ namespace GenerateIdsService {
             }
         }
 
-        sheet.getRange(sheetHeader + 1, columnToFill, idColumnNewData.length, 1).setValues(idColumnNewData).setBackground(null);
+        sheet.getRange(2, idColumn, idColumnNewData.length, 1).setValues(idColumnNewData).setBackground(null);
 
         // Return idColumn index
-        return columnToFill;
+        return idColumn;
     }
 }
