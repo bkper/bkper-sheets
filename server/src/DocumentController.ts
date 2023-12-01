@@ -3,16 +3,11 @@
  */
 function onOpen() {
 
-  const idsSubMenu = SpreadsheetApp.getUi().createMenu('Transaction IDs')
-    .addItem('Generate IDs', 'generateIds')
-    .addItem('Find duplicated IDs', 'findDuplicatedIds');
-
   SpreadsheetApp.getUi().createAddonMenu()
     .addItem('Open', 'showSidebar')
     .addItem('Auto-Record', 'showAutoRecordPopup')
+    .addItem('Generate Transaction IDs', 'generateIds')
     .addItem('Update', 'update')
-    .addSeparator()
-    .addSubMenu(idsSubMenu)
     .addToUi();
 }
 
@@ -45,10 +40,6 @@ function update() {
 function generateIds(): void {
   const sheet = getActiveSpreadsheet().getActiveSheet();
   GenerateIdsService.generate(sheet);
-}
-
-function findDuplicatedIds(): void {
-  GenerateIdsService.findDuplicatedIds();
 }
 
 function executeFetch(spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet, fetchStatement: FetchStatement, range: GoogleAppsScript.Spreadsheet.Range, fetchValues: boolean): void {
