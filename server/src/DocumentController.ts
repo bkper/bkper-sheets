@@ -6,8 +6,8 @@ function onOpen() {
   SpreadsheetApp.getUi().createAddonMenu()
     .addItem('Open', 'showSidebar')
     .addItem('Auto-Record', 'showAutoRecordPopup')
-    .addItem('Generate Transaction IDs', 'generateIds')
     .addItem('Update', 'update')
+    .addItem('Generate Transaction IDs', 'generateIds')
     .addToUi();
 }
 

@@ -6,24 +6,32 @@ namespace RecordTransactionsService {
     
     const timezone = activeSS.getSpreadsheetTimeZone();
     
-    batchCreateTransactions(book, selectedRange, selectedRange.getValues(), timezone);
+    const success = batchCreateTransactions(book, selectedRange, selectedRange.getValues(), timezone);
 
-    if (highlight) {
+    if (highlight && success) {
       selectedRange.setBackground(RECORD_BACKGROUND_);
     }
 
-    return true;
+    return success;
   }
 
-  export function batchCreateTransactions(book: Bkper.Book, range: GoogleAppsScript.Spreadsheet.Range,  values: any[][], timezone: string) {
+  export function batchCreateTransactions(book: Bkper.Book, range: GoogleAppsScript.Spreadsheet.Range, values: any[][], timezone: string): boolean {
 
     let header = new TransactionsHeader(range);
 
+    if(findDuplicatedTransactionIds(header, range)) {
+      let htmlOutput = HtmlService.createHtmlOutput(`<p>There are transactions with the same ID. Delete duplicates (marked in red) and try again.</p>`)
+          .setSandboxMode(HtmlService.SandboxMode.IFRAME)
+          .setWidth(800).setHeight(60);
+      SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'Error:');
+      return false;
+    }
+
     let bookIdHeaderColumn = header.getBookIdHeaderColumn();
-    
+
     if (bookIdHeaderColumn) {
       //MAP
-      let transactionsBatch: {[bookId: string]: RecordTransactionBatch} = {}
+      let transactionsBatch: { [bookId: string]: RecordTransactionBatch } = {}
       transactionsBatch[book.getId()] = new RecordTransactionBatch(book);
       for (const row of values) {
         let bookId = row[bookIdHeaderColumn.getIndex()];
@@ -49,7 +57,7 @@ namespace RecordTransactionsService {
         let batch = transactionsBatch[key];
         batch.getBook().batchCreateTransactions(batch.getTransactions());
       }
-      
+
     } else {
       let transactions: Bkper.Transaction[] = [];
       for (const row of values) {
@@ -57,23 +65,25 @@ namespace RecordTransactionsService {
       }
       book.batchCreateTransactions(transactions);
     }
+
+    return true;
   }
 
-    function formatValue(book: Bkper.Book, cell: any, timezone?: string) {
-        if (Utilities_.isDate(cell)) {
-            return book.formatDate(cell, timezone);
-        } else if (!isNaN(cell)) {
-            return book.formatAmount(cell);
-        }
-        return cell;
+  function formatValue(book: Bkper.Book, cell: any, timezone?: string) {
+    if (Utilities_.isDate(cell)) {
+      return book.formatDate(cell, timezone);
+    } else if (!isNaN(cell)) {
+      return book.formatAmount(cell);
     }
+    return cell;
+  }
 
-    function formatProperty(book: Bkper.Book, cell: any, timezone?: string) {
-        if (Utilities_.isDate(cell)) {
-            return book.formatDate(cell, timezone);
-        }
-        return cell;
+  function formatProperty(book: Bkper.Book, cell: any, timezone?: string) {
+    if (Utilities_.isDate(cell)) {
+      return book.formatDate(cell, timezone);
     }
+    return cell;
+  }
 
   function arrayToTransaction_(row: any[], book: Bkper.Book, header: TransactionsHeader, timezone?: string): Bkper.Transaction {
     let transaction = book.newTransaction();
@@ -133,5 +143,33 @@ namespace RecordTransactionsService {
     } else {
       return false;
     }
+  }
+
+  function findDuplicatedTransactionIds(header: TransactionsHeader, transactionsDataRange: GoogleAppsScript.Spreadsheet.Range): boolean {
+    const columns = header.getColumns();
+    const ERROR_BACKGROUND = '#ea9999';
+
+    let findDuplicatedTransactionIds = false;
+    // search for ID header
+    for(const column of columns) {
+      if (column.isId()) {
+        const idColumnIndex = column.getIndex();
+        const transactionsData = transactionsDataRange.getValues();
+        let idsMap = new Set<string>();
+        // look for duplicates
+        for (let i = 0; i < transactionsData.length; i++) {
+          const transactionId = `${transactionsData[i][idColumnIndex]}`.trim();
+          const isDuplicatedId = idsMap.has(transactionId);
+          if (isDuplicatedId) {
+            transactionsDataRange.getCell(i + 1, idColumnIndex + 1).setBackground(ERROR_BACKGROUND);
+            findDuplicatedTransactionIds = true;
+          } else if (transactionId != '') {
+            idsMap.add(transactionId);
+          }
+        }
+      }
+    }
+
+    return findDuplicatedTransactionIds;
   }
 }

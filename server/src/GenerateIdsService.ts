@@ -32,6 +32,7 @@ namespace GenerateIdsService {
     function fillIdColumn(sheet: GoogleAppsScript.Spreadsheet.Sheet, headerRowNum: number, idColumn: number): void {      
           // Sheet has an ID header but seems to have no transitions
         const transactionsRange = sheet.getRange(headerRowNum, 1, sheet.getLastRow(), sheet.getLastColumn());
+        transactionsRange.setBackground(null);
         if (transactionsRange.isBlank()) {
             throw "Sheet appears to contain no transactions below the header";
         }
