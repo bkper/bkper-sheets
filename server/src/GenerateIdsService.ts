@@ -1,11 +1,16 @@
 namespace GenerateIdsService {
 
-    // Generate unique IDs for non-empty rows and returns the ID column starting from 1 = column A
-    export function generate(sheet: GoogleAppsScript.Spreadsheet.Sheet): number {
+    // Generate unique IDs for non-empty rows
+    export function generate(sheet: GoogleAppsScript.Spreadsheet.Sheet): void {
         // Validate header
         const header = new TransactionsHeader(sheet.getDataRange());
         if (!header.isValid()) {
-            throw "Error: you must set a frozen header with an ID column. See https://help.bkper.com/en/articles/2569151-bkper-add-on-for-google-sheets#h_73cf0eaf6c for more information.";
+            const bkperHelpURL = "https://help.bkper.com/en/articles/2569151-bkper-add-on-for-google-sheets#h_73cf0eaf6c";
+            let htmlOutput = HtmlService.createHtmlOutput(`<a target='_blank' href='${bkperHelpURL}'>See Bkper help for more information</a>`)
+                .setSandboxMode(HtmlService.SandboxMode.IFRAME)
+                .setWidth(800).setHeight(40);
+            SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'You must set a frozen header with an ID column.');
+            return;
         }
 
         // Try to find ID column
@@ -20,12 +25,11 @@ namespace GenerateIdsService {
             throw "Error: could not find an ID column in the header.";
         }
 
-        // Fill ID column with unique IDs and return idColumn index
-        return fillIdColumn(sheet, header.getRowNum() + 1, idColumn);
+        // Fill ID column with unique IDs
+        fillIdColumn(sheet, header.getRowNum() + 1, idColumn);
     }
 
-    // Fill ID column with unique IDs
-    function fillIdColumn(sheet: GoogleAppsScript.Spreadsheet.Sheet, headerRowNum: number, idColumn: number): number {      
+    function fillIdColumn(sheet: GoogleAppsScript.Spreadsheet.Sheet, headerRowNum: number, idColumn: number): void {      
           // Sheet has an ID header but seems to have no transitions
         const transactionsRange = sheet.getRange(headerRowNum, 1, sheet.getLastRow(), sheet.getLastColumn());
         if (transactionsRange.isBlank()) {
@@ -51,8 +55,5 @@ namespace GenerateIdsService {
         }
 
         sheet.getRange(headerRowNum, idColumn, idColumnNewData.length, 1).setValues(idColumnNewData).setBackground(null);
-
-        // Return idColumn index
-        return idColumn;
     }
 }
