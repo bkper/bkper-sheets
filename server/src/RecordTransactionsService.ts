@@ -1,4 +1,5 @@
-var RECORD_BACKGROUND_ = '#B0DDBC';
+var RECORD_BACKGROUND_ = '#b0ddbc';
+var ERROR_BACKGROUND_ = '#ea9999';
 
 namespace RecordTransactionsService {
 
@@ -144,8 +145,8 @@ namespace RecordTransactionsService {
   }
 
   function findDuplicatedTransactionIds(header: TransactionsHeader, transactionsDataRange: GoogleAppsScript.Spreadsheet.Range): boolean {
+
     const columns = header.getColumns();
-    const ERROR_BACKGROUND = '#ea9999';
 
     let findDuplicatedTransactionIds = false;
     
@@ -173,7 +174,10 @@ namespace RecordTransactionsService {
         }
         // set backgrounds
         for (const rowIndex of Array.from(errorBackgroundsSet.values())) {
-          transactionsDataRange.getCell(+rowIndex, idColumnIndex + 1).setBackground(ERROR_BACKGROUND);
+          const cell = transactionsDataRange.getCell(+rowIndex, idColumnIndex + 1);
+          if (cell.getBackground() !== RECORD_BACKGROUND_) {
+            cell.setBackground(ERROR_BACKGROUND_);
+          }
         }
       }
     }

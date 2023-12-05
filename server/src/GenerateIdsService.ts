@@ -1,3 +1,5 @@
+var ERROR_BACKGROUND_ = '#ea9999';
+
 namespace GenerateIdsService {
 
     // Generate unique IDs for non-empty rows
@@ -31,33 +33,43 @@ namespace GenerateIdsService {
     }
 
     function fillIdColumn(sheet: GoogleAppsScript.Spreadsheet.Sheet, headerRowNum: number, idColumn: number): void {      
-          // Sheet has an ID header but seems to have no transitions
+        // Sheet has an ID header but seems to have no transitions
         const transactionsRange = sheet.getRange(headerRowNum, 1, sheet.getLastRow(), sheet.getLastColumn());
-        transactionsRange.setBackground(null);
+
         if (transactionsRange.isBlank()) {
             const htmlOutput = Utilities_.getErrorHtmlOutput('Sheet appears to contain no transactions below the header.');
             SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'Error');
             return;
         }
         
-        let idColumnData = sheet.getRange(headerRowNum, idColumn, sheet.getLastRow(), 1).getValues();
+        const idColumnData = sheet.getRange(headerRowNum, idColumn, sheet.getLastRow(), 1).getValues();
+        const idColumnBackgrounds = sheet.getRange(headerRowNum, idColumn, sheet.getLastRow(), 1).getBackgrounds();
         let idColumnNewData: any[][] = [];
+        let idColumnNewBackgrounds: string[][] = [];
         for (let i = 0; i < idColumnData.length; i++) {
-            let cellValue = idColumnData[i][0];
+            const cellValue = idColumnData[i][0];
+            const cellBackground = idColumnBackgrounds[i][0];
             if (cellValue) {
                 idColumnNewData.push([cellValue]);
+                idColumnNewBackgrounds.push([cellBackground]);
             } else {
                 // Only generate ID to non-empty rows
                 const emptyRow = sheet.getRange(headerRowNum + i, 1, 1, sheet.getLastColumn()).isBlank();
                 if (!emptyRow) {
                     const incrementedTimestamp = new Date().getTime() + i;
+                    // Data
                     idColumnNewData.push([Utilities.getUuid() + `-${incrementedTimestamp}`]);
+                    // Background
+                    cellBackground === ERROR_BACKGROUND_ ? idColumnNewBackgrounds.push([undefined]) : idColumnNewBackgrounds.push([cellBackground]);
                 } else {
+                    // Data
                     idColumnNewData.push(['']);
+                    // Background
+                    idColumnNewBackgrounds.push([cellBackground]);
                 }
             }
         }
 
-        sheet.getRange(headerRowNum, idColumn, idColumnNewData.length, 1).setValues(idColumnNewData).setBackground(null);
+        sheet.getRange(headerRowNum, idColumn, idColumnNewData.length, 1).setValues(idColumnNewData).setBackgrounds(idColumnNewBackgrounds);
     }
 }
