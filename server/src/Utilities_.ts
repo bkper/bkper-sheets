@@ -70,6 +70,13 @@ namespace Utilities_ {
     }
   }    
 
+  export function getErrorHtmlOutput(message: string): GoogleAppsScript.HTML.HtmlOutput {
+    return HtmlService.createHtmlOutput(`
+      <p style="font-family: Google Sans,Roboto,RobotoDraft,Helvetica,Arial,sans-serif;">
+        ${message}
+      </p>
+    `).setSandboxMode(HtmlService.SandboxMode.IFRAME).setWidth(800).setHeight(60);
+  }
 
   export function formatDateRelativeTo(date: Date, realtiveTo: Date, timeZone: string): string {
 

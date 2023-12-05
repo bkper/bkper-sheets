@@ -19,11 +19,9 @@ namespace RecordTransactionsService {
 
     let header = new TransactionsHeader(range);
 
-    if(findDuplicatedTransactionIds(header, range)) {
-      let htmlOutput = HtmlService.createHtmlOutput(`<p>There are transactions with the same ID. Delete duplicates (marked in red) and try again.</p>`)
-          .setSandboxMode(HtmlService.SandboxMode.IFRAME)
-          .setWidth(800).setHeight(60);
-      SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'Error:');
+    if (findDuplicatedTransactionIds(header, range)) {
+      const htmlOutput = Utilities_.getErrorHtmlOutput('There are transactions with the same ID. Please review duplicates (marked in red) and try again.');
+      SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'Error');
       return false;
     }
 

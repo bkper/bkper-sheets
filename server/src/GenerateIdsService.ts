@@ -5,11 +5,10 @@ namespace GenerateIdsService {
         // Validate header
         const header = new TransactionsHeader(sheet.getDataRange());
         if (!header.isValid()) {
-            const bkperHelpURL = "https://help.bkper.com/en/articles/2569151-bkper-add-on-for-google-sheets#h_73cf0eaf6c";
-            let htmlOutput = HtmlService.createHtmlOutput(`<a target='_blank' href='${bkperHelpURL}'>See Bkper help for more information</a>`)
-                .setSandboxMode(HtmlService.SandboxMode.IFRAME)
-                .setWidth(800).setHeight(40);
-            SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'You must set a frozen header with an ID column.');
+            const bkperHelpUrl = "https://help.bkper.com/en/articles/2569151-bkper-add-on-for-google-sheets#h_73cf0eaf6c";
+            const errorMsg = `You must set a frozen header with an ID column. Learn more in <a target='_blank' href='${bkperHelpUrl}'>Bkper Help</a>.`;
+            const htmlOutput = Utilities_.getErrorHtmlOutput(errorMsg);
+            SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'Error');
             return;
         }
 
@@ -22,7 +21,9 @@ namespace GenerateIdsService {
             }
         }
         if (idColumn == 0) {
-            throw "Error: could not find an ID column in the header.";
+            const htmlOutput = Utilities_.getErrorHtmlOutput('Could not find an ID column in the header.');
+            SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'Error');
+            return;
         }
 
         // Fill ID column with unique IDs
@@ -34,7 +35,9 @@ namespace GenerateIdsService {
         const transactionsRange = sheet.getRange(headerRowNum, 1, sheet.getLastRow(), sheet.getLastColumn());
         transactionsRange.setBackground(null);
         if (transactionsRange.isBlank()) {
-            throw "Sheet appears to contain no transactions below the header";
+            const htmlOutput = Utilities_.getErrorHtmlOutput('Sheet appears to contain no transactions below the header.');
+            SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'Error');
+            return;
         }
         
         let idColumnData = sheet.getRange(headerRowNum, idColumn, sheet.getLastRow(), 1).getValues();
