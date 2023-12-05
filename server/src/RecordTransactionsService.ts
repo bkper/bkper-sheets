@@ -150,22 +150,32 @@ namespace RecordTransactionsService {
     const ERROR_BACKGROUND = '#ea9999';
 
     let findDuplicatedTransactionIds = false;
+    
     // search for ID header
     for(const column of columns) {
       if (column.isId()) {
         const idColumnIndex = column.getIndex();
         const transactionsData = transactionsDataRange.getValues();
-        let idsMap = new Set<string>();
+        let idsMap = new Map<string, string>();
+        let errorBackgroundsSet = new Set<string>();
         // look for duplicates
         for (let i = 0; i < transactionsData.length; i++) {
           const transactionId = `${transactionsData[i][idColumnIndex]}`.trim();
-          const isDuplicatedId = idsMap.has(transactionId);
-          if (isDuplicatedId) {
-            transactionsDataRange.getCell(i + 1, idColumnIndex + 1).setBackground(ERROR_BACKGROUND);
-            findDuplicatedTransactionIds = true;
-          } else if (transactionId != '') {
-            idsMap.add(transactionId);
+          if (transactionId != '') {
+            const duplicatedIdRow = idsMap.get(transactionId);
+            if (duplicatedIdRow != undefined) {
+              findDuplicatedTransactionIds = true;
+              // flag both rows
+              errorBackgroundsSet.add(`${i + 1}`);
+              errorBackgroundsSet.add(`${duplicatedIdRow}`);
+            } else {
+              idsMap.set(transactionId, `${i + 1}`);
+            }
           }
+        }
+        // set backgrounds
+        for (const rowIndex of Array.from(errorBackgroundsSet.values())) {
+          transactionsDataRange.getCell(+rowIndex, idColumnIndex + 1).setBackground(ERROR_BACKGROUND);
         }
       }
     }
