@@ -4,9 +4,9 @@ var ERROR_BACKGROUND_ = '#ea9999';
 namespace RecordTransactionsService {
 
   export function recordTransactions(book: Bkper.Book, selectedRange: GoogleAppsScript.Spreadsheet.Range, activeSS: GoogleAppsScript.Spreadsheet.Spreadsheet, highlight: boolean): boolean {
-    
+
     const timezone = activeSS.getSpreadsheetTimeZone();
-    
+
     const success = batchCreateTransactions(book, selectedRange, selectedRange.getValues(), timezone);
 
     if (highlight && success) {
@@ -90,39 +90,45 @@ namespace RecordTransactionsService {
     if (header.isValid()) {
       for (const column of header.getColumns()) {
         let value = row[column.getIndex()];
-        if (createAccountIfNeeded(book, column, value)) {
-          descriptionRow.push(value)
-        } 
-        
-        else if (column.isCreditAccount()) {
-          transaction.setCreditAccount(value);
-        } else if (column.isDebitAccount()) {
-          transaction.setDebitAccount(value);
-        } else if (column.isDate()) {
-          transaction.setDate(value);
-        } else if (column.isAmount()) {
-          transaction.setAmount(value);
-        } else if (column.isDescription()) {
-          transaction.setDescription(value);
+
+        if (value && value != '') {
+
+          if (createAccountIfNeeded(book, column, value)) {
+            descriptionRow.push(value)
+          } else if (column.isCreditAccount()) {
+            transaction.setCreditAccount(value);
+          } else if (column.isDebitAccount()) {
+            transaction.setDebitAccount(value);
+          } else if (column.isDate()) {
+            transaction.setDate(value);
+          } else if (column.isAmount()) {
+            transaction.setAmount(value);
+          } else if (column.isDescription()) {
+            transaction.setDescription(value);
+          } else if (column.isAttachment()) {
+            transaction.addUrl(value)
+          } else if (column.isProperty()) {
+            transaction.setProperty(column.getName(), formatProperty(book, value, timezone));
+          } else if (column.isId()) {
+            transaction.addRemoteId(value);
+          } else if (!column.isBookId()) {
+            descriptionRow.push(formatValue(book, value, timezone))
+          }
         }
-        
-        else if (column.isProperty()) {
-          transaction.setProperty(column.getName(), formatProperty(book, value, timezone));
-        } else if (column.isId()) {
-          transaction.addRemoteId(value);
-        } else if (!column.isBookId()) {
-          descriptionRow.push(formatValue(book, value, timezone))
-        } 
+
       }
     } else {
-        for (var j = 0; j < row.length; j++) {
-            var cell = row[j];
-            descriptionRow.push(formatValue(book, cell, timezone))
-        }
+      for (var j = 0; j < row.length; j++) {
+        var cell = row[j];
+        descriptionRow.push(formatValue(book, cell, timezone))
+      }
     }
 
     if (transaction.getDescription() == '') {
-      transaction.setDescription(descriptionRow.join(" "))
+      let descrition = descriptionRow.join(" ");
+      if (descrition.trim().length > 0) {
+        transaction.setDescription(descrition)
+      }
     }
 
     return transaction;
@@ -149,9 +155,9 @@ namespace RecordTransactionsService {
     const columns = header.getColumns();
 
     let findDuplicatedTransactionIds = false;
-    
+
     // search for ID header
-    for(const column of columns) {
+    for (const column of columns) {
       if (column.isId()) {
         const idColumnIndex = column.getIndex();
         const transactionsData = transactionsDataRange.getValues();
