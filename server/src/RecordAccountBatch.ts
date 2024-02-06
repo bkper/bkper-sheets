@@ -2,8 +2,8 @@ class RecordAccountBatch {
 
     private book: Bkper.Book;
 
-    private newAccounts: BatchNewAccount[] = [];
-    private existingAccounts: BatchExistingAccount[] = [];
+    private newAccountsMap: { [rowIndex: string]: BatchNewAccount } = {};
+    private existingAccountsMap: { [rowIndex: string]: BatchExistingAccount } = {};
 
     private groupNames: string[] = [];
 
@@ -18,12 +18,12 @@ class RecordAccountBatch {
         return this.book;
     }
 
-    pushNewAccount(account: BatchNewAccount) {
-        this.newAccounts.push(account);
+    setNewAccount(account: BatchNewAccount, rowIndex: string) {
+        this.newAccountsMap[rowIndex] = account;
     }
 
-    pushExistingAccount(account: BatchExistingAccount) {
-        this.existingAccounts.push(account);
+    setExistingAccount(account: BatchExistingAccount, rowIndex: string) {
+        this.existingAccountsMap[rowIndex] = account;
     }
 
     pushGroupName(groupName: string) {
@@ -32,7 +32,7 @@ class RecordAccountBatch {
         }
     }
 
-    addToAccountTypesMap(rowIndex: string, accountType: string) {
+    setAccountType(rowIndex: string, accountType: string) {
         if (!this.accountTypesMap[rowIndex]) {
             this.accountTypesMap[rowIndex] = accountType;
         }
@@ -60,17 +60,28 @@ class RecordAccountBatch {
 
     private createNewAccounts() {
         let newAccounts: Bkper.Account[] = [];
-        for (const newAccount of this.newAccounts) {
-            newAccounts.push(newAccount.build());
+        for (const rowIndex of Object.keys(this.newAccountsMap)) {
+            const mappedNewAccount = this.newAccountsMap[rowIndex];
+            if (mappedNewAccount) {
+                newAccounts.push(mappedNewAccount.build());
+            }
         }
         if (newAccounts.length > 0) {
+            // Fire batch create accounts
             this.book.batchCreateAccounts(newAccounts);
         }
     }
 
     private updateExistingAccounts() {
-        for (const existingAccount of this.existingAccounts) {
-            existingAccount.update();
+        for (const rowIndex of Object.keys(this.existingAccountsMap)) {
+            const mappedExistingAccount = this.existingAccountsMap[rowIndex];
+            if (mappedExistingAccount) {
+                const updateResult = mappedExistingAccount.update();
+                // Overwrite background if account did NOT update
+                if (!updateResult.updated) {
+                    this.accountTypesMap[rowIndex] = undefined;
+                }
+            }
         }
     }
 
@@ -117,7 +128,7 @@ class BatchExistingAccount {
         return (!currentProperties[key] && value) || (currentProperties[key] && currentProperties[key] !== value) ? true : false;
     }
 
-    update(): Bkper.Account {
+    update(): { account: Bkper.Account, updated: boolean } {
         let currentProperties = this.account.getProperties();
         let currentGroupNames = this.account.getGroups().map(g => g.getName());
         let needToUpdate = false;
@@ -134,7 +145,12 @@ class BatchExistingAccount {
                 needToUpdate = true;
             }
         }
-        return needToUpdate ? this.account.update() : this.account;
+        // Return object with account and update status
+        if (needToUpdate) {
+            return { account: this.account.update(), updated: true};
+        } else {
+            return { account: this.account, updated: false};
+        }
     }
 
 }

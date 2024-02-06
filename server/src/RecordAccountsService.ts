@@ -123,8 +123,8 @@ namespace RecordAccountsService {
     }
 
     if (highlight) {
-      const type = accountName ? accountType as string : undefined;
-      batch.addToAccountTypesMap(rowIndex + '', type);
+      const type = accountName ? `${accountType}` : undefined;
+      batch.setAccountType(`${rowIndex}`, type);
     }
 
     if (!accountName) {
@@ -133,10 +133,10 @@ namespace RecordAccountsService {
 
     const account = book.getAccount(accountName);
     if (account) {
-      batch.pushExistingAccount(new BatchExistingAccount(book, account, accountGroupNames, accountProperties));
+      batch.setExistingAccount(new BatchExistingAccount(book, account, accountGroupNames, accountProperties), `${rowIndex}`);
     } else {
       const newAccount = book.newAccount().setName(accountName).setType(accountType);
-      batch.pushNewAccount(new BatchNewAccount(book, newAccount, accountGroupNames, accountProperties));
+      batch.setNewAccount(new BatchNewAccount(book, newAccount, accountGroupNames, accountProperties), `${rowIndex}`);
     }
 
     return batch;
