@@ -77,11 +77,11 @@ namespace RecordTransactionsService {
     return cell;
   }
 
-  function formatProperty(book: Bkper.Book, cell: any, timezone?: string) {
+  function formatProperty(book: Bkper.Book, cell: any, timezone?: string): string {
     if (Utilities_.isDate(cell)) {
       return book.formatDate(cell, timezone);
     }
-    return cell;
+    return `${cell}`;
   }
 
   function arrayToTransaction_(row: any[], book: Bkper.Book, header: TransactionsHeader, timezone?: string): Bkper.Transaction {
@@ -91,7 +91,7 @@ namespace RecordTransactionsService {
       for (const column of header.getColumns()) {
         let value = row[column.getIndex()];
 
-        if (value && value != '') {
+        if ((value && value != '') || value == 0) {
 
           if (createAccountIfNeeded(book, column, value)) {
             descriptionRow.push(value)
