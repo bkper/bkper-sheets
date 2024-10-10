@@ -94,7 +94,7 @@ namespace RecordAccountsService {
 
     if (header.isValid()) {
       for (const column of header.getColumns()) {
-        const value = (row[column.getIndex()] + '').trim();
+        const value = (row[column.getIndex()] + '').replaceAll('\n', ' ').trim();
         if (column.isName()) {
           accountName = value;
         } else if (column.isType()) {
@@ -110,13 +110,13 @@ namespace RecordAccountsService {
       }
     } else {
       // row[0] should be the Name
-      accountName = (row[0] + '').trim();
+      accountName = (row[0] + '').replaceAll('\n', ' ').trim();
       // row[1] should be the Type
-      const type = (row[1] + '').trim();
+      const type = (row[1] + '').replaceAll('\n', ' ').trim();
       accountType = isValidType(type) ? type as Bkper.AccountType : BkperApp.AccountType.ASSET;
       // Every other cell should be a Group name
       for (let i = 2; i < row.length; i++) {
-        const value = (row[i] + '').trim();
+        const value = (row[i] + '').replaceAll('\n', ' ').trim();
         batch.pushGroupName(value);
         accountGroupNames.push(value);
       }
