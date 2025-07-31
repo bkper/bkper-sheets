@@ -19,7 +19,7 @@
 
 <div class="sidebar branding-below hiddenContent" id="sidebarWrapper">
 
-  <div class="block form-group">
+  <div class="form-group ledger-select-group">
     <select id="ledgerSelect" class="ledgerSelect" disabled="disabled">
       <option value="">Select a Book...</option>
     </select>
@@ -39,7 +39,7 @@
       <div class="block form-group tabContent">
 
         <div class="block form-group" id='record-type-radio-group'>
-          <div>
+          <div class="record-type-group">
             <div class="inline record-type-radio-btn">
               <input type="radio" checked="checked" name="record-type-radio" id="record-type-radio-transactions" value="transactions">
               <label for="record-type-radio-transactions" class="bold">Transactions</label>
@@ -73,7 +73,7 @@
       <div class="block form-group tabContent">
 
         <div class="block form-group" id='fetch-type-radio-group'>
-          <div>
+          <div class="fetch-type-group">
             <div class="inline function-radio-btn">
               <input type="radio" name="fetch-type-radio" id="fetch-type-radio-balances" value="balances" checked="checked"/>
               <label for="fetch-type-radio-balances" class="bold">Balances</label>
@@ -82,8 +82,6 @@
               <input type="radio" name="fetch-type-radio" id="fetch-type-radio-transactions" value="transactions" />
               <label for="fetch-type-radio-transactions" class="bold">Transactions</label>
             </div>
-          </div>
-          <div>
             <div class="inline function-radio-btn">
               <input type="radio" name="fetch-type-radio" id="fetch-type-radio-accounts" value="accounts" />
               <label for="fetch-type-radio-accounts" class="bold">Accounts</label>

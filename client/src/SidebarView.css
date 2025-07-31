@@ -17,7 +17,7 @@ body {
 }
 
 .record-type-radio-btn {
-  margin-right: 10px;
+  margin-bottom: 5px;
 }
 
 .bal-type-radio-btn {
@@ -122,8 +122,19 @@ input[type="radio"] {
   width: 100%;
 }
 
+.ledger-select-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.record-type-group, .fetch-type-group {
+  display: flex;
+  flex-direction: column;
+}
+
 .ledgerSelect {
-  width: 195px;
+  width: 191px;
 }
 
 #recordedStatus {
