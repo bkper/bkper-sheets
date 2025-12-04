@@ -3,15 +3,18 @@
   "compilerOptions": {
     "lib": ["esnext", "dom"],
     "target": "ES5",
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "types": ["jquery"]
   },
   "include": [
     "src/**/*.ts",
     "test/**/*.ts",
-    "@types/**/*.d.ts"
+    "./@types/**/*.d.ts"
   ],
   "exclude": [
-    "node_modules/",
-    "build/"
+    "node_modules/**",
+    "build/**",
+    "../node_modules/**"
   ]
 }

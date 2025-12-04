@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
     "module": "none",
+    "skipLibCheck": true,
     "experimentalDecorators": true
   }
 }
+

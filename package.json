@@ -23,7 +23,7 @@
     "build:server": "yarn --cwd server/ build",
     "build": "run-p clean build:*",
     "postbuild": "yarn copy",
-    "watch": "run-p watch:client watch:server watch:push",
+    "dev": "run-p watch:client watch:server watch:push",
     "watch:client": "run-p watch:client:*",
     "watch:client:src": "watch 'yarn --cwd client/ build' ./client/src",
     "watch:client:dist": "watch 'yarn copy:client' ./client/dist",

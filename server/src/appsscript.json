@@ -1,20 +1,20 @@
 {
-  "timeZone": "America/Sao_Paulo",
-  "dependencies": {
-    "libraries": [
-      {
-        "userSymbol": "BkperApp",
-        "libraryId": "1hMJszJGSUVZDB3vmsWrUZfRhY1UWbhS0SQ6Lzl06gm1zhBF3ioTM7mpJ",
-        "version": "189",
-        "developmentMode": false
-      },
-      {
-        "userSymbol": "OAuth2",
-        "libraryId": "1B7FSrk5Zi6L1rSxxTDgDEUsPzlukDsi4KGuTMorsTQHhGBzBkMun4iDF",
-        "version": "41"
-      }
-    ]
-  },
-  "exceptionLogging": "STACKDRIVER",
-  "runtimeVersion": "V8"
+    "timeZone": "America/Sao_Paulo",
+    "dependencies": {
+        "libraries": [
+            {
+                "userSymbol": "BkperApp",
+                "libraryId": "1hMJszJGSUVZDB3vmsWrUZfRhY1UWbhS0SQ6Lzl06gm1zhBF3ioTM7mpJ",
+                "version": "189",
+                "developmentMode": true
+            },
+            {
+                "userSymbol": "OAuth2",
+                "libraryId": "1B7FSrk5Zi6L1rSxxTDgDEUsPzlukDsi4KGuTMorsTQHhGBzBkMun4iDF",
+                "version": "41"
+            }
+        ]
+    },
+    "exceptionLogging": "STACKDRIVER",
+    "runtimeVersion": "V8"
 }
