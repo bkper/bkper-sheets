@@ -1,6 +1,8 @@
 
 namespace FetchTabView {
 
+  var QUERY_CATEGORY_STATUS_ = "Status";
+
   var view;
 
   export function init() {
@@ -282,7 +284,11 @@ namespace FetchTabView {
           //@ts-ignore
           var matcher = new RegExp($.ui.autocomplete
             .escapeRegex(request.term), "i");
-          var matching = $.grep(queries, function (value: any) {
+          var filteredQueries = queries;
+          if (getFetchType() !== "transactions") {
+            filteredQueries = queries.filter((q: any) => q.category !== QUERY_CATEGORY_STATUS_);
+          }
+          var matching = $.grep(filteredQueries, function (value: any) {
             var title = value.title;
             return matcher.test(title);
           });

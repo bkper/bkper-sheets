@@ -1,3 +1,4 @@
+var QUERY_CATEGORY_STATUS_ = "Status";
 var QUERY_CATEGORY_SAVED_ = "Saved Queries";
 var QUERY_CATEGORY_ACCOUNT_ = "Accounts";
 var QUERY_CATEGORY_GROUP_ = "Groups";
@@ -24,10 +25,12 @@ namespace QueryService {
   export function loadQueries(ledgerId: string): LedgerQueries {
     var ledger = BookService.getBook(ledgerId);
 
-    var queries = filterBalanceSavedQueries_(ledger);
+    var queries = createStatusQueries_();
+    var savedQueries = filterBalanceSavedQueries_(ledger);
+    queries = queries.concat(savedQueries);
     var groupQueries = createGroupQueries_(ledger);
     queries = queries.concat(groupQueries);
-    var accountQueries = createAccountQueries_(ledger)
+    var accountQueries = createAccountQueries_(ledger);
     queries = queries.concat(accountQueries);
     
     var ledgerQueries = {
@@ -61,6 +64,15 @@ namespace QueryService {
         category: QUERY_CATEGORY_GROUP_
       }
     }).sort(queryComparator_);
+  }
+
+  function createStatusQueries_(): Query[] {
+    return [
+      { title: "Draft", query: "is:draft", category: QUERY_CATEGORY_STATUS_ },
+      { title: "Unchecked", query: "is:unchecked", category: QUERY_CATEGORY_STATUS_ },
+      { title: "Checked", query: "is:checked", category: QUERY_CATEGORY_STATUS_ },
+      { title: "Trashed", query: "is:trashed", category: QUERY_CATEGORY_STATUS_ }
+    ];
   }
   
   function queryComparator_(query1: Query, query2: Query) {
