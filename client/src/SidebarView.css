@@ -128,9 +128,14 @@ input[type="radio"] {
   justify-content: space-between;
 }
 
-.record-type-group, .fetch-type-group {
+.record-type-group {
   display: flex;
   flex-direction: column;
+}
+
+.fetch-type-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
 
 .ledgerSelect {
