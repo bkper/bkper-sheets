@@ -5,17 +5,15 @@
  * @param {string} bookId The universal Book Id.
  * @param {number} cache Increase to clean cache and fetch fresh data.
  * @param {string} query The transactions query.
- * @param {boolean} properties True to include transaction properties.
- * @param {boolean} ids True to include transaction ids.
  * 
  * @customfunction
  */
-function BKPER_TRANSACTIONS(bookId: string, cache: number, query: string, properties: boolean, ids: boolean): any[][] {
+function BKPER_TRANSACTIONS(bookId: string, cache: number, query: string): any[][] {
   return BookService.getBook(bookId)
   .createTransactionsDataTable(query)
   .includeUrls(true)
-  .includeProperties(properties)
-  .includeIds(ids)
+  .includeProperties(true)
+  .includeIds(true)
   .build();
 }
 
@@ -25,16 +23,15 @@ function BKPER_TRANSACTIONS(bookId: string, cache: number, query: string, proper
  * @param {string} bookId The universal Book Id.
  * @param {number} cache Increase to clean cache and fetch fresh data.
  * @param {boolean} groups True to include account groups.
- * @param {boolean} properties True to include account properties.
  * 
  * @customfunction
  * 
  */
-function BKPER_ACCOUNTS(bookId: string, cache: number, groups?: boolean, properties?: boolean): any[][] {
+function BKPER_ACCOUNTS(bookId: string, cache: number, groups?: boolean): any[][] {
   return BookService.getBook(bookId)
   .createAccountsDataTable()
   .groups(groups)
-  .properties(properties)
+  .properties(true)
   .build();
 }
 
@@ -43,15 +40,14 @@ function BKPER_ACCOUNTS(bookId: string, cache: number, groups?: boolean, propert
  *
  * @param {string} bookId The universal Book Id.
  * @param {number} cache Increase to clean cache and fetch fresh data.
- * @param {boolean} properties True to include group properties.
  * 
  * @customfunction
  * 
  */
-function BKPER_GROUPS(bookId: string, cache: number, properties?: boolean): any[][] {
+function BKPER_GROUPS(bookId: string, cache: number): any[][] {
   return BookService.getBook(bookId)
   .createGroupsDataTable()
-  .properties(properties)
+  .properties(true)
   .build();
 }
 

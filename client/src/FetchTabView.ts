@@ -14,7 +14,6 @@ namespace FetchTabView {
       balanceTypeRadioGroup: $('#balance-type-radio-group'),
       expanded: $('#expanded'),
       transposed: $('#transposed'),
-      properties: $('#properties'),
       groups: $('#groups'),
       fetchOptionRadioGroup: $('#fetch-option-radio-group')
     }
@@ -48,9 +47,6 @@ namespace FetchTabView {
   }
   function disableTransposed(disable) {
     disableInput(disable, view.transposed);
-  }
-  function disableProperties(disable) {
-    disableInput(disable, view.properties);
   }
   function disableGroups(disable) {
     disableInput(disable, view.groups);
@@ -86,13 +82,11 @@ namespace FetchTabView {
     disableBalanceType(true);
     disableExpanded(true);
     disableTransposed(true);
-    disableProperties(true);
     disableGroups(true);
     disableFetchOption(true);
     disableFetchButton(true);
 
     if (form.fetchType == "accounts") {
-      disableProperties(false);
       disableGroups(false);
       disableFetchOption(false);
       disableFetchButton(false);
@@ -103,7 +97,6 @@ namespace FetchTabView {
     }
 
     if (form.fetchType == "groups") {
-      disableProperties(false);
       disableFetchOption(false);
       disableFetchButton(false);
 
@@ -115,7 +108,6 @@ namespace FetchTabView {
     if (form.fetchType == "transactions") {
 
       disableQueryInput(false)
-      disableProperties(false);
 
       resetBalancesOptions();
 
@@ -204,14 +196,6 @@ namespace FetchTabView {
 
   function getGroups(): boolean {
     return view.groups.is(":checked");
-  }
-
-  function getProperties(): boolean {
-    return view.properties.is(":checked");
-  }
-
-  function getIds(): boolean {
-    return $("input[name=fetch-type-radio]:checked", view.fetchTypeRadioGroup).val() === "transactions";
   }
 
   export function shouldFetchValues(): boolean {
@@ -344,8 +328,6 @@ namespace FetchTabView {
     form.expanded = getExpanded();
     form.transposed = getTransposed();
     form.groups = getGroups();
-    form.properties = getProperties();
-    form.ids = getIds();
     return form;
   }
 

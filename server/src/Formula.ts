@@ -41,16 +41,12 @@ class Formula {
     
     if (fetchStatement.fetchType === 'groups') {
       formula.name = FormulaName.BKPER_GROUPS;
-      formula.param1 = fetchStatement.properties ? true : false;
     } else if (fetchStatement.fetchType === 'accounts') {
       formula.name = FormulaName.BKPER_ACCOUNTS;
       formula.param1 = fetchStatement.groups ? true : false;
-      formula.param2 = fetchStatement.properties ? true : false;
     } else if (fetchStatement.fetchType === 'transactions') {
       formula.name = FormulaName.BKPER_TRANSACTIONS;
       formula.param1 = fetchStatement.query.replace(/\"/g, "'");
-      formula.param2 = fetchStatement.properties ? true : false;
-      formula.param3 = fetchStatement.ids ? true : false;
     } else if (fetchStatement.fetchType === 'balances') {
       formula.param1 = fetchStatement.query.replace(/\"/g, "'");
       if (typeof fetchStatement.expanded == "boolean" && fetchStatement.expanded == true) {
@@ -174,19 +170,15 @@ class Formula {
 
 
     if (this.name === FormulaName.BKPER_GROUPS) {
-      if (this.param1 == undefined) {
-        this.param1 = false;
-      }
-      let param1 = (''+this.param1).toUpperCase();
-      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.cache}${sep} ${param1})`;
+      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.cache})`;
     } else if (this.name === FormulaName.BKPER_ACCOUNTS) {
       if (this.param1 == undefined) {
         this.param1 = true;
       }
       let param1 = (''+this.param1).toUpperCase();
-      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.cache}${sep} ${param1}${sep} ${param2})`;
+      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.cache}${sep} ${param1})`;
     } else if (this.name === FormulaName.BKPER_TRANSACTIONS) {
-      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.cache}${sep} ${param1Quotes}${this.param1}${param1Quotes}${sep} ${param2}${sep} ${param3})`;
+      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.cache}${sep} ${param1Quotes}${this.param1}${param1Quotes})`;
     } else {
       return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.cache}${sep} ${param1Quotes}${this.param1}${param1Quotes}${sep} ${param2}${sep} ${param3}${sep} ${param4})`;
     }

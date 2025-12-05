@@ -12,7 +12,5 @@ interface FetchStatement {
   hideDates?: boolean,
   hideNames?: boolean,
   groups?: boolean,
-  properties?: boolean,
-  ids?: boolean,
   lastUpdate?: number
 }

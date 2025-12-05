@@ -66,13 +66,9 @@ declare namespace google {
 
             hideNames?: boolean;
 
-            ids?: boolean;
-
             lastUpdate?: number;
 
             ledgerId: string;
-
-            properties?: boolean;
 
             query?: string;
 
