@@ -1,22 +1,31 @@
 class RecordTransactionBatch {
 
   private book: Bkper.Book;
-  private transactions: Bkper.Transaction[] = [];
+  private transactionsToCreate: Bkper.Transaction[] = [];
+  private transactionsToUpdate: Bkper.Transaction[] = [];
 
   constructor(book: Bkper.Book) {
     this.book = book;
   }
 
-  push(transaction: Bkper.Transaction) {
-    this.transactions.push(transaction);
+  pushCreate(transaction: Bkper.Transaction) {
+    this.transactionsToCreate.push(transaction);
+  }
+
+  pushUpdate(transaction: Bkper.Transaction) {
+    this.transactionsToUpdate.push(transaction);
   }
 
   getBook() {
     return this.book;
   }
 
-  getTransactions() {
-    return this.transactions;
+  getTransactionsToCreate() {
+    return this.transactionsToCreate;
+  }
+
+  getTransactionsToUpdate() {
+    return this.transactionsToUpdate;
   }
 
 }

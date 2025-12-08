@@ -8,6 +8,7 @@ class TransactionsHeader {
     private rowNum: number;
 
     private bookIdHeaderColumn: TransactionsHeaderColumn;
+    private transactionIdHeaderColumn: TransactionsHeaderColumn;
 
     constructor(range: GoogleAppsScript.Spreadsheet.Range) {
         this.range = range;
@@ -26,15 +27,39 @@ class TransactionsHeader {
                 if (header.isBookId()) {
                     this.bookIdHeaderColumn = header;
                 }
+                if (header.isTransactionId()) {
+                    this.transactionIdHeaderColumn = header;
+                }
             }
         }
-        if (frozenRows > 0) {
+        if (frozenRows > 0 || this.hasRecognizedColumns()) {
             this.valid = true;
         }
     }
 
+    private hasRecognizedColumns(): boolean {
+        for (const column of this.columns) {
+            if (column.isDate() ||
+                column.isDescription() ||
+                column.isAmount() ||
+                column.isCreditAccount() ||
+                column.isDebitAccount() ||
+                column.isId() ||
+                column.isTransactionId() ||
+                column.isBookId() ||
+                column.isAttachment()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     getBookIdHeaderColumn(): TransactionsHeaderColumn {
         return this.bookIdHeaderColumn;
+    }
+
+    getTransactionIdHeaderColumn(): TransactionsHeaderColumn {
+        return this.transactionIdHeaderColumn;
     }
 
 
@@ -111,6 +136,18 @@ class TransactionsHeaderColumn {
         return this.isValid() && this.name.trim().toLowerCase() == 'transaction id';
     }
 
+    isStatus(): boolean {
+        return this.isValid() && this.name.trim().toLowerCase() == 'status';
+    }
+
+    isRecordedAt(): boolean {
+        if (!this.isValid()) {
+            return false;
+        }
+        const nameLower = this.name.trim().toLowerCase();
+        return nameLower == 'recorded at' || nameLower == 'created at';
+    }
+
     isCreditAccount(): boolean {
         if (!this.isValid()) {
             return false;
@@ -136,6 +173,9 @@ class TransactionsHeaderColumn {
             && !this.isAttachment()
             && !this.isBookId()
             && !this.isId()
+            && !this.isTransactionId()
+            && !this.isStatus()
+            && !this.isRecordedAt()
             && !this.isCreditAccount()
             && !this.isDebitAccount()
             ;

@@ -116,7 +116,7 @@ namespace AutoRecordService {
         }
       }
       
-      RecordTransactionsService.batchCreateTransactions(book, range, values, timeZone);
+      RecordTransactionsService.batchSaveTransactions(book, range, values, timeZone);
 
       range.setBackground(RECORD_BACKGROUND_);
       binding.currentRow = lastRow;
