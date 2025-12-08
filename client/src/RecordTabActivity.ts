@@ -7,7 +7,12 @@ namespace RecordTabActivity {
 	export function recordLines() {
 		SidebarView.loading(true);
 		RecordTabView.disableRecordButton(true);
-		google.script.run.withSuccessHandler(recorded).withFailureHandler(SidebarView.showError).saveLines(RecordTabView.getForm());
+		google.script.run.withSuccessHandler(recorded).withFailureHandler(handleRecordError).saveLines(RecordTabView.getForm());
+	}
+
+	function handleRecordError(error) {
+		RecordTabView.disableRecordButton(false);
+		SidebarView.showError(error);
 	}
 
 	function recorded(recorded) {
