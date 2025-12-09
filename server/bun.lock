@@ -1,10 +1,11 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "@bkper/bkper-sheets-server",
       "devDependencies": {
-        "@bkper/bkper-app-types": "^3.34.2",
+        "@bkper/bkper-gs-types": "^3.40.0",
         "@types/chai": "^4.2.1",
         "@types/google-apps-script": "^0.0.59",
         "@types/google-apps-script-oauth2": "^24.0.2",
@@ -20,7 +21,7 @@
     },
   },
   "packages": {
-    "@bkper/bkper-app-types": ["@bkper/bkper-app-types@3.34.2", "", { "dependencies": { "@types/google-apps-script": "*" } }, "sha512-MEPpAEA+UaJ5m9DMQqhPgMBSUvjbzE2xwEljbbtQxXqpgHLT/WYoLnWV/9SSBEgLsNo3ymf05BQJv3WTQKsV8g=="],
+    "@bkper/bkper-gs-types": ["@bkper/bkper-gs-types@3.40.0", "", { "dependencies": { "@types/google-apps-script": "*" } }, "sha512-cF934IOnAUkPz8QYcw2+I6gG7oe6S4mjHgj+/wiTiYoxkhMAy7Hb1O4hEnZbtsfCZ0QLmAjKC9SiCsZVMly5NA=="],
 
     "@types/chai": ["@types/chai@4.3.20", "", {}, "sha512-/pC9HAB5I/xMlc5FP77qjCnI16ChlJfW0tGa0IUcFn38VJrTV6DeZ60NU5KZBtaOZqjdpwTWohz5HU1RrhiYxQ=="],
 
