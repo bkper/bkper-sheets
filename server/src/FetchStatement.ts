@@ -11,6 +11,5 @@ interface FetchStatement {
   transposed?: boolean,
   hideDates?: boolean,
   hideNames?: boolean,
-  groups?: boolean,
   lastUpdate?: number
 }

@@ -14,7 +14,6 @@ namespace FetchTabView {
       balanceTypeRadioGroup: $('#balance-type-radio-group'),
       expanded: $('#expanded'),
       transposed: $('#transposed'),
-      groups: $('#groups'),
       fetchOptionRadioGroup: $('#fetch-option-radio-group')
     }
     bindUIActions();
@@ -48,9 +47,6 @@ namespace FetchTabView {
   function disableTransposed(disable) {
     disableInput(disable, view.transposed);
   }
-  function disableGroups(disable) {
-    disableInput(disable, view.groups);
-  }
 
   function disableFetchOption(disable) {
     disableInput(disable, view.fetchOptionRadioGroup);
@@ -82,12 +78,10 @@ namespace FetchTabView {
     disableBalanceType(true);
     disableExpanded(true);
     disableTransposed(true);
-    disableGroups(true);
     disableFetchOption(true);
     disableFetchButton(true);
 
     if (form.fetchType == "accounts") {
-      disableGroups(false);
       disableFetchOption(false);
       disableFetchButton(false);
 
@@ -192,10 +186,6 @@ namespace FetchTabView {
 
   function setTransposed(transposed: boolean) {
     view.transposed.prop('checked', transposed);
-  }
-
-  function getGroups(): boolean {
-    return view.groups.is(":checked");
   }
 
   export function shouldFetchValues(): boolean {
@@ -327,7 +317,6 @@ namespace FetchTabView {
     form.balanceType = getBalanceType();
     form.expanded = getExpanded();
     form.transposed = getTransposed();
-    form.groups = getGroups();
     return form;
   }
 

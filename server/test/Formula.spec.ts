@@ -42,7 +42,7 @@ describe('Formula', () => {
     
     it('should parse accounts', () => {
       fetchStatement.fetchType = "accounts";
-      expect(Formula.parseFetchStatement(fetchStatement, 'pt_BR').toString()).to.eql('=BKPER_ACCOUNTS("xxx"; 1; FALSE)');
+      expect(Formula.parseFetchStatement(fetchStatement, 'pt_BR').toString()).to.eql('=BKPER_ACCOUNTS("xxx"; 1)');
     })
 
     it('should parse groups', () => {
@@ -69,10 +69,10 @@ describe('Formula', () => {
   describe('#parseString()', () => {
 
     it('should parse accounts', () => {
-      expect(Formula.parseString('= BKPER_ACCOUNTS("xxx"; 1)', 'pt_BR').toString()).to.eql('=BKPER_ACCOUNTS("xxx"; 1; TRUE)');
-      expect(Formula.parseString('= BKPER_ACCOUNTS("xxx"; 1; TRUE)', 'pt_BR').toString()).to.eql('=BKPER_ACCOUNTS("xxx"; 1; TRUE)');
-      // Legacy formulas with properties param should still parse (extra param ignored in output)
-      expect(Formula.parseString('= BKPER_ACCOUNTS("xxx"; 1; TRUE; TRUE)', 'pt_BR').toString()).to.eql('=BKPER_ACCOUNTS("xxx"; 1; TRUE)');
+      expect(Formula.parseString('= BKPER_ACCOUNTS("xxx"; 1)', 'pt_BR').toString()).to.eql('=BKPER_ACCOUNTS("xxx"; 1)');
+      // Legacy formulas with groups param should still parse (extra param ignored in output)
+      expect(Formula.parseString('= BKPER_ACCOUNTS("xxx"; 1; TRUE)', 'pt_BR').toString()).to.eql('=BKPER_ACCOUNTS("xxx"; 1)');
+      expect(Formula.parseString('= BKPER_ACCOUNTS("xxx"; 1; TRUE; TRUE)', 'pt_BR').toString()).to.eql('=BKPER_ACCOUNTS("xxx"; 1)');
     })
 
     it('should parse groups', () => {

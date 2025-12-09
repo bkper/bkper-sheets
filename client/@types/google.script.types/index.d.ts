@@ -60,8 +60,6 @@ declare namespace google {
 
             fetchType?: "transactions" | "balances" | "accounts" | "groups";
 
-            groups?: boolean;
-
             hideDates?: boolean;
 
             hideNames?: boolean;

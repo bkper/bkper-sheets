@@ -43,7 +43,6 @@ class Formula {
       formula.name = FormulaName.BKPER_GROUPS;
     } else if (fetchStatement.fetchType === 'accounts') {
       formula.name = FormulaName.BKPER_ACCOUNTS;
-      formula.param1 = fetchStatement.groups ? true : false;
     } else if (fetchStatement.fetchType === 'transactions') {
       formula.name = FormulaName.BKPER_TRANSACTIONS;
       formula.param1 = fetchStatement.query.replace(/\"/g, "'");
@@ -172,11 +171,7 @@ class Formula {
     if (this.name === FormulaName.BKPER_GROUPS) {
       return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.cache})`;
     } else if (this.name === FormulaName.BKPER_ACCOUNTS) {
-      if (this.param1 == undefined) {
-        this.param1 = true;
-      }
-      let param1 = (''+this.param1).toUpperCase();
-      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.cache}${sep} ${param1})`;
+      return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.cache})`;
     } else if (this.name === FormulaName.BKPER_TRANSACTIONS) {
       return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.cache}${sep} ${param1Quotes}${this.param1}${param1Quotes})`;
     } else {

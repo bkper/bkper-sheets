@@ -21,16 +21,15 @@ function BKPER_TRANSACTIONS(bookId: string, cache: number, query: string): any[]
  *
  * @param {string} bookId The universal Book Id.
  * @param {number} cache Increase to clean cache and fetch fresh data.
- * @param {boolean} groups True to include account groups.
  *
  * @customfunction
  *
  */
-function BKPER_ACCOUNTS(bookId: string, cache: number, groups?: boolean): any[][] {
+function BKPER_ACCOUNTS(bookId: string, cache: number): any[][] {
     return BookService.getBook(bookId)
         .createAccountsDataTable()
         .ids(true)
-        .groups(groups)
+        .groups(true)
         .properties(true)
         .build();
 }
