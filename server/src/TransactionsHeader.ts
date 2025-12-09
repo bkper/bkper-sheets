@@ -148,6 +148,10 @@ class TransactionsHeaderColumn {
         return nameLower == 'recorded at' || nameLower == 'created at';
     }
 
+    isBalance(): boolean {
+        return this.isValid() && this.name.trim().toLowerCase() == 'balance';
+    }
+
     isCreditAccount(): boolean {
         if (!this.isValid()) {
             return false;
@@ -178,6 +182,7 @@ class TransactionsHeaderColumn {
             && !this.isRecordedAt()
             && !this.isCreditAccount()
             && !this.isDebitAccount()
+            && !this.isBalance()
             ;
     }
 }

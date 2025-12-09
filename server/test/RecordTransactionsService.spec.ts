@@ -220,6 +220,75 @@ describe('RecordTransactionsService', () => {
       expect(updatedTransaction._date).to.equal('2024-06-15');
     });
 
+    it('should skip balance column and not save it as a property when updating', () => {
+      // Given
+      let updatedTransaction: any = null;
+
+      const mockTransaction = (id?: string) => {
+        const tx: any = {
+          _id: id,
+          _creditAccount: '',
+          _debitAccount: '',
+          _date: '',
+          _amount: 0,
+          _description: '',
+          _properties: {} as { [key: string]: string },
+          _remoteIds: [] as string[],
+          getId: function() { return this._id; },
+          setCreditAccount: function(v: string) { this._creditAccount = v; return this; },
+          setDebitAccount: function(v: string) { this._debitAccount = v; return this; },
+          setDate: function(v: any) { this._date = v; return this; },
+          setAmount: function(v: number) { this._amount = v; return this; },
+          setDescription: function(v: string) { this._description = v; return this; },
+          getDescription: function() { return this._description; },
+          setProperty: function(k: string, v: string) { this._properties[k] = v; return this; },
+          addRemoteId: function(v: string) { this._remoteIds.push(v); return this; },
+        };
+        return tx;
+      };
+
+      const existingTx = mockTransaction('tx-123');
+
+      const mockBook: any = {
+        getId: () => 'book-123',
+        newTransaction: () => mockTransaction(),
+        getTransaction: () => existingTx,
+        batchCreateTransactions: () => {},
+        batchUpdateTransactions: (txs: any[]) => {
+          updatedTransaction = txs[0];
+        },
+        formatDate: (d: any) => d,
+        formatAmount: (a: any) => a,
+        getGroup: (): any => null,
+      };
+
+      const mockSheet: any = {
+        getFrozenRows: () => 1,
+        getSheetValues: () => [['Date', 'Description', 'Amount', 'Credit Account', 'Debit Account', 'Balance', 'Transaction ID']],
+      };
+
+      const mockRange: any = {
+        getSheet: () => mockSheet,
+        getColumn: () => 1,
+        getNumColumns: () => 7,
+        getCell: () => ({ getBackground: () => '#ffffff', setBackground: () => {} }),
+        getValues: () => [
+          ['2024-01-01', 'Test Transaction', 100, 'Bank', 'Expenses', 500, 'tx-123'],
+        ],
+      };
+
+      const values = mockRange.getValues();
+
+      // When
+      const result = RecordTransactionsService.batchSaveTransactions(mockBook, mockRange, values, 'UTC');
+
+      // Then
+      expect(result).to.be.true;
+      expect(updatedTransaction).to.not.be.null;
+      expect(updatedTransaction._properties).to.not.have.property('Balance');
+      expect(updatedTransaction._properties).to.not.have.property('balance');
+    });
+
     it('should work with non-frozen headers when recognized column names exist', () => {
       // Given
       let updatedTransaction: any = null;
