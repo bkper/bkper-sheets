@@ -45,6 +45,9 @@ namespace FetchTabView {
     disableInput(disable, view.expanded);
   }
   function disableTransposed(disable) {
+    if (disable) {
+      setTransposed(false);
+    }
     disableInput(disable, view.transposed);
   }
 
@@ -127,10 +130,6 @@ namespace FetchTabView {
 
       if (form.balanceType == null) {
         autoSelectBalanceOption();
-      }
-
-      if (form.balanceType == 'PERIOD' || form.balanceType == 'CUMULATIVE') {
-        setTransposed(true);
       }
 
       disableFetchOption(false);
