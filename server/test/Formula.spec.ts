@@ -45,6 +45,16 @@ describe('Formula', () => {
       expect(Formula.parseFetchStatement(fetchStatement, 'pt_BR').toString()).to.eql('=BKPER_ACCOUNTS("xxx"; 1)');
     })
 
+    it('should parse accounts with group filter', () => {
+      fetchStatement.fetchType = "accounts";
+      fetchStatement.query = "group:'Assets'";
+      expect(Formula.parseFetchStatement(fetchStatement, 'pt_BR').toString()).to.eql('=BKPER_ACCOUNTS("xxx"; 1; "Assets")');
+      expect(Formula.parseFetchStatement(fetchStatement, 'en_US').toString()).to.eql('=BKPER_ACCOUNTS("xxx", 1, "Assets")');
+      expect(Formula.parseFetchStatement(fetchStatement, 'en_US').toJavascript()).to.eql('BKPER_ACCOUNTS("xxx", 1, "Assets")');
+      // Reset query for next tests (balances test expects this format)
+      fetchStatement.query = 'acc: "some account"';
+    })
+
     it('should parse groups', () => {
       fetchStatement.fetchType = "groups";
       expect(Formula.parseFetchStatement(fetchStatement, 'pt_BR').toString()).to.eql('=BKPER_GROUPS("xxx"; 1)');
@@ -73,6 +83,9 @@ describe('Formula', () => {
       // Legacy formulas with groups param should still parse (extra param ignored in output)
       expect(Formula.parseString('= BKPER_ACCOUNTS("xxx"; 1; TRUE)', 'pt_BR').toString()).to.eql('=BKPER_ACCOUNTS("xxx"; 1)');
       expect(Formula.parseString('= BKPER_ACCOUNTS("xxx"; 1; TRUE; TRUE)', 'pt_BR').toString()).to.eql('=BKPER_ACCOUNTS("xxx"; 1)');
+      // With group filter
+      expect(Formula.parseString('= BKPER_ACCOUNTS("xxx"; 1; "Assets")', 'pt_BR').toString()).to.eql('=BKPER_ACCOUNTS("xxx"; 1; "Assets")');
+      expect(Formula.parseString('= BKPER_ACCOUNTS("xxx", 1, "My Group")', 'en_US').toString()).to.eql('=BKPER_ACCOUNTS("xxx", 1, "My Group")');
     })
 
     it('should parse groups', () => {

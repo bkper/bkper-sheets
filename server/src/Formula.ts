@@ -43,6 +43,13 @@ class Formula {
       formula.name = FormulaName.BKPER_GROUPS;
     } else if (fetchStatement.fetchType === 'accounts') {
       formula.name = FormulaName.BKPER_ACCOUNTS;
+      if (fetchStatement.query) {
+        // Extract group name from "group:'GroupName'" format
+        const groupMatch = fetchStatement.query.match(/group:'([^']+)'/);
+        if (groupMatch) {
+          formula.param1 = groupMatch[1];
+        }
+      }
     } else if (fetchStatement.fetchType === 'transactions') {
       formula.name = FormulaName.BKPER_TRANSACTIONS;
       formula.param1 = fetchStatement.query.replace(/\"/g, "'");
@@ -171,6 +178,11 @@ class Formula {
     if (this.name === FormulaName.BKPER_GROUPS) {
       return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.cache})`;
     } else if (this.name === FormulaName.BKPER_ACCOUNTS) {
+      // Only include group param if it's a string (not a legacy boolean param like TRUE/FALSE)
+      const param1Lower = typeof this.param1 === 'string' ? this.param1.toLowerCase() : '';
+      if (this.param1 && typeof this.param1 === 'string' && param1Lower !== 'true' && param1Lower !== 'false') {
+        return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.cache}${sep} ${param1Quotes}${this.param1}${param1Quotes})`;
+      }
       return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.cache})`;
     } else if (this.name === FormulaName.BKPER_TRANSACTIONS) {
       return `=${this.name}(${bookIdQuotes}${this.bookId}${bookIdQuotes}${sep} ${this.cache}${sep} ${param1Quotes}${this.param1}${param1Quotes})`;

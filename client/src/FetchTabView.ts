@@ -2,6 +2,7 @@
 namespace FetchTabView {
 
   var QUERY_CATEGORY_STATUS_ = "Status";
+  var QUERY_CATEGORY_GROUP_ = "Groups";
 
   var view;
 
@@ -85,11 +86,11 @@ namespace FetchTabView {
     disableFetchButton(true);
 
     if (form.fetchType == "accounts") {
+      disableQueryInput(false);
       disableFetchOption(false);
       disableFetchButton(false);
 
       resetBalancesOptions();
-      resetQuery();
       return;
     }
 
@@ -258,7 +259,10 @@ namespace FetchTabView {
           var matcher = new RegExp($.ui.autocomplete
             .escapeRegex(request.term), "i");
           var filteredQueries = queries;
-          if (getFetchType() !== "transactions") {
+          if (getFetchType() === "accounts") {
+            // Only show Groups for accounts fetch type
+            filteredQueries = queries.filter((q: any) => q.category === QUERY_CATEGORY_GROUP_);
+          } else if (getFetchType() !== "transactions") {
             filteredQueries = queries.filter((q: any) => q.category !== QUERY_CATEGORY_STATUS_);
           }
           var matching = $.grep(filteredQueries, function (value: any) {
