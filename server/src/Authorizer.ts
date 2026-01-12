@@ -8,6 +8,7 @@ namespace Authorizer {
   export function initAuth() {
     try {
       BkperApp.setApiKey(CachedProperties_.getCachedProperty(CacheService.getScriptCache(), PropertiesService.getScriptProperties(), 'API_KEY'));
+      BkperApp.setAgentId('bkper-sheets');
       BkperApp.setOAuthTokenProvider({
         getOAuthToken: () => Authorizer.getAccessToken()
       })

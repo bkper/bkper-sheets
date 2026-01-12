@@ -5,7 +5,7 @@
     "": {
       "name": "@bkper/bkper-sheets-server",
       "devDependencies": {
-        "@bkper/bkper-gs-types": "^3.41.0",
+        "@bkper/bkper-gs-types": "^3.42.0",
         "@types/chai": "^4.2.1",
         "@types/google-apps-script": "^0.0.59",
         "@types/google-apps-script-oauth2": "^24.0.2",
@@ -21,7 +21,7 @@
     },
   },
   "packages": {
-    "@bkper/bkper-gs-types": ["@bkper/bkper-gs-types@3.41.0", "", { "dependencies": { "@types/google-apps-script": "*" } }, "sha512-DEzTW2TPkyes2KzJUgbcghZCd9Vfv/LhvuhWGifjImcjCnRdezgzlZUmi1dvqVaAxddnADofWQ45TBOhrbgKNA=="],
+    "@bkper/bkper-gs-types": ["@bkper/bkper-gs-types@3.42.0", "", { "dependencies": { "@types/google-apps-script": "*" } }, "sha512-BtkFpH+ck4ljUaKi1nMbRQ0kZ02TAIHRQ+HCRuAKN4ZMMfcKmpuu6CV/qu3Q/ap5gU4OXRAhCUfAM7nEuB0jRA=="],
 
     "@types/chai": ["@types/chai@4.3.20", "", {}, "sha512-/pC9HAB5I/xMlc5FP77qjCnI16ChlJfW0tGa0IUcFn38VJrTV6DeZ60NU5KZBtaOZqjdpwTWohz5HU1RrhiYxQ=="],
 
