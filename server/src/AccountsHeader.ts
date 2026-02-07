@@ -1,5 +1,4 @@
 class AccountsHeader {
-
     private range: GoogleAppsScript.Spreadsheet.Range;
 
     private valid = false;
@@ -17,7 +16,9 @@ class AccountsHeader {
     private parse() {
         let frozenRows = this.range.getSheet().getFrozenRows();
         this.rowNum = frozenRows > 0 ? frozenRows : 1;
-        let headerValues = this.range.getSheet().getSheetValues(this.rowNum, this.range.getColumn(), 1, this.range.getNumColumns());
+        let headerValues = this.range
+            .getSheet()
+            .getSheetValues(this.rowNum, this.range.getColumn(), 1, this.range.getNumColumns());
         this.columns = [];
         for (let i = 0; i < headerValues.length; i++) {
             for (let j = 0; j < headerValues[i].length; j++) {
@@ -52,11 +53,9 @@ class AccountsHeader {
     getColumns(): AccountsHeaderColumn[] {
         return this.columns;
     }
-
 }
 
 class AccountsHeaderColumn {
-
     private name: any;
     private index: number;
 
@@ -66,7 +65,7 @@ class AccountsHeaderColumn {
     }
 
     private isValid(): boolean {
-        return this.name != null && typeof this.name == "string" && this.name.trim() != '';
+        return this.name != null && typeof this.name == 'string' && this.name.trim() != '';
     }
 
     getName(): string {
@@ -94,7 +93,12 @@ class AccountsHeaderColumn {
     }
 
     isProperty(): boolean {
-        return this.isValid() && !this.isName() && !this.isType() && !this.isGroup() && !this.isBookId();
+        return (
+            this.isValid() &&
+            !this.isName() &&
+            !this.isType() &&
+            !this.isGroup() &&
+            !this.isBookId()
+        );
     }
-
 }

@@ -1,5 +1,4 @@
 class TransactionsHeader {
-
     private range: GoogleAppsScript.Spreadsheet.Range;
 
     private valid = false;
@@ -18,12 +17,14 @@ class TransactionsHeader {
     private parse() {
         var frozenRows = this.range.getSheet().getFrozenRows();
         this.rowNum = frozenRows > 0 ? frozenRows : 1;
-        var headerValues = this.range.getSheet().getSheetValues(this.rowNum, this.range.getColumn(), 1, this.range.getNumColumns());
+        var headerValues = this.range
+            .getSheet()
+            .getSheetValues(this.rowNum, this.range.getColumn(), 1, this.range.getNumColumns());
         this.columns = [];
         for (var i = 0; i < headerValues.length; i++) {
             for (var j = 0; j < headerValues[i].length; j++) {
                 const header = new TransactionsHeaderColumn(headerValues[i][j], j);
-                this.columns.push(header)
+                this.columns.push(header);
                 if (header.isBookId()) {
                     this.bookIdHeaderColumn = header;
                 }
@@ -39,7 +40,8 @@ class TransactionsHeader {
 
     private hasRecognizedColumns(): boolean {
         for (const column of this.columns) {
-            if (column.isDate() ||
+            if (
+                column.isDate() ||
                 column.isDescription() ||
                 column.isAmount() ||
                 column.isCreditAccount() ||
@@ -47,7 +49,8 @@ class TransactionsHeader {
                 column.isId() ||
                 column.isTransactionId() ||
                 column.isBookId() ||
-                column.isAttachment()) {
+                column.isAttachment()
+            ) {
                 return true;
             }
         }
@@ -61,7 +64,6 @@ class TransactionsHeader {
     getTransactionIdHeaderColumn(): TransactionsHeaderColumn {
         return this.transactionIdHeaderColumn;
     }
-
 
     getRange(): GoogleAppsScript.Spreadsheet.Range {
         return this.range;
@@ -81,7 +83,6 @@ class TransactionsHeader {
 }
 
 class TransactionsHeaderColumn {
-
     private name: any;
     private group: Bkper.Group;
     private index: number;
@@ -91,9 +92,8 @@ class TransactionsHeaderColumn {
         this.index = index;
     }
 
-
     private isValid(): boolean {
-        return this.name != null && typeof this.name == "string" && this.name.trim() != '';
+        return this.name != null && typeof this.name == 'string' && this.name.trim() != '';
     }
 
     getName(): string {
@@ -157,7 +157,12 @@ class TransactionsHeaderColumn {
             return false;
         }
         const nameLower = this.name.trim().toLowerCase();
-        return nameLower == 'credit account' || nameLower == 'origin' || nameLower == 'from' || nameLower == 'from account';
+        return (
+            nameLower == 'credit account' ||
+            nameLower == 'origin' ||
+            nameLower == 'from' ||
+            nameLower == 'from account'
+        );
     }
 
     isDebitAccount(): boolean {
@@ -165,24 +170,30 @@ class TransactionsHeaderColumn {
             return false;
         }
         const nameLower = this.name.trim().toLowerCase();
-        return nameLower == 'debit account' || nameLower == 'destination' || nameLower == 'to' || nameLower == 'to account';
+        return (
+            nameLower == 'debit account' ||
+            nameLower == 'destination' ||
+            nameLower == 'to' ||
+            nameLower == 'to account'
+        );
     }
 
     isProperty(): boolean {
-        return this.isValid()
-            && !this.getGroup()
-            && !this.isDate()
-            && !this.isDescription()
-            && !this.isAmount()
-            && !this.isAttachment()
-            && !this.isBookId()
-            && !this.isId()
-            && !this.isTransactionId()
-            && !this.isStatus()
-            && !this.isRecordedAt()
-            && !this.isCreditAccount()
-            && !this.isDebitAccount()
-            && !this.isBalance()
-            ;
+        return (
+            this.isValid() &&
+            !this.getGroup() &&
+            !this.isDate() &&
+            !this.isDescription() &&
+            !this.isAmount() &&
+            !this.isAttachment() &&
+            !this.isBookId() &&
+            !this.isId() &&
+            !this.isTransactionId() &&
+            !this.isStatus() &&
+            !this.isRecordedAt() &&
+            !this.isCreditAccount() &&
+            !this.isDebitAccount() &&
+            !this.isBalance()
+        );
     }
 }

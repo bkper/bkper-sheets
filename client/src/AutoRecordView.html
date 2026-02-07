@@ -1,34 +1,30 @@
 <script>
-  if (window.trustedTypes && window.trustedTypes.createPolicy) {
-    window.trustedTypes.createPolicy('default', {
-      createHTML: string => string,
-      createScriptURL: string => string,
-      createScript: string => string,
-    });
-  }
+    if (window.trustedTypes && window.trustedTypes.createPolicy) {
+        window.trustedTypes.createPolicy('default', {
+            createHTML: string => string,
+            createScriptURL: string => string,
+            createScript: string => string,
+        });
+    }
 </script>
 
-<link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
+<link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css" />
 
-<link inline href="AutoRecordView.css" rel="stylesheet">
+<link inline href="AutoRecordView.css" rel="stylesheet" />
 
 <div class="block form-group center">
-  <div id="waiting">
-  </div>
-  <div id="onOffLabel">
-    OFF
-  </div>
-  <div id="onOffButtonPanel">
-    <label class="switch">
-      <input id="onOffButton" type="checkbox">
-      <span class="slider round"></span>
-    </label>    
-  </div>
+    <div id="waiting"></div>
+    <div id="onOffLabel">OFF</div>
+    <div id="onOffButtonPanel">
+        <label class="switch">
+            <input id="onOffButton" type="checkbox" />
+            <span class="slider round"></span>
+        </label>
+    </div>
 
-  <div class="bookPanel">
-  	<span id="bookName"></span>
-  </div>
-
+    <div class="bookPanel">
+        <span id="bookName"></span>
+    </div>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -36,4 +32,3 @@
 <script inline src="AutoRecordActivity.js"></script>
 
 <script inline src="AutoRecordView.js"></script>
-

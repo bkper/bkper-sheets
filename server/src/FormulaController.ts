@@ -66,7 +66,7 @@ function BKPER_BALANCES_TRIAL(
     query: string,
     expanded?: boolean | number,
     transposed?: boolean,
-    hideNames?: boolean,
+    hideNames?: boolean
 ): any[][] {
     let balanceReport = BookService.getBook(bookId).getBalancesReport(query);
 
@@ -74,7 +74,7 @@ function BKPER_BALANCES_TRIAL(
 
     let period = false;
 
-    if (query.indexOf("after:") >= 0) {
+    if (query.indexOf('after:') >= 0) {
         period = true;
     }
 
@@ -88,7 +88,7 @@ function BKPER_BALANCES_TRIAL(
         .trial(true)
         .build();
     if (table == null || table.length == 0) {
-        return [[""]];
+        return [['']];
     }
     return table;
 }
@@ -111,7 +111,7 @@ function BKPER_BALANCES_TOTAL(
     query: string,
     expanded?: boolean | number,
     transposed?: boolean,
-    hideNames?: boolean,
+    hideNames?: boolean
 ): any[][] {
     let balanceReport = BookService.getBook(bookId).getBalancesReport(query);
 
@@ -119,7 +119,7 @@ function BKPER_BALANCES_TOTAL(
 
     let period = false;
 
-    if (query.indexOf("after:") >= 0) {
+    if (query.indexOf('after:') >= 0) {
         period = true;
     }
 
@@ -132,7 +132,7 @@ function BKPER_BALANCES_TOTAL(
         .period(period)
         .build();
     if (table == null || table.length == 0) {
-        return [[""]];
+        return [['']];
     }
     return table;
 }
@@ -155,7 +155,7 @@ function BKPER_BALANCES_PERIOD(
     query: string,
     expanded?: boolean | number,
     transposed?: boolean,
-    hideDates?: boolean,
+    hideDates?: boolean
 ): any[][] {
     let balanceReport = BookService.getBook(bookId).getBalancesReport(query);
     return balanceReport
@@ -185,7 +185,7 @@ function BKPER_BALANCES_CUMULATIVE(
     query: string,
     expanded?: boolean | number,
     transposed?: boolean,
-    hideDates?: boolean,
+    hideDates?: boolean
 ): any[][] {
     let balanceReport = BookService.getBook(bookId).getBalancesReport(query);
     return balanceReport

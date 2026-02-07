@@ -1,5 +1,4 @@
 class RecordAccountBatch {
-
     private book: Bkper.Book;
 
     private newAccountsMap: { [rowIndex: string]: BatchNewAccount } = {};
@@ -93,17 +92,20 @@ class RecordAccountBatch {
         // Update existing accounts
         this.updateExistingAccounts();
     }
-
 }
 
 class BatchExistingAccount {
-
     private book: Bkper.Book;
     private account: Bkper.Account;
     private groupNames: string[];
     private properties: { [key: string]: string };
 
-    constructor(book: Bkper.Book, account: Bkper.Account, groupNames: string[], properties: { [key: string]: string }) {
+    constructor(
+        book: Bkper.Book,
+        account: Bkper.Account,
+        groupNames: string[],
+        properties: { [key: string]: string }
+    ) {
         this.book = book;
         this.account = account;
         this.groupNames = groupNames;
@@ -124,11 +126,18 @@ class BatchExistingAccount {
         return groups;
     }
 
-    private shouldAddProperty(currentProperties: { [key: string]: string }, key: string, value: string): boolean {
-        return (!currentProperties[key] && value) || (currentProperties[key] && currentProperties[key] !== value) ? true : false;
+    private shouldAddProperty(
+        currentProperties: { [key: string]: string },
+        key: string,
+        value: string
+    ): boolean {
+        return (!currentProperties[key] && value) ||
+            (currentProperties[key] && currentProperties[key] !== value)
+            ? true
+            : false;
     }
 
-    update(): { account: Bkper.Account, updated: boolean } {
+    update(): { account: Bkper.Account; updated: boolean } {
         let currentProperties = this.account.getProperties();
         let currentGroupNames = this.account.getGroups().map(g => g.getName());
         let needToUpdate = false;
@@ -147,22 +156,25 @@ class BatchExistingAccount {
         }
         // Return object with account and update status
         if (needToUpdate) {
-            return { account: this.account.update(), updated: true};
+            return { account: this.account.update(), updated: true };
         } else {
-            return { account: this.account, updated: false};
+            return { account: this.account, updated: false };
         }
     }
-
 }
 
 class BatchNewAccount {
-
     private book: Bkper.Book;
     private account: Bkper.Account;
     private groupNames: string[];
     private properties: { [key: string]: string };
 
-    constructor(book: Bkper.Book, account: Bkper.Account, groupNames: string[], properties: { [key: string]: string }) {
+    constructor(
+        book: Bkper.Book,
+        account: Bkper.Account,
+        groupNames: string[],
+        properties: { [key: string]: string }
+    ) {
         this.book = book;
         this.account = account;
         this.groupNames = groupNames;
@@ -186,5 +198,4 @@ class BatchNewAccount {
     build(): Bkper.Account {
         return this.account.setGroups(this.getGroups()).setProperties(this.properties);
     }
-
 }

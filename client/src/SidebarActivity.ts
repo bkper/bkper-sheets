@@ -1,88 +1,96 @@
-
 namespace SidebarActivity {
+    var saveRetries = 0;
 
-  var saveRetries = 0;
+    export function init() {
+        if (DEV_MODE) {
+            SidebarView.setLedgers([]);
+            SidebarView.showSidebarWrapper(true);
+            SidebarView.disableLedgerSelect(false);
+        } else {
+            loadLedgers();
+        }
+    }
 
-	export function init() {
-		if (DEV_MODE) {
-			SidebarView.setLedgers([]);
-			SidebarView.showSidebarWrapper(true);
-			SidebarView.disableLedgerSelect(false);
-		} else {
-			loadLedgers();
-		}
-	}
-
-	//SERVICE FUNCTIONS
-	function loadLedgers() {
-		google.script.run.withSuccessHandler(ledgersLoaded).withFailureHandler(SidebarView.showError).loadLedgers();
+    //SERVICE FUNCTIONS
+    function loadLedgers() {
+        google.script.run
+            .withSuccessHandler(ledgersLoaded)
+            .withFailureHandler(SidebarView.showError)
+            .loadLedgers();
     }
 
     export function insertBookId(bookId: string) {
         SidebarView.loading(true);
-        google.script.run.withSuccessHandler(() => SidebarView.loading(false)).withFailureHandler(SidebarView.showError).insertBookId(bookId);
+        google.script.run
+            .withSuccessHandler(() => SidebarView.loading(false))
+            .withFailureHandler(SidebarView.showError)
+            .insertBookId(bookId);
     }
 
     export function loadBookId() {
-        SidebarView.disableLedgerSelect(true)
-        google.script.run.withSuccessHandler(SidebarView.setSelectedLedger).withFailureHandler(SidebarView.showError).loadBookId()
+        SidebarView.disableLedgerSelect(true);
+        google.script.run
+            .withSuccessHandler(SidebarView.setSelectedLedger)
+            .withFailureHandler(SidebarView.showError)
+            .loadBookId();
     }
-  
-	export function saveLastSelectedLedger() {
-		var ledgerId = SidebarView.getSelectedLedgerId();
-		google.script.run.withSuccessHandler(lastSelectedLedgerSaved).withFailureHandler(lastSelectedLedgerSavedError).saveLastSelectedLedger(ledgerId);
-	}
 
-	export function reload() {
-		SidebarView.loading(true);
-		CacheController.clear();
-		loadLedgers();
-	}
+    export function saveLastSelectedLedger() {
+        var ledgerId = SidebarView.getSelectedLedgerId();
+        google.script.run
+            .withSuccessHandler(lastSelectedLedgerSaved)
+            .withFailureHandler(lastSelectedLedgerSavedError)
+            .saveLastSelectedLedger(ledgerId);
+    }
 
-	function ledgersLoaded(ledgers) {
-		saveRetries = 0;
-		SidebarView.setLedgers(ledgers);
-		SidebarView.showSidebarWrapper(true);
-		if (ledgers.length > 0) {
-			SidebarView.disableLedgerSelect(false);
-		}
-		SidebarView.loading(false);
-	}
+    export function reload() {
+        SidebarView.loading(true);
+        CacheController.clear();
+        loadLedgers();
+    }
 
-	function lastSelectedLedgerSaved() {
-		saveRetries = 0;
-	}
+    function ledgersLoaded(ledgers) {
+        saveRetries = 0;
+        SidebarView.setLedgers(ledgers);
+        SidebarView.showSidebarWrapper(true);
+        if (ledgers.length > 0) {
+            SidebarView.disableLedgerSelect(false);
+        }
+        SidebarView.loading(false);
+    }
 
-	function lastSelectedLedgerSavedError() {
-		if (saveRetries < 10) {
-			saveRetries++;
-			saveLastSelectedLedger();
-		} else {
-			SidebarView.showError('Error. Refresh pressing button below.');
-		}
-	}
+    function lastSelectedLedgerSaved() {
+        saveRetries = 0;
+    }
 
-	function fetched(ledgers) {
-		SidebarView.loading(false);
-	}
+    function lastSelectedLedgerSavedError() {
+        if (saveRetries < 10) {
+            saveRetries++;
+            saveLastSelectedLedger();
+        } else {
+            SidebarView.showError('Error. Refresh pressing button below.');
+        }
+    }
 
-	function isFormFullfilled(form) {
-		return form.ledgerId != null && form.ledgerId.trim() != "";
-	}
+    function fetched(ledgers) {
+        SidebarView.loading(false);
+    }
 
-	export function getOpenURL(form, isFetch) {
-		var place = "#transactions:";
+    function isFormFullfilled(form) {
+        return form.ledgerId != null && form.ledgerId.trim() != '';
+    }
 
-		if (isFetch && form.fetchType == "balances") {
-			place = "#report:";
-		}
+    export function getOpenURL(form, isFetch) {
+        var place = '#transactions:';
 
-		var url = "https://app.bkper.com/"+ place + "ledgerId=" + form.ledgerId;
-		if (isFetch && form.query != null && form.query.trim() != "") {
-			url += "&query=" + encodeURIComponent(encodeURIComponent(form.query));
-		}
-		return url;
-	}
+        if (isFetch && form.fetchType == 'balances') {
+            place = '#report:';
+        }
 
-};
-
+        var url = 'https://app.bkper.com/' + place + 'ledgerId=' + form.ledgerId;
+        if (isFetch && form.query != null && form.query.trim() != '') {
+            url += '&query=' + encodeURIComponent(encodeURIComponent(form.query));
+        }
+        return url;
+    }
+}

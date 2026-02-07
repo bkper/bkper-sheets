@@ -1,67 +1,66 @@
-
-  .center {
+.center {
     text-align: center;
-  }
+}
 
-  .red {
-    color: #CC0000;
-  }
+.red {
+    color: #cc0000;
+}
 
-  #waiting {
+#waiting {
     background-position: center top;
-    background-image: url("https://storage.googleapis.com/bkper-public/addons/waiting.gif");
+    background-image: url('https://storage.googleapis.com/bkper-public/addons/waiting.gif');
     background-repeat: no-repeat;
-  }
+}
 
-  #onOffLabel {
+#onOffLabel {
     width: 100%;
     font-size: 22px;
     font-weight: bold;
     color: grey;
-  }
+}
 
-  #onOffLabel, #waiting {
+#onOffLabel,
+#waiting {
     height: 45px;
-  }
+}
 
-   #onOffButtonPanel   {
-     height:  40px;
-     margin-bottom: 5px;
-   }
-   
-   #toggleContainer {
-     margin: auto;
-   }
+#onOffButtonPanel {
+    height: 40px;
+    margin-bottom: 5px;
+}
 
-  #onOffLabel, #onOffButton {
-     display: none;
-  }
+#toggleContainer {
+    margin: auto;
+}
 
-  #onOffButton {
-      cursor: pointer;
-  }
+#onOffLabel,
+#onOffButton {
+    display: none;
+}
 
-  .bookPanel {
+#onOffButton {
+    cursor: pointer;
+}
+
+.bookPanel {
     color: grey;
     padding-bottom: 10px;
-  }
+}
 
-
-
-  .switch {
+.switch {
     position: relative;
     display: inline-block;
     width: 60px;
     height: 34px;
-  }
-  
-  .switch input { 
+}
+
+.switch input {
     opacity: 0;
     width: 0;
     height: 0;
-  }
-  
-  .slider {
+}
+
+.slider {
     position: absolute;
     cursor: pointer;
     top: 0;
@@ -69,43 +68,41 @@
     right: 0;
     bottom: 0;
     background-color: #ccc;
-    -webkit-transition: .4s;
-    transition: .4s;
-  }
-  
-  .slider:before {
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+}
+
+.slider:before {
     position: absolute;
-    content: "";
+    content: '';
     height: 26px;
     width: 26px;
     left: 4px;
     bottom: 4px;
     background-color: white;
-    -webkit-transition: .4s;
-    transition: .4s;
-  }
-  
-  input:checked + .slider {
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+}
+
+input:checked + .slider {
     background-color: #228c33;
-  }
-  
-  input:focus + .slider {
+}
+
+input:focus + .slider {
     box-shadow: 0 0 1px #228c33;
-  }
-  
-  input:checked + .slider:before {
+}
+
+input:checked + .slider:before {
     -webkit-transform: translateX(26px);
     -ms-transform: translateX(26px);
     transform: translateX(26px);
-  }
-  
-  /* Rounded sliders */
-  .slider.round {
+}
+
+/* Rounded sliders */
+.slider.round {
     border-radius: 34px;
-  }
-  
-  .slider.round:before {
+}
+
+.slider.round:before {
     border-radius: 50%;
-  }
-
-
+}

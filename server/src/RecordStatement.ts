@@ -2,7 +2,7 @@
  * @public
  */
 interface SaveStatement {
-  ledgerId: string,
-  recordType?: "transactions" | "accounts" | "groups",
-  highlight?: boolean
+    ledgerId: string;
+    recordType?: 'transactions' | 'accounts' | 'groups';
+    highlight?: boolean;
 }

@@ -1,5 +1,4 @@
 class RecordGroupBatch {
-
     private book: Bkper.Book;
     private groups: BatchGroup[] = [];
     private parentNames: string[] = [];
@@ -65,17 +64,20 @@ class RecordGroupBatch {
         }
         this.book.batchCreateGroups(newGroups);
     }
-
 }
 
 class BatchGroup {
-
     private book: Bkper.Book;
-    private groupName: string
+    private groupName: string;
     private parentName: string;
     private properties: { [key: string]: string };
 
-    constructor(book: Bkper.Book, groupName: string, parentName: string, properties: { [key: string]: string }) {
+    constructor(
+        book: Bkper.Book,
+        groupName: string,
+        parentName: string,
+        properties: { [key: string]: string }
+    ) {
         this.book = book;
         this.groupName = groupName;
         this.parentName = parentName;
@@ -86,8 +88,15 @@ class BatchGroup {
         return this.book.getGroup(this.groupName) ? false : true;
     }
 
-    private shouldAddProperty(currentProperties: { [key: string]: string }, key: string, value: string): boolean {
-        return (!currentProperties[key] && value) || (currentProperties[key] && currentProperties[key] !== value) ? true : false;
+    private shouldAddProperty(
+        currentProperties: { [key: string]: string },
+        key: string,
+        value: string
+    ): boolean {
+        return (!currentProperties[key] && value) ||
+            (currentProperties[key] && currentProperties[key] !== value)
+            ? true
+            : false;
     }
 
     update(): Bkper.Group | null {
@@ -127,5 +136,4 @@ class BatchGroup {
         }
         return null;
     }
-
 }

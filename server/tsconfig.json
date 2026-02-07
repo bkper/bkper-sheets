@@ -1,19 +1,12 @@
 {
-  "extends": "../tsconfig",
-  "compilerOptions": {
-    "lib": [ "esnext" ],
-    "target": "ES6",
-    "noImplicitAny": true,
-    "skipLibCheck": true,
-    "typeRoots" : ["node_modules/@bkper", "node_modules/@types" ]
+    "extends": "../tsconfig",
+    "compilerOptions": {
+        "lib": ["esnext"],
+        "target": "ES6",
+        "noImplicitAny": true,
+        "skipLibCheck": true,
+        "typeRoots": ["node_modules/@bkper", "node_modules/@types"]
     },
-  "include": [
-    "src/**/*.ts",
-    "test/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules/**",
-    "build/**",
-    "../node_modules/**"
-  ]
+    "include": ["src/**/*.ts", "test/**/*.ts"],
+    "exclude": ["node_modules/**", "build/**", "../node_modules/**"]
 }

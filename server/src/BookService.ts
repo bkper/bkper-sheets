@@ -1,7 +1,6 @@
-var LEDGER_LAST_UPDATE_PREFIX_ = "bkper_ledger_last_update_";
+var LEDGER_LAST_UPDATE_PREFIX_ = 'bkper_ledger_last_update_';
 
 namespace BookService {
-
     var booksCache: any;
 
     export function loadBooks(): Bkper.Book[] {
@@ -40,6 +39,4 @@ namespace BookService {
         var selectedRange = activeSS.getActiveRange();
         return selectedRange.getValue();
     }
-
 }
-

@@ -1,5 +1,4 @@
 class GroupsHeader {
-
     private range: GoogleAppsScript.Spreadsheet.Range;
 
     private valid = false;
@@ -17,7 +16,9 @@ class GroupsHeader {
     private parse() {
         let frozenRows = this.range.getSheet().getFrozenRows();
         this.rowNum = frozenRows > 0 ? frozenRows : 1;
-        let headerValues = this.range.getSheet().getSheetValues(this.rowNum, this.range.getColumn(), 1, this.range.getNumColumns());
+        let headerValues = this.range
+            .getSheet()
+            .getSheetValues(this.rowNum, this.range.getColumn(), 1, this.range.getNumColumns());
         this.columns = [];
         for (let i = 0; i < headerValues.length; i++) {
             for (let j = 0; j < headerValues[i].length; j++) {
@@ -52,11 +53,9 @@ class GroupsHeader {
     getColumns(): GroupsHeaderColumn[] {
         return this.columns;
     }
-
 }
 
 class GroupsHeaderColumn {
-
     private name: any;
     private index: number;
 
@@ -66,7 +65,7 @@ class GroupsHeaderColumn {
     }
 
     private isValid(): boolean {
-        return this.name != null && typeof this.name == "string" && this.name.trim() != '';
+        return this.name != null && typeof this.name == 'string' && this.name.trim() != '';
     }
 
     getName(): string {
@@ -102,7 +101,14 @@ class GroupsHeaderColumn {
     }
 
     isProperty(): boolean {
-        return this.isValid() && !this.isName() && !this.isType() && !this.isParent() && !this.isChildren() && !this.isAccounts() && !this.isBookId();
+        return (
+            this.isValid() &&
+            !this.isName() &&
+            !this.isType() &&
+            !this.isParent() &&
+            !this.isChildren() &&
+            !this.isAccounts() &&
+            !this.isBookId()
+        );
     }
-
 }
