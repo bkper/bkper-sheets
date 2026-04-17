@@ -4,27 +4,13 @@ The Bkper Add-on for Google Sheets connects your Bkper Books to Google Sheets in
 
 Bkper Functions stay connected to your Books. Every posted transaction updates the report. Press **Update** from the Bkper menu to refresh all formulas at once.
 
-## How it works
+## Install
 
-```mermaid
-sequenceDiagram
-    participant Sheet as Google Sheet
-    participant Addon as Bkper Add-on
-    participant Book as Bkper Book
+Install from the [Google Workspace Marketplace](https://workspace.google.com/marketplace/app/bkper/360398463400), then open a Google Sheet and go to **Extensions >> Bkper >> Open**.
 
-    Note over Sheet,Addon: Fetch
-    Addon->>Book: Query balances, transactions, accounts, groups
-    Book-->>Addon: Live data
-    Addon->>Sheet: Insert Bkper Function or paste values
+[![Balance Sheet built with Bkper Functions](https://raw.githubusercontent.com/bkper/bkper-sheets/master/docs/bkper-google-sheets.png)](https://docs.google.com/spreadsheets/d/1icR8z8F3RSBeedfMbNE4-Q2FZvxyDhZeSrHuSXvPXr8/edit?gid=7113480#gid=7113480)
 
-    Note over Sheet,Addon: Record
-    Sheet->>Addon: Selected rows
-    Addon->>Book: Create or update transactions, accounts, groups
-
-    Note over Sheet,Addon: Update
-    Addon->>Sheet: Increment cache on all Bkper Functions
-    Sheet->>Book: Re-fetch fresh data
-```
+For the detailed installation walkthrough, see [Install the Add-on](https://bkper.com/docs/guides/google-sheets/install).
 
 ## Functions reference
 
@@ -354,7 +340,6 @@ Bkper Functions use Google Apps Script, which has a **30-second runtime limit** 
 
 - Use balance functions instead of fetching all transactions
 - Narrow your time range (e.g., `after:$m-12 before:$m-6`)
-- Use the [CSV Export App](https://bkper.com/apps/bkper-csv-export-app) for large data exports
 
 > Make sure your Book and Google Sheet use the same timezone. Different timezones can cause date discrepancies (d-1 or d+1).
 
