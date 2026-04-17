@@ -1,8 +1,15 @@
-# You can override the name from the repository
 id: bkper-sheets
 name: Google Sheets Add-on
+description: Connect your Bkper Books to Google Sheets for custom reporting, data analysis, and automated transaction recording using Bkper Functions.
 
-# Set your logo url from public host. Best fit 200x200 px. Use https:// 
-logo: https://bkper.com/images/automations/logo-google-sheets.png
+logoUrl: https://bkper.com/images/automations/logo-google-sheets.png
+
+website: https://bkper.com/apps/bkper-sheets
+ownerName: Bkper
+ownerLogoUrl: https://avatars.githubusercontent.com/u/11943086?v=4
+ownerWebsite: https://bkper.com
+repoUrl: https://github.com/bkper/bkper-sheets
+repoPrivate: false
+deprecated: false
 
 scriptId: 1WDiSLYb67DLWs2XdnKopZcsK3HCwnhRlRYjaAXlMDdej6WFo8EMhiPk4
