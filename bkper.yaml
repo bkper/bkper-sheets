@@ -1,4 +1,5 @@
 # You can override the name from the repository
+id: bkper-sheets
 name: Google Sheets Add-on
 
 # Set your logo url from public host. Best fit 200x200 px. Use https:// 
