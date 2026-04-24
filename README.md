@@ -131,6 +131,8 @@ Balance queries that combine a Group or Account with a hashtag return the balanc
 
 > Balance filtered by hashtag is calculated for up to **3,000** transactions.
 
+> **Note:** `BKPER_BALANCES_TOTAL` and `BKPER_BALANCES_TRIAL` return a single empty cell when no results match the query.
+
 ### Data functions
 
 Data functions return complete record listings with IDs, Groups, and Custom Properties included automatically.
@@ -242,18 +244,26 @@ Wrap any Bkper Function with Google Sheets `QUERY` to reorder results:
 =QUERY(A2:B5, "Select A, B order by A desc")
 ```
 
+## Fetch data via sidebar
+
+You can also fetch data through the sidebar without writing formulas. Open the sidebar (**Extensions >> Bkper >> Open**), select a Book, go to the **Fetch** tab, choose a data type (Transactions, Balances, Accounts, or Groups), optionally enter a query, and choose whether to insert a **live formula** or static **values**.
+
+> **Tip:** In the sidebar, hold **Shift** while clicking the Open/Create button to insert the Book ID into the active cell. Hold **Alt** to load the Book ID from the active cell.
+
 ## Recording data
 
-Open the sidebar (**Extensions >> Bkper >> Open**), select a Book, go to the **Save** tab, choose a data type, select the cells, and press **Save**. Each row creates or updates one record in Bkper. Successfully saved rows are highlighted in green.
+Open the sidebar (**Extensions >> Bkper >> Open**), select a Book, go to the **Save** tab, choose a data type, select the cells, and press **Save**. Each row creates or updates one record in Bkper. Enable the **Highlight** checkbox to turn saved rows green.
+
+> If you only have **Viewer** access to the selected Book, the Save tab is hidden and you can only fetch data.
 
 ### Column headers
 
 The Add-on uses the first row as a header to map columns. Headers are recognized in two ways:
 
 - **Frozen first row** — When you freeze the first row (View >> Freeze >> 1 row), the Add-on always treats it as a header
-- **Recognized column names** — Even without freezing, the Add-on recognizes specific column names
+- **Recognized column names** — Even without freezing, the Add-on recognizes specific column names for **Transactions**
 
-When no frozen row and no recognized names are found, the Add-on falls back to positional parsing.
+When no frozen row and no recognized names are found, the Add-on falls back to positional parsing. **Accounts** and **Groups** always require a frozen first row for header recognition.
 
 > Freeze the first row for maximum flexibility and Custom Property support.
 
@@ -280,7 +290,9 @@ Columns with blank headers are ignored. Use this for internal columns (like chec
 
 When both From and To Accounts are provided along with an Amount, the transaction is **posted** directly. Otherwise it is saved as a **draft**.
 
-Any column with a header that is not a recognized system column becomes a [Custom Property](https://bkper.com/docs/guides/using-bkper/properties). The header becomes the property key and the cell value becomes the property value.
+If no **Description** is provided, the Add-on joins all remaining cell values with spaces to create an automatic description.
+
+Any column with a header that is not a recognized system column normally becomes a [Custom Property](https://bkper.com/docs/guides/using-bkper/properties). **Exception:** if the header matches a **Group name** in your Book, the Add-on creates an Account with that cell value under that Group instead of adding a property.
 
 #### New vs update
 
@@ -289,7 +301,7 @@ Any column with a header that is not a recognized system column becomes a [Custo
 | Empty or missing | Records a new transaction |
 | Contains an existing ID | Updates the existing transaction |
 
-This enables a bulk edit workflow: **fetch** transactions → **edit** in your Sheet → **save** back to Bkper. When updating, read-only columns (Transaction Id, Status, Recorded at, Balance) are ignored.
+This enables a bulk edit workflow: **fetch** transactions → **edit** in your Sheet → **save** back to Bkper. When updating, read-only columns (Transaction Id, Status, Recorded at, Balance, Attachment) are ignored.
 
 #### Remote IDs
 
@@ -305,7 +317,9 @@ The **ID** column maps to a Remote ID in Bkper — a reference to an external id
 | **BookId** | Target Book ID (overrides sidebar selection) |
 | *Other columns* | Custom Properties (when first row is frozen) |
 
-When an Account with the same name already exists, it is updated with the new Groups and properties. Accounts are sorted by type then highlighted with the corresponding type color after saving.
+When an Account with the same name already exists, it is updated — new Groups and properties are added, but existing ones are not removed. Accounts are sorted by type then highlighted with the corresponding type color after saving.
+
+> **Positional fallback** (no valid header): `Name | Type | Group1 | Group2 | ...`
 
 ### Group columns
 
@@ -316,13 +330,15 @@ When an Account with the same name already exists, it is updated with the new Gr
 | **BookId** | Target Book ID (overrides sidebar selection) |
 | *Other columns* | Custom Properties (when first row is frozen) |
 
-When a Group with the same name already exists, it is updated with the new parent and properties. Type, Children, and Accounts columns from fetched data are read-only and ignored when saving.
+When a Group with the same name already exists, it is updated — a new parent and properties are added if missing, but existing ones are not removed. Type, Children, and Accounts columns from fetched data are read-only and ignored when saving.
+
+> **Positional fallback** (no valid header): `Name | Parent | ...`
 
 ### Unique IDs
 
 Assigning a unique ID to each row makes transactions **idempotent** — a transaction with a unique ID cannot be recorded twice in the same Book.
 
-To generate IDs: freeze the first row with an **ID** column, then go to **Extensions >> Bkper >> Generate Transaction IDs**. A unique ID is inserted for each row with data.
+To generate IDs: freeze the first row with an **ID** column, then go to **Extensions >> Bkper >> Generate Transaction IDs**. A unique ID is inserted for each row with data. Blank rows are skipped.
 
 From Bkper's perspective, a unique ID from a Sheet is a Remote ID.
 
@@ -331,6 +347,13 @@ From Bkper's perspective, a unique ID from a Sheet is a Remote ID.
 Activate Auto Record on a tab and each new row added is automatically recorded in your Bkper Book. Useful when data flows into the Sheet from Google Forms, `QUERY` formulas, or other integrations.
 
 To set up: open the sidebar, select a Book, then go to **Extensions >> Bkper >> Auto-Record** and toggle to **YES**. The tab turns green to indicate it's active.
+
+**How it works:**
+- Each row gets an auto-generated Remote ID so duplicates are prevented
+- If a row contains **more than one date**, the first column is cleared to avoid Google Forms date duplication
+- Recorded rows receive a **log note** in the first column with the timestamp, Book name, and user email
+- Triggers run hourly, on sheet changes, and on form submissions
+- After **50 failed retries**, the binding is automatically removed
 
 > Deleting a row already recorded may make the internal pointer stale, preventing new rows from being recorded until it catches up. Avoid deleting recorded rows. If needed, toggle Auto Record off and back on to reset the pointer.
 
