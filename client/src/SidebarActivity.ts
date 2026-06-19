@@ -1,5 +1,6 @@
 namespace SidebarActivity {
     var saveRetries = 0;
+    var GOOGLE_SHEETS_ADDON_SOURCE = 'google_sheets_addon';
 
     export function init() {
         if (DEV_MODE) {
@@ -81,16 +82,29 @@ namespace SidebarActivity {
     }
 
     export function getOpenURL(form, isFetch) {
-        var place = '#transactions:';
-
-        if (isFetch && form.fetchType == 'balances') {
-            place = '#report:';
-        }
-
-        var url = 'https://app.bkper.com/' + place + 'ledgerId=' + form.ledgerId;
+        var url = new URL('https://bkper.app/books/' + encodeURIComponent(form.ledgerId) + '/transactions');
         if (isFetch && form.query != null && form.query.trim() != '') {
-            url += '&query=' + encodeURIComponent(encodeURIComponent(form.query));
+            url.searchParams.set('query', form.query);
         }
-        return url;
+        if (isFetch && form.fetchType == 'balances') {
+            url.searchParams.set('charts', 'true');
+        }
+        appendGoogleSheetsAddonAttribution(url, 'open_book_button', true);
+        return url.toString();
+    }
+
+    export function getCreateURL() {
+        var url = new URL('https://app.bkper.com/create');
+        appendGoogleSheetsAddonAttribution(url, 'open_book_button', false);
+        return url.toString();
+    }
+
+    function appendGoogleSheetsAddonAttribution(url: URL, utmContent: string, includeLegacySource: boolean) {
+        if (includeLegacySource) {
+            url.searchParams.set('source', GOOGLE_SHEETS_ADDON_SOURCE);
+        }
+        url.searchParams.set('utm_source', GOOGLE_SHEETS_ADDON_SOURCE);
+        url.searchParams.set('utm_medium', 'addon');
+        url.searchParams.set('utm_content', utmContent);
     }
 }

@@ -199,7 +199,7 @@ namespace SidebarView {
                 var url = SidebarActivity.getOpenURL(form, appendQuery);
                 openInNewTab(url);
             } else {
-                var url = 'https://app.bkper.com/create';
+                var url = SidebarActivity.getCreateURL();
                 openInNewTab(url);
             }
         }
