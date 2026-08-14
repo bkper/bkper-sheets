@@ -17,25 +17,21 @@ namespace RecordTransactionsService {
     ): boolean {
         const timezone = activeSS.getSpreadsheetTimeZone();
 
-        const success = batchSaveTransactions(
+        return batchSaveTransactions(
             book,
             selectedRange,
             selectedRange.getValues(),
-            timezone
+            timezone,
+            highlight
         );
-
-        if (highlight && success) {
-            selectedRange.setBackground(RECORD_BACKGROUND_);
-        }
-
-        return success;
     }
 
     export function batchSaveTransactions(
         book: Bkper.Book,
         range: GoogleAppsScript.Spreadsheet.Range,
         values: any[][],
-        timezone: string
+        timezone: string,
+        highlight: boolean = false
     ): boolean {
         let header = new TransactionsHeader(range);
 
@@ -149,6 +145,7 @@ namespace RecordTransactionsService {
         }
 
         // REDUCE: Execute batch operations for each book
+        const updatedTransactionIdsByBatch = new Map<RecordTransactionBatch, Set<string>>();
         for (const key in transactionsBatch) {
             let batch = transactionsBatch[key];
             let toCreate = batch.getTransactionsToCreate();
@@ -158,11 +155,39 @@ namespace RecordTransactionsService {
                 batch.getBook().batchCreateTransactions(toCreate);
             }
             if (toUpdate.length > 0) {
-                batch.getBook().batchUpdateTransactions(toUpdate);
+                const updatedTransactions = batch.getBook().batchUpdateTransactions(toUpdate);
+                if (highlight) {
+                    updatedTransactionIdsByBatch.set(
+                        batch,
+                        new Set(updatedTransactions.map(transaction => transaction.getId()))
+                    );
+                }
             }
         }
 
+        if (highlight) {
+            highlightRecordedRows_(preparedRows, updatedTransactionIdsByBatch, range);
+        }
+
         return true;
+    }
+
+    function highlightRecordedRows_(
+        preparedRows: PreparedTransactionRow_[],
+        updatedTransactionIdsByBatch: Map<RecordTransactionBatch, Set<string>>,
+        range: GoogleAppsScript.Spreadsheet.Range
+    ): void {
+        for (const preparedRow of preparedRows) {
+            const updatedTransactionIds = updatedTransactionIdsByBatch.get(preparedRow.batch);
+            if (
+                preparedRow.transactionId == null ||
+                (updatedTransactionIds && updatedTransactionIds.has(preparedRow.transactionId))
+            ) {
+                range
+                    .offset(preparedRow.rowIndex, 0, 1, range.getNumColumns())
+                    .setBackground(RECORD_BACKGROUND_);
+            }
+        }
     }
 
     function findDuplicatedTransactionIds_(

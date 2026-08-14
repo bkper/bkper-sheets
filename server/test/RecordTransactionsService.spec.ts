@@ -779,6 +779,85 @@ describe('RecordTransactionsService', () => {
             }
         });
 
+        it('should highlight created rows and only draft rows returned by batch update', () => {
+            const highlightedRanges: {
+                rowOffset: number;
+                columnOffset: number;
+                numRows: number;
+                numColumns: number;
+            }[] = [];
+            const transaction = (id: string): Bkper.Transaction =>
+                ({
+                    getId: () => id,
+                    getDescription: () => 'Existing',
+                    setDescription: function () {
+                        return this;
+                    },
+                } as unknown as Bkper.Transaction);
+            const transactionsById: { [id: string]: Bkper.Transaction } = {
+                'tx-changed': transaction('tx-changed'),
+                'tx-unchanged': transaction('tx-unchanged'),
+            };
+            const book = {
+                getId: () => 'book-123',
+                newTransaction: () => transaction('created'),
+                getTransactionsByIds: (ids: string[]) => ids.map(id => transactionsById[id]),
+                batchCreateTransactions: (transactions: Bkper.Transaction[]) => transactions,
+                batchUpdateTransactions: () => [transactionsById['tx-changed']],
+                getGroup: (): null => null,
+            };
+            const sheet = {
+                getFrozenRows: () => 1,
+                getSheetValues: () => [['Description', 'Transaction ID']],
+            };
+            const range = {
+                getSheet: () => sheet,
+                getColumn: () => 1,
+                getNumColumns: () => 2,
+                getValues: () => [
+                    ['Changed', 'tx-changed'],
+                    ['Unchanged', 'tx-unchanged'],
+                    ['Created', ''],
+                ],
+                getCell: () => ({ getBackground: () => '#ffffff', setBackground: () => {} }),
+                setBackground: () => {
+                    throw new Error('The complete selection must not be highlighted');
+                },
+                offset: (
+                    rowOffset: number,
+                    columnOffset: number,
+                    numRows: number,
+                    numColumns: number
+                ) => ({
+                    setBackground: (color: string) => {
+                        expect(color).to.equal(RECORD_BACKGROUND_);
+                        highlightedRanges.push({
+                            rowOffset: rowOffset,
+                            columnOffset: columnOffset,
+                            numRows: numRows,
+                            numColumns: numColumns,
+                        });
+                    },
+                }),
+            };
+            const spreadsheet = {
+                getSpreadsheetTimeZone: () => 'UTC',
+            };
+
+            const result = RecordTransactionsService.recordTransactions(
+                book as unknown as Bkper.Book,
+                range as unknown as GoogleAppsScript.Spreadsheet.Range,
+                spreadsheet as unknown as GoogleAppsScript.Spreadsheet.Spreadsheet,
+                true
+            );
+
+            expect(result).to.be.true;
+            expect(highlightedRanges).to.deep.equal([
+                { rowOffset: 0, columnOffset: 0, numRows: 1, numColumns: 2 },
+                { rowOffset: 2, columnOffset: 0, numRows: 1, numColumns: 2 },
+            ]);
+        });
+
         it('should highlight missing Transaction IDs and perform no writes', () => {
             const backgrounds = new Map<string, string>();
             let writes = 0;
