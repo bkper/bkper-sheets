@@ -64,9 +64,9 @@ describe('RecordTransactionsService', () => {
             const mockBook: any = {
                 getId: () => 'book-123',
                 newTransaction: () => mockTransaction(),
-                getTransaction: (id: string) => {
-                    fetchedTransactionIds.push(id);
-                    return mockTransaction(id);
+                getTransactionsByIds: (ids: string[]) => {
+                    fetchedTransactionIds.push(...ids);
+                    return ids.map(id => mockTransaction(id));
                 },
                 batchCreateTransactions: (txs: any[]) => {
                     createdTransactions.push(...txs);
@@ -173,7 +173,7 @@ describe('RecordTransactionsService', () => {
             const mockBook: any = {
                 getId: () => 'book-123',
                 newTransaction: () => mockTransaction(),
-                getTransaction: () => mockTransaction(),
+                getTransactionsByIds: (): any[] => [],
                 batchCreateTransactions: (txs: any[]) => {
                     createdTransactions.push(...txs);
                 },
@@ -281,7 +281,7 @@ describe('RecordTransactionsService', () => {
             const mockBook: any = {
                 getId: () => 'book-123',
                 newTransaction: () => mockTransaction(),
-                getTransaction: () => existingTx,
+                getTransactionsByIds: () => [existingTx],
                 batchCreateTransactions: () => {},
                 batchUpdateTransactions: (txs: any[]) => {
                     updatedTransaction = txs[0];
@@ -392,7 +392,7 @@ describe('RecordTransactionsService', () => {
             const mockBook: any = {
                 getId: () => 'book-123',
                 newTransaction: () => mockTransaction(),
-                getTransaction: () => existingTx,
+                getTransactionsByIds: () => [existingTx],
                 batchCreateTransactions: () => {},
                 batchUpdateTransactions: (txs: any[]) => {
                     updatedTransaction = txs[0];
@@ -506,7 +506,7 @@ describe('RecordTransactionsService', () => {
             const mockBook: any = {
                 getId: () => 'book-123',
                 newTransaction: () => mockTransaction(),
-                getTransaction: () => existingTx,
+                getTransactionsByIds: () => [existingTx],
                 batchCreateTransactions: () => {},
                 batchUpdateTransactions: (txs: any[]) => {
                     updatedTransaction = txs[0];
@@ -559,6 +559,292 @@ describe('RecordTransactionsService', () => {
             expect(updatedTransaction._creditAccount).to.equal('NewOrigin');
             expect(updatedTransaction._debitAccount).to.equal('NewDestination');
             expect(updatedTransaction._date).to.equal('2024-07-20');
+        });
+
+        it('should preserve existing values when update cells are blank', () => {
+            const transaction: any = {
+                _description: 'Existing description',
+                _amount: 42,
+                _creditAccount: 'Existing origin',
+                _debitAccount: 'Existing destination',
+                _date: '2024-01-01',
+                getId: () => 'tx-1',
+                getDescription: function () {
+                    return this._description;
+                },
+                setDescription: function (value: string) {
+                    this._description = value;
+                    return this;
+                },
+                setAmount: function (value: number) {
+                    this._amount = value;
+                    return this;
+                },
+                setCreditAccount: function (value: string) {
+                    this._creditAccount = value;
+                    return this;
+                },
+                setDebitAccount: function (value: string) {
+                    this._debitAccount = value;
+                    return this;
+                },
+                setDate: function (value: string) {
+                    this._date = value;
+                    return this;
+                },
+            };
+            let updatedTransaction: any = null;
+            const book: any = {
+                getId: () => 'book-123',
+                getTransactionsByIds: () => [transaction],
+                batchCreateTransactions: () => {},
+                batchUpdateTransactions: (transactions: any[]) => {
+                    updatedTransaction = transactions[0];
+                },
+                getGroup: (): null => null,
+            };
+            const sheet: any = {
+                getFrozenRows: () => 1,
+                getSheetValues: () => [
+                    [
+                        'Date',
+                        'Description',
+                        'Amount',
+                        'Credit Account',
+                        'Debit Account',
+                        'Transaction ID',
+                    ],
+                ],
+            };
+            const range: any = {
+                getSheet: () => sheet,
+                getColumn: () => 1,
+                getNumColumns: () => 6,
+                getValues: () => [['', '', '', '', '', 'tx-1']],
+                getCell: () => ({ getBackground: () => '#ffffff', setBackground: () => {} }),
+            };
+
+            const result = RecordTransactionsService.batchSaveTransactions(
+                book,
+                range,
+                range.getValues(),
+                'UTC'
+            );
+
+            expect(result).to.be.true;
+            expect(updatedTransaction).to.equal(transaction);
+            expect(transaction._description).to.equal('Existing description');
+            expect(transaction._amount).to.equal(42);
+            expect(transaction._creditAccount).to.equal('Existing origin');
+            expect(transaction._debitAccount).to.equal('Existing destination');
+            expect(transaction._date).to.equal('2024-01-01');
+        });
+
+        it('should batch-read every Book before any writes', () => {
+            const events: string[] = [];
+            const transaction = (id: string): any => ({
+                getId: () => id,
+                getDescription: () => 'Existing',
+                setDescription: function () {
+                    return this;
+                },
+            });
+            const defaultBook: any = {
+                getId: () => 'agtzfmJrcGVyLWhyZHI-default',
+                getTransactionsByIds: (ids: string[]) => {
+                    events.push('read-default');
+                    return ids.map(transaction);
+                },
+                batchCreateTransactions: () => events.push('write-default'),
+                batchUpdateTransactions: () => events.push('write-default'),
+                getGroup: (): null => null,
+            };
+            const otherBook: any = {
+                getId: () => 'agtzfmJrcGVyLWhyZHI-other',
+                getTransactionsByIds: (ids: string[]) => {
+                    events.push('read-other');
+                    return ids.map(transaction);
+                },
+                batchCreateTransactions: () => events.push('write-other'),
+                batchUpdateTransactions: () => events.push('write-other'),
+                getGroup: (): null => null,
+            };
+            const runtime = globalThis as unknown as {
+                BkperApp: { getBook: () => Bkper.Book };
+            };
+            const originalBkperApp = runtime.BkperApp;
+            runtime.BkperApp = { getBook: () => otherBook };
+            const sheet: any = {
+                getFrozenRows: () => 1,
+                getSheetValues: () => [['Description', 'Transaction ID', 'BookId']],
+            };
+            const range: any = {
+                getSheet: () => sheet,
+                getColumn: () => 1,
+                getNumColumns: () => 3,
+                getValues: () => [
+                    ['Default update', 'tx-default', ''],
+                    ['Other update', 'tx-other', 'agtzfmJrcGVyLWhyZHI-other'],
+                ],
+                getCell: () => ({ getBackground: () => '#ffffff', setBackground: () => {} }),
+            };
+
+            try {
+                const result = RecordTransactionsService.batchSaveTransactions(
+                    defaultBook,
+                    range,
+                    range.getValues(),
+                    'UTC'
+                );
+
+                expect(result).to.be.true;
+                expect(events.slice(0, 2)).to.deep.equal(['read-default', 'read-other']);
+                expect(events.slice(2)).to.deep.equal(['write-default', 'write-other']);
+            } finally {
+                runtime.BkperApp = originalBkperApp;
+            }
+        });
+
+        it('should highlight duplicate Transaction IDs and perform no writes', () => {
+            const backgrounds = new Map<string, string>();
+            let reads = 0;
+            let writes = 0;
+            let dialogMessage = '';
+            const utilities = Utilities_ as unknown as {
+                getErrorHtmlOutput: (message: string) => GoogleAppsScript.HTML.HtmlOutput;
+            };
+            const originalGetErrorHtmlOutput = utilities.getErrorHtmlOutput;
+            utilities.getErrorHtmlOutput = (message: string) => {
+                dialogMessage = message;
+                return {} as GoogleAppsScript.HTML.HtmlOutput;
+            };
+            const runtime = globalThis as unknown as {
+                SpreadsheetApp: {
+                    getUi: () => { showModalDialog: () => void };
+                };
+            };
+            const originalSpreadsheetApp = runtime.SpreadsheetApp;
+            runtime.SpreadsheetApp = {
+                getUi: () => ({ showModalDialog: () => {} }),
+            };
+
+            const book = {
+                getId: () => 'book-123',
+                getTransactionsByIds: (): Bkper.Transaction[] => {
+                    reads++;
+                    return [];
+                },
+                batchCreateTransactions: () => {
+                    writes++;
+                },
+                batchUpdateTransactions: () => {
+                    writes++;
+                },
+            };
+            const sheet = {
+                getFrozenRows: () => 1,
+                getSheetValues: () => [['Description', 'Transaction ID']],
+            };
+            const range = {
+                getSheet: () => sheet,
+                getColumn: () => 1,
+                getNumColumns: () => 2,
+                getValues: () => [
+                    ['First', 'tx-duplicate'],
+                    ['Second', 'tx-duplicate'],
+                ],
+                getCell: (row: number, column: number) => ({
+                    getBackground: () => '#ffffff',
+                    setBackground: (color: string) => backgrounds.set(`${row}:${column}`, color),
+                }),
+            };
+
+            try {
+                const result = RecordTransactionsService.batchSaveTransactions(
+                    book as unknown as Bkper.Book,
+                    range as unknown as GoogleAppsScript.Spreadsheet.Range,
+                    range.getValues(),
+                    'UTC'
+                );
+
+                expect(result).to.be.false;
+                expect(reads).to.equal(0);
+                expect(writes).to.equal(0);
+                expect(backgrounds.get('1:2')).to.equal(ERROR_BACKGROUND_);
+                expect(backgrounds.get('2:2')).to.equal(ERROR_BACKGROUND_);
+                expect(dialogMessage).to.contain('duplicate Transaction IDs');
+            } finally {
+                utilities.getErrorHtmlOutput = originalGetErrorHtmlOutput;
+                runtime.SpreadsheetApp = originalSpreadsheetApp;
+            }
+        });
+
+        it('should highlight missing Transaction IDs and perform no writes', () => {
+            const backgrounds = new Map<string, string>();
+            let writes = 0;
+            let dialogMessage = '';
+            const utilities = Utilities_ as unknown as {
+                getErrorHtmlOutput: (message: string) => GoogleAppsScript.HTML.HtmlOutput;
+            };
+            const originalGetErrorHtmlOutput = utilities.getErrorHtmlOutput;
+            utilities.getErrorHtmlOutput = (message: string) => {
+                dialogMessage = message;
+                return {} as GoogleAppsScript.HTML.HtmlOutput;
+            };
+            const runtime = globalThis as unknown as {
+                SpreadsheetApp: {
+                    getUi: () => { showModalDialog: () => void };
+                };
+            };
+            const originalSpreadsheetApp = runtime.SpreadsheetApp;
+            runtime.SpreadsheetApp = {
+                getUi: () => ({ showModalDialog: () => {} }),
+            };
+
+            const book = {
+                getId: () => 'book-123',
+                getTransactionsByIds: () => {
+                    throw 'Transactions not found. Ids: [tx-missing] [Book: Test Book]';
+                },
+                batchCreateTransactions: () => {
+                    writes++;
+                },
+                batchUpdateTransactions: () => {
+                    writes++;
+                },
+            };
+            const sheet = {
+                getFrozenRows: () => 1,
+                getSheetValues: () => [['Description', 'Transaction ID']],
+            };
+            const range = {
+                getSheet: () => sheet,
+                getColumn: () => 1,
+                getNumColumns: () => 2,
+                getValues: () => [['Missing transaction', 'tx-missing']],
+                getCell: (row: number, column: number) => ({
+                    getBackground: () => '#ffffff',
+                    setBackground: (color: string) => backgrounds.set(`${row}:${column}`, color),
+                }),
+            };
+
+            try {
+                const result = RecordTransactionsService.batchSaveTransactions(
+                    book as unknown as Bkper.Book,
+                    range as unknown as GoogleAppsScript.Spreadsheet.Range,
+                    range.getValues(),
+                    'UTC'
+                );
+
+                expect(result).to.be.false;
+                expect(writes).to.equal(0);
+                expect(backgrounds.get('1:2')).to.equal(ERROR_BACKGROUND_);
+                expect(dialogMessage).to.contain('tx-missing');
+                expect(dialogMessage).to.contain('not found');
+            } finally {
+                utilities.getErrorHtmlOutput = originalGetErrorHtmlOutput;
+                runtime.SpreadsheetApp = originalSpreadsheetApp;
+            }
         });
     });
 });

@@ -2,6 +2,13 @@ var RECORD_BACKGROUND_ = '#b0ddbc';
 var ERROR_BACKGROUND_ = '#ea9999';
 
 namespace RecordTransactionsService {
+    interface PreparedTransactionRow_ {
+        row: any[];
+        rowIndex: number;
+        batch: RecordTransactionBatch;
+        transactionId: string | null;
+    }
+
     export function recordTransactions(
         book: Bkper.Book,
         selectedRange: GoogleAppsScript.Spreadsheet.Range,
@@ -43,22 +50,101 @@ namespace RecordTransactionsService {
         let bookIdHeaderColumn = header.getBookIdHeaderColumn();
         let transactionIdHeaderColumn = header.getTransactionIdHeaderColumn();
 
-        // MAP: Group transactions by book
+        // MAP: Group rows by book before retrieving or writing transactions.
         let transactionsBatch: { [bookId: string]: RecordTransactionBatch } = {};
         transactionsBatch[book.getId()] = new RecordTransactionBatch(book);
+        const preparedRows: PreparedTransactionRow_[] = [];
 
-        for (const row of values) {
-            let batch = getBatchForRow(row, book, bookIdHeaderColumn, transactionsBatch);
-            let transactionId = getTransactionIdFromRow(row, transactionIdHeaderColumn);
+        for (let rowIndex = 0; rowIndex < values.length; rowIndex++) {
+            const row = values[rowIndex];
+            const batch = getBatchForRow(row, book, bookIdHeaderColumn, transactionsBatch);
+            preparedRows.push({
+                row: row,
+                rowIndex: rowIndex,
+                batch: batch,
+                transactionId: getTransactionIdFromRow(row, transactionIdHeaderColumn),
+            });
+        }
 
-            if (transactionId) {
-                // Update existing transaction
-                let existingTransaction = batch.getBook().getTransaction(transactionId);
-                applyRowToTransaction_(existingTransaction, row, batch.getBook(), header, timezone);
-                batch.pushUpdate(existingTransaction);
+        if (findDuplicatedTransactionIds_(preparedRows, transactionIdHeaderColumn, range)) {
+            showTransactionIdError_(
+                'There are duplicate Transaction IDs. Please review the cells marked in red and try again.'
+            );
+            return false;
+        }
+
+        // Load every Book's complete update transactions before performing any writes.
+        const existingTransactionsByBook: {
+            [bookId: string]: { [transactionId: string]: Bkper.Transaction };
+        } = {};
+        for (const bookId in transactionsBatch) {
+            const batch = transactionsBatch[bookId];
+            const transactionIds = preparedRows
+                .filter(preparedRow => preparedRow.batch === batch && preparedRow.transactionId)
+                .map(preparedRow => preparedRow.transactionId as string);
+            let existingTransactions: Bkper.Transaction[] = [];
+            if (transactionIds.length == 0) {
+                existingTransactionsByBook[bookId] = {};
+                continue;
+            }
+            try {
+                existingTransactions = batch.getBook().getTransactionsByIds(transactionIds);
+            } catch (error) {
+                const missingIds = parseMissingTransactionIds_(error);
+                if (missingIds.length == 0) {
+                    throw error;
+                }
+                highlightTransactionIds_(
+                    preparedRows,
+                    batch,
+                    missingIds,
+                    transactionIdHeaderColumn,
+                    range
+                );
+                showTransactionIdError_(
+                    `Transaction IDs not found: ${missingIds.join(', ')}. Please correct the cells marked in red and try again.`
+                );
+                return false;
+            }
+
+            const transactionsById: { [transactionId: string]: Bkper.Transaction } = {};
+            for (const transaction of existingTransactions) {
+                transactionsById[transaction.getId()] = transaction;
+            }
+            const missingIds = transactionIds.filter(id => transactionsById[id] == null);
+            if (missingIds.length > 0) {
+                highlightTransactionIds_(
+                    preparedRows,
+                    batch,
+                    missingIds,
+                    transactionIdHeaderColumn,
+                    range
+                );
+                showTransactionIdError_(
+                    `Transaction IDs not found: ${missingIds.join(', ')}. Please correct the cells marked in red and try again.`
+                );
+                return false;
+            }
+            existingTransactionsByBook[bookId] = transactionsById;
+        }
+
+        for (const preparedRow of preparedRows) {
+            const rowBook = preparedRow.batch.getBook();
+            if (preparedRow.transactionId) {
+                const existingTransaction =
+                    existingTransactionsByBook[rowBook.getId()][preparedRow.transactionId];
+                applyRowToTransaction_(
+                    existingTransaction,
+                    preparedRow.row,
+                    rowBook,
+                    header,
+                    timezone
+                );
+                preparedRow.batch.pushUpdate(existingTransaction);
             } else {
-                // Create new transaction
-                batch.pushCreate(arrayToTransaction_(row, batch.getBook(), header, timezone));
+                preparedRow.batch.pushCreate(
+                    arrayToTransaction_(preparedRow.row, rowBook, header, timezone)
+                );
             }
         }
 
@@ -77,6 +163,79 @@ namespace RecordTransactionsService {
         }
 
         return true;
+    }
+
+    function findDuplicatedTransactionIds_(
+        preparedRows: PreparedTransactionRow_[],
+        transactionIdHeaderColumn: TransactionsHeaderColumn,
+        range: GoogleAppsScript.Spreadsheet.Range
+    ): boolean {
+        if (!transactionIdHeaderColumn) {
+            return false;
+        }
+
+        const firstRowById = new Map<string, PreparedTransactionRow_>();
+        const duplicateRows = new Set<PreparedTransactionRow_>();
+        for (const preparedRow of preparedRows) {
+            if (!preparedRow.transactionId) {
+                continue;
+            }
+            const firstRow = firstRowById.get(preparedRow.transactionId);
+            if (firstRow) {
+                duplicateRows.add(firstRow);
+                duplicateRows.add(preparedRow);
+            } else {
+                firstRowById.set(preparedRow.transactionId, preparedRow);
+            }
+        }
+
+        for (const duplicateRow of Array.from(duplicateRows.values())) {
+            range
+                .getCell(duplicateRow.rowIndex + 1, transactionIdHeaderColumn.getIndex() + 1)
+                .setBackground(ERROR_BACKGROUND_);
+        }
+        return duplicateRows.size > 0;
+    }
+
+    function highlightTransactionIds_(
+        preparedRows: PreparedTransactionRow_[],
+        batch: RecordTransactionBatch,
+        transactionIds: string[],
+        transactionIdHeaderColumn: TransactionsHeaderColumn,
+        range: GoogleAppsScript.Spreadsheet.Range
+    ): void {
+        if (!transactionIdHeaderColumn) {
+            return;
+        }
+        const transactionIdSet = new Set(transactionIds);
+        for (const preparedRow of preparedRows) {
+            if (
+                preparedRow.batch === batch &&
+                preparedRow.transactionId &&
+                transactionIdSet.has(preparedRow.transactionId)
+            ) {
+                range
+                    .getCell(preparedRow.rowIndex + 1, transactionIdHeaderColumn.getIndex() + 1)
+                    .setBackground(ERROR_BACKGROUND_);
+            }
+        }
+    }
+
+    function parseMissingTransactionIds_(error: unknown): string[] {
+        const message = error instanceof Error ? error.message : `${error}`;
+        const match = message.match(/Ids:\s*\[([^\]]*)\]/);
+        if (!match) {
+            return [];
+        }
+        return match[1]
+            .split(',')
+            .map(id => id.trim())
+            .filter(id => id != '');
+    }
+
+    function showTransactionIdError_(message: string): void {
+        const htmlOutput = Utilities_.getErrorHtmlOutput(message);
+        SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'Error');
     }
 
     function getBatchForRow(
@@ -154,7 +313,7 @@ namespace RecordTransactionsService {
             for (const column of header.getColumns()) {
                 let value = row[column.getIndex()];
 
-                if ((value && value != '') || value == 0) {
+                if ((value && value != '') || value === 0) {
                     if (createAccountIfNeeded(book, column, value)) {
                         descriptionRow.push(value);
                     } else if (column.isCreditAccount()) {
@@ -217,7 +376,7 @@ namespace RecordTransactionsService {
             for (const column of header.getColumns()) {
                 let value = row[column.getIndex()];
 
-                if ((value && value != '') || value == 0) {
+                if ((value && value != '') || value === 0) {
                     if (createAccountIfNeeded(book, column, value)) {
                         descriptionRow.push(value);
                     } else if (column.isCreditAccount()) {
