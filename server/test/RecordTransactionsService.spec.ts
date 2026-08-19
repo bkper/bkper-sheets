@@ -709,24 +709,6 @@ describe('RecordTransactionsService', () => {
             const backgrounds = new Map<string, string>();
             let reads = 0;
             let writes = 0;
-            let dialogMessage = '';
-            const utilities = Utilities_ as unknown as {
-                getErrorHtmlOutput: (message: string) => GoogleAppsScript.HTML.HtmlOutput;
-            };
-            const originalGetErrorHtmlOutput = utilities.getErrorHtmlOutput;
-            utilities.getErrorHtmlOutput = (message: string) => {
-                dialogMessage = message;
-                return {} as GoogleAppsScript.HTML.HtmlOutput;
-            };
-            const runtime = globalThis as unknown as {
-                SpreadsheetApp: {
-                    getUi: () => { showModalDialog: () => void };
-                };
-            };
-            const originalSpreadsheetApp = runtime.SpreadsheetApp;
-            runtime.SpreadsheetApp = {
-                getUi: () => ({ showModalDialog: () => {} }),
-            };
 
             const book = {
                 getId: () => 'book-123',
@@ -750,8 +732,10 @@ describe('RecordTransactionsService', () => {
                 getColumn: () => 1,
                 getNumColumns: () => 2,
                 getValues: () => [
-                    ['First', 'tx-duplicate'],
-                    ['Second', 'tx-duplicate'],
+                    ['First', ' tx-duplicate '],
+                    ['Second', 'tx-other'],
+                    ['Third', 'tx-duplicate'],
+                    ['Fourth', 'tx-other'],
                 ],
                 getCell: (row: number, column: number) => ({
                     getBackground: () => '#ffffff',
@@ -759,24 +743,23 @@ describe('RecordTransactionsService', () => {
                 }),
             };
 
-            try {
-                const result = RecordTransactionsService.batchSaveTransactions(
+            expect(() =>
+                RecordTransactionsService.batchSaveTransactions(
                     book as unknown as Bkper.Book,
                     range as unknown as GoogleAppsScript.Spreadsheet.Range,
                     range.getValues(),
                     'UTC'
-                );
+                )
+            ).to.throw(
+                'Duplicate transactions found. Please correct the Transaction ID cells marked in red and try again.'
+            );
 
-                expect(result).to.be.false;
-                expect(reads).to.equal(0);
-                expect(writes).to.equal(0);
-                expect(backgrounds.get('1:2')).to.equal(ERROR_BACKGROUND_);
-                expect(backgrounds.get('2:2')).to.equal(ERROR_BACKGROUND_);
-                expect(dialogMessage).to.contain('duplicate Transaction IDs');
-            } finally {
-                utilities.getErrorHtmlOutput = originalGetErrorHtmlOutput;
-                runtime.SpreadsheetApp = originalSpreadsheetApp;
-            }
+            expect(reads).to.equal(0);
+            expect(writes).to.equal(0);
+            expect(backgrounds.get('1:2')).to.equal(ERROR_BACKGROUND_);
+            expect(backgrounds.get('2:2')).to.equal(ERROR_BACKGROUND_);
+            expect(backgrounds.get('3:2')).to.equal(ERROR_BACKGROUND_);
+            expect(backgrounds.get('4:2')).to.equal(ERROR_BACKGROUND_);
         });
 
         it('should highlight created rows and only draft rows returned by batch update', () => {
