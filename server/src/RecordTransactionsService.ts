@@ -9,6 +9,12 @@ namespace RecordTransactionsService {
         transactionId: string | null;
     }
 
+    interface TrashedTransactionDetails_ {
+        transactionId: string;
+        merged: boolean;
+        activeSuccessorIds: string[];
+    }
+
     export function recordTransactions(
         book: Bkper.Book,
         selectedRange: GoogleAppsScript.Spreadsheet.Range,
@@ -134,6 +140,24 @@ namespace RecordTransactionsService {
                 showTransactionIdError_(
                     `Transaction IDs not found: ${missingIds.join(', ')}. Please correct the cells marked in red and try again.`
                 );
+                return false;
+            }
+
+            const trashedTransactions = existingTransactions.filter(transaction =>
+                transaction.isTrashed()
+            );
+            if (trashedTransactions.length > 0) {
+                const details = trashedTransactions.map(transaction =>
+                    getTrashedTransactionDetails_(batch.getBook(), transaction.getId())
+                );
+                highlightTransactionIds_(
+                    preparedRows,
+                    batch,
+                    details.map(detail => detail.transactionId),
+                    transactionIdHeaderColumn,
+                    range
+                );
+                showTransactionIdError_(formatTrashedTransactionError_(details));
                 return false;
             }
             existingTransactionsByBook[bookId] = transactionsById;
@@ -276,6 +300,97 @@ namespace RecordTransactionsService {
     function showTransactionIdError_(message: string): void {
         const htmlOutput = Utilities_.getErrorHtmlOutput(message);
         SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'Error');
+    }
+
+    function getTrashedTransactionDetails_(
+        book: Bkper.Book,
+        transactionId: string
+    ): TrashedTransactionDetails_ {
+        const activeSuccessorIds = new Set<string>();
+        const visitedIds = new Set<string>([transactionId]);
+        const merged = collectMergeSuccessors_(
+            book,
+            transactionId,
+            activeSuccessorIds,
+            visitedIds
+        );
+        return {
+            transactionId: transactionId,
+            merged: merged,
+            activeSuccessorIds: Array.from(activeSuccessorIds.values()),
+        };
+    }
+
+    function collectMergeSuccessors_(
+        book: Bkper.Book,
+        transactionId: string,
+        activeSuccessorIds: Set<string>,
+        visitedIds: Set<string>
+    ): boolean {
+        const remoteIdQuery = `remoteId:'merged_${transactionId}'`;
+        let merged = false;
+
+        const activeTransactions = getTransactions_(book, remoteIdQuery);
+        for (const transaction of activeTransactions) {
+            merged = true;
+            activeSuccessorIds.add(transaction.getId());
+        }
+
+        const trashedTransactions = getTransactions_(book, `${remoteIdQuery} is:trashed`);
+        for (const transaction of trashedTransactions) {
+            merged = true;
+            const successorId = transaction.getId();
+            if (!visitedIds.has(successorId)) {
+                visitedIds.add(successorId);
+                if (
+                    collectMergeSuccessors_(
+                        book,
+                        successorId,
+                        activeSuccessorIds,
+                        visitedIds
+                    )
+                ) {
+                    merged = true;
+                }
+            }
+        }
+        return merged;
+    }
+
+    function getTransactions_(book: Bkper.Book, query: string): Bkper.Transaction[] {
+        const iterator = book.getTransactions(query);
+        const transactions: Bkper.Transaction[] = [];
+        while (iterator.hasNext()) {
+            transactions.push(iterator.next());
+        }
+        return transactions;
+    }
+
+    function formatTrashedTransactionError_(details: TrashedTransactionDetails_[]): string {
+        const messages: string[] = [];
+        const mergedDetails = details.filter(detail => detail.merged);
+        const otherTrashedIds = details
+            .filter(detail => !detail.merged)
+            .map(detail => detail.transactionId);
+
+        if (mergedDetails.length > 0) {
+            const replacements = mergedDetails.map(detail => {
+                if (detail.activeSuccessorIds.length == 0) {
+                    return detail.transactionId;
+                }
+                return `${detail.transactionId} → ${detail.activeSuccessorIds.join(', ')}`;
+            });
+            messages.push(
+                `These transactions were merged and can no longer be updated: ${replacements.join('; ')}.`
+            );
+        }
+        if (otherTrashedIds.length > 0) {
+            messages.push(
+                `These transactions are trashed and can no longer be updated: ${otherTrashedIds.join(', ')}.`
+            );
+        }
+        messages.push('Refresh or re-fetch the transactions before saving again.');
+        return messages.join(' ');
     }
 
     function getBatchForRow(

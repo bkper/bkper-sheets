@@ -22,6 +22,7 @@ describe('RecordTransactionsService', () => {
                     getId: function () {
                         return this._id;
                     },
+                    isTrashed: () => false,
                     setCreditAccount: function (v: string) {
                         this._creditAccount = v;
                         return this;
@@ -237,6 +238,7 @@ describe('RecordTransactionsService', () => {
                     getId: function () {
                         return this._id;
                     },
+                    isTrashed: () => false,
                     setCreditAccount: function (v: string) {
                         this._creditAccount = v;
                         return this;
@@ -352,6 +354,7 @@ describe('RecordTransactionsService', () => {
                     getId: function () {
                         return this._id;
                     },
+                    isTrashed: () => false,
                     setCreditAccount: function (v: string) {
                         this._creditAccount = v;
                         return this;
@@ -462,6 +465,7 @@ describe('RecordTransactionsService', () => {
                     getId: function () {
                         return this._id;
                     },
+                    isTrashed: () => false,
                     setCreditAccount: function (v: string) {
                         this._creditAccount = v;
                         return this;
@@ -569,6 +573,7 @@ describe('RecordTransactionsService', () => {
                 _debitAccount: 'Existing destination',
                 _date: '2024-01-01',
                 getId: () => 'tx-1',
+                isTrashed: () => false,
                 getDescription: function () {
                     return this._description;
                 },
@@ -644,6 +649,7 @@ describe('RecordTransactionsService', () => {
             const events: string[] = [];
             const transaction = (id: string): any => ({
                 getId: () => id,
+                isTrashed: () => false,
                 getDescription: () => 'Existing',
                 setDescription: function () {
                     return this;
@@ -875,6 +881,7 @@ describe('RecordTransactionsService', () => {
             const transaction = (id: string): Bkper.Transaction =>
                 ({
                     getId: () => id,
+                    isTrashed: () => false,
                     getDescription: () => 'Existing',
                     setDescription: function () {
                         return this;
@@ -942,6 +949,100 @@ describe('RecordTransactionsService', () => {
                 { rowOffset: 0, columnOffset: 0, numRows: 1, numColumns: 2 },
                 { rowOffset: 2, columnOffset: 0, numRows: 1, numColumns: 2 },
             ]);
+        });
+
+        it('should explain merged trashed transactions and list active successors', () => {
+            const backgrounds = new Map<string, string>();
+            let writes = 0;
+            let dialogMessage = '';
+            const utilities = Utilities_ as unknown as {
+                getErrorHtmlOutput: (message: string) => GoogleAppsScript.HTML.HtmlOutput;
+            };
+            const originalGetErrorHtmlOutput = utilities.getErrorHtmlOutput;
+            utilities.getErrorHtmlOutput = (message: string) => {
+                dialogMessage = message;
+                return {} as GoogleAppsScript.HTML.HtmlOutput;
+            };
+            const runtime = globalThis as unknown as {
+                SpreadsheetApp: {
+                    getUi: () => { showModalDialog: () => void };
+                };
+            };
+            const originalSpreadsheetApp = runtime.SpreadsheetApp;
+            runtime.SpreadsheetApp = {
+                getUi: () => ({ showModalDialog: () => {} }),
+            };
+
+            const transaction = (id: string, trashed: boolean): Bkper.Transaction =>
+                ({
+                    getId: () => id,
+                    isTrashed: () => trashed,
+                } as unknown as Bkper.Transaction);
+            const iterator = (transactions: Bkper.Transaction[]): Bkper.TransactionIterator => {
+                let index = 0;
+                return {
+                    hasNext: () => index < transactions.length,
+                    next: () => transactions[index++],
+                } as unknown as Bkper.TransactionIterator;
+            };
+            const oldTransaction = transaction('tx-old', true);
+            const intermediateTransaction = transaction('tx-intermediate', true);
+            const activeSuccessor1 = transaction('tx-current-1', false);
+            const activeSuccessor2 = transaction('tx-current-2', false);
+            const book = {
+                getId: () => 'book-123',
+                getTransactionsByIds: () => [oldTransaction],
+                getTransactions: (query: string) => {
+                    if (query.includes('merged_tx-old') && query.includes('is:trashed')) {
+                        return iterator([intermediateTransaction]);
+                    }
+                    if (query.includes('merged_tx-intermediate') && !query.includes('is:trashed')) {
+                        return iterator([activeSuccessor1, activeSuccessor2]);
+                    }
+                    return iterator([]);
+                },
+                batchCreateTransactions: () => {
+                    writes++;
+                },
+                batchUpdateTransactions: () => {
+                    writes++;
+                },
+            };
+            const sheet = {
+                getFrozenRows: () => 1,
+                getSheetValues: () => [['Description', 'Transaction ID']],
+            };
+            const range = {
+                getSheet: () => sheet,
+                getColumn: () => 1,
+                getNumColumns: () => 2,
+                getValues: () => [['Merged transaction', 'tx-old']],
+                getCell: (row: number, column: number) => ({
+                    getBackground: () => '#ffffff',
+                    setBackground: (color: string) => backgrounds.set(`${row}:${column}`, color),
+                }),
+            };
+
+            try {
+                const result = RecordTransactionsService.batchSaveTransactions(
+                    book as unknown as Bkper.Book,
+                    range as unknown as GoogleAppsScript.Spreadsheet.Range,
+                    range.getValues(),
+                    'UTC'
+                );
+
+                expect(result).to.be.false;
+                expect(writes).to.equal(0);
+                expect(backgrounds.get('1:2')).to.equal(ERROR_BACKGROUND_);
+                expect(dialogMessage).to.contain('tx-old');
+                expect(dialogMessage).to.contain('merged');
+                expect(dialogMessage).to.contain('tx-current-1');
+                expect(dialogMessage).to.contain('tx-current-2');
+                expect(dialogMessage).to.contain('Refresh');
+            } finally {
+                utilities.getErrorHtmlOutput = originalGetErrorHtmlOutput;
+                runtime.SpreadsheetApp = originalSpreadsheetApp;
+            }
         });
 
         it('should highlight missing Transaction IDs and perform no writes', () => {
