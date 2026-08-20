@@ -63,9 +63,10 @@ namespace RecordTransactionsService {
         }
 
         if (findDuplicatedTransactionIds_(preparedRows, transactionIdHeaderColumn, range)) {
-            throw new Error(
+            showTransactionIdError_(
                 'Duplicate transactions found. Please correct the Transaction ID cells marked in red and try again.'
             );
+            return false;
         }
 
         // Load every Book's complete update transactions before performing any writes.
