@@ -37,7 +37,7 @@ function installValidationDialogMock_(): ValidationDialogMock_ {
 
 describe('Book ID validation', () => {
     it('should reject and highlight an invalid Book ID when recording accounts', () => {
-        const backgrounds = new Map<string, string>();
+        const backgroundWrites: (string | null)[][][] = [];
         let writes = 0;
         const dialog = installValidationDialogMock_();
         const book = {
@@ -55,9 +55,10 @@ describe('Book ID validation', () => {
             getColumn: () => 1,
             getNumColumns: () => 2,
             getValues: () => [['Checking', 123]],
-            getCell: (row: number, column: number) => ({
-                setBackground: (color: string) => backgrounds.set(`${row}:${column}`, color),
-            }),
+            getBackgrounds: () => [['#ffffff', '#ffffff']],
+            setBackgrounds: (backgrounds: (string | null)[][]) => {
+                backgroundWrites.push(backgrounds);
+            },
         };
         const spreadsheet = {
             getSpreadsheetTimeZone: () => 'UTC',
@@ -73,7 +74,9 @@ describe('Book ID validation', () => {
 
             expect(result).to.be.false;
             expect(writes).to.equal(0);
-            expect(backgrounds.get('1:2')).to.equal('#ea9999');
+            expect(backgroundWrites).to.deep.equal([
+                [['#ffffff', '#ea9999']],
+            ]);
             expect(dialog.getMessage()).to.contain('123');
         } finally {
             dialog.restore();
@@ -81,7 +84,7 @@ describe('Book ID validation', () => {
     });
 
     it('should reject and highlight an invalid Book ID when recording groups', () => {
-        const backgrounds = new Map<string, string>();
+        const backgroundWrites: (string | null)[][][] = [];
         let writes = 0;
         const dialog = installValidationDialogMock_();
         const book = {
@@ -99,9 +102,10 @@ describe('Book ID validation', () => {
             getColumn: () => 1,
             getNumColumns: () => 2,
             getValues: () => [['Operations', false]],
-            getCell: (row: number, column: number) => ({
-                setBackground: (color: string) => backgrounds.set(`${row}:${column}`, color),
-            }),
+            getBackgrounds: () => [['#ffffff', '#ffffff']],
+            setBackgrounds: (backgrounds: (string | null)[][]) => {
+                backgroundWrites.push(backgrounds);
+            },
         };
         const spreadsheet = {
             getSpreadsheetTimeZone: () => 'UTC',
@@ -117,7 +121,9 @@ describe('Book ID validation', () => {
 
             expect(result).to.be.false;
             expect(writes).to.equal(0);
-            expect(backgrounds.get('1:2')).to.equal('#ea9999');
+            expect(backgroundWrites).to.deep.equal([
+                [['#ffffff', '#ea9999']],
+            ]);
             expect(dialog.getMessage()).to.contain('false');
         } finally {
             dialog.restore();

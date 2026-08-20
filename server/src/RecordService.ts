@@ -11,27 +11,32 @@ namespace RecordService {
             return false;
         }
 
+        RangeHighlightService.clearValidationErrors(selectedRange);
+
+        let recorded = false;
         if (recordStatement.recordType == 'transactions') {
-            return RecordTransactionsService.recordTransactions(
+            recorded = RecordTransactionsService.recordTransactions(
                 book,
                 selectedRange,
                 activeSS,
                 recordStatement.highlight
             );
         } else if (recordStatement.recordType == 'accounts') {
-            return RecordAccountsService.recordAccounts(
+            recorded = RecordAccountsService.recordAccounts(
                 book,
                 selectedRange,
                 activeSS,
                 recordStatement.highlight
             );
         } else if (recordStatement.recordType == 'groups') {
-            return RecordGroupsService.recordGroups(
+            recorded = RecordGroupsService.recordGroups(
                 book,
                 selectedRange,
                 activeSS,
                 recordStatement.highlight
             );
         }
+
+        return recorded;
     }
 }

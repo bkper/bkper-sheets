@@ -41,7 +41,7 @@ namespace RecordTransactionsService {
     ): boolean {
         let header = new TransactionsHeader(range);
 
-        if (findDuplicatedRemoteIds(header, range)) {
+        if (findDuplicatedRemoteIds(header, range, values)) {
             const htmlOutput = Utilities_.getErrorHtmlOutput(
                 'There are transactions with the same ID. Please review duplicates (marked in red) and try again.'
             );
@@ -216,17 +216,17 @@ namespace RecordTransactionsService {
         updatedTransactionIdsByBatch: Map<RecordTransactionBatch, Set<string>>,
         range: GoogleAppsScript.Spreadsheet.Range
     ): void {
+        const recordedRows: number[] = [];
         for (const preparedRow of preparedRows) {
             const updatedTransactionIds = updatedTransactionIdsByBatch.get(preparedRow.batch);
             if (
                 preparedRow.transactionId == null ||
                 (updatedTransactionIds && updatedTransactionIds.has(preparedRow.transactionId))
             ) {
-                range
-                    .offset(preparedRow.rowIndex, 0, 1, range.getNumColumns())
-                    .setBackground(RECORD_BACKGROUND_);
+                recordedRows.push(preparedRow.rowIndex);
             }
         }
+        RangeHighlightService.highlightRows(range, recordedRows, RECORD_BACKGROUND_);
     }
 
     function findDuplicatedTransactionIds_(
@@ -253,11 +253,11 @@ namespace RecordTransactionsService {
             }
         }
 
-        for (const duplicateRow of Array.from(duplicateRows.values())) {
-            range
-                .getCell(duplicateRow.rowIndex + 1, transactionIdHeaderColumn.getIndex() + 1)
-                .setBackground(ERROR_BACKGROUND_);
-        }
+        const duplicateCells = Array.from(duplicateRows.values()).map(duplicateRow => ({
+            row: duplicateRow.rowIndex,
+            column: transactionIdHeaderColumn.getIndex(),
+        }));
+        RangeHighlightService.highlightErrors(range, duplicateCells);
         return duplicateRows.size > 0;
     }
 
@@ -272,17 +272,20 @@ namespace RecordTransactionsService {
             return;
         }
         const transactionIdSet = new Set(transactionIds);
+        const invalidCells: RangeHighlightService.Cell[] = [];
         for (const preparedRow of preparedRows) {
             if (
                 preparedRow.batch === batch &&
                 preparedRow.transactionId &&
                 transactionIdSet.has(preparedRow.transactionId)
             ) {
-                range
-                    .getCell(preparedRow.rowIndex + 1, transactionIdHeaderColumn.getIndex() + 1)
-                    .setBackground(ERROR_BACKGROUND_);
+                invalidCells.push({
+                    row: preparedRow.rowIndex,
+                    column: transactionIdHeaderColumn.getIndex(),
+                });
             }
         }
+        RangeHighlightService.highlightErrors(range, invalidCells);
     }
 
     function parseMissingTransactionIds_(error: unknown): string[] {
@@ -591,44 +594,38 @@ namespace RecordTransactionsService {
 
     function findDuplicatedRemoteIds(
         header: TransactionsHeader,
-        transactionsDataRange: GoogleAppsScript.Spreadsheet.Range
+        transactionsDataRange: GoogleAppsScript.Spreadsheet.Range,
+        transactionsData: any[][]
     ): boolean {
         const columns = header.getColumns();
-
-        let findDuplicatedTransactionIds = false;
+        const duplicateCells: RangeHighlightService.Cell[] = [];
 
         // search for ID header
         for (const column of columns) {
             if (column.isId()) {
                 const idColumnIndex = column.getIndex();
-                const transactionsData = transactionsDataRange.getValues();
-                let idsMap = new Map<string, string>();
-                let errorBackgroundsSet = new Set<string>();
+                const idsMap = new Map<string, number>();
+                const duplicateRows = new Set<number>();
                 // look for duplicates
                 for (let i = 0; i < transactionsData.length; i++) {
                     const transactionId = `${transactionsData[i][idColumnIndex]}`.trim();
                     if (transactionId != '') {
                         const duplicatedIdRow = idsMap.get(transactionId);
                         if (duplicatedIdRow != undefined) {
-                            findDuplicatedTransactionIds = true;
-                            // flag both rows
-                            errorBackgroundsSet.add(`${i + 1}`);
-                            errorBackgroundsSet.add(`${duplicatedIdRow}`);
+                            duplicateRows.add(i);
+                            duplicateRows.add(duplicatedIdRow);
                         } else {
-                            idsMap.set(transactionId, `${i + 1}`);
+                            idsMap.set(transactionId, i);
                         }
                     }
                 }
-                // set backgrounds
-                for (const rowIndex of Array.from(errorBackgroundsSet.values())) {
-                    const cell = transactionsDataRange.getCell(+rowIndex, idColumnIndex + 1);
-                    if (cell.getBackground() !== RECORD_BACKGROUND_) {
-                        cell.setBackground(ERROR_BACKGROUND_);
-                    }
+                for (const row of Array.from(duplicateRows.values())) {
+                    duplicateCells.push({ row: row, column: idColumnIndex });
                 }
             }
         }
 
-        return findDuplicatedTransactionIds;
+        RangeHighlightService.highlightErrors(transactionsDataRange, duplicateCells);
+        return duplicateCells.length > 0;
     }
 }

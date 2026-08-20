@@ -1,5 +1,3 @@
-var BOOK_ID_ERROR_BACKGROUND_ = '#ea9999';
-
 namespace BookIdValidationService {
     export interface HeaderColumn {
         getIndex(): number;
@@ -57,14 +55,17 @@ namespace BookIdValidationService {
             return { valid: true, booksById: booksById };
         }
 
+        const invalidCells: RangeHighlightService.Cell[] = [];
         for (const bookId of invalidBookIds) {
             const rows = rowsByBookId.get(bookId) || [];
             for (const rowIndex of rows) {
-                range
-                    .getCell(rowIndex + 1, bookIdHeaderColumn.getIndex() + 1)
-                    .setBackground(BOOK_ID_ERROR_BACKGROUND_);
+                invalidCells.push({
+                    row: rowIndex,
+                    column: bookIdHeaderColumn.getIndex(),
+                });
             }
         }
+        RangeHighlightService.highlightErrors(range, invalidCells);
 
         const escapedBookIds = invalidBookIds.map(bookId => escapeHtml_(bookId));
         const htmlOutput = Utilities_.getErrorHtmlOutput(

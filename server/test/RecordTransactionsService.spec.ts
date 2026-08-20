@@ -712,8 +712,75 @@ describe('RecordTransactionsService', () => {
             }
         });
 
+        it('should highlight duplicate remote IDs in one batch', () => {
+            const backgroundWrites: (string | null)[][][] = [];
+            let dialogShown = false;
+            const utilities = Utilities_ as unknown as {
+                getErrorHtmlOutput: (message: string) => GoogleAppsScript.HTML.HtmlOutput;
+            };
+            const originalGetErrorHtmlOutput = utilities.getErrorHtmlOutput;
+            utilities.getErrorHtmlOutput = () => ({} as GoogleAppsScript.HTML.HtmlOutput);
+            const runtime = globalThis as unknown as {
+                SpreadsheetApp: {
+                    getUi: () => { showModalDialog: () => void };
+                };
+            };
+            const originalSpreadsheetApp = runtime.SpreadsheetApp;
+            runtime.SpreadsheetApp = {
+                getUi: () => ({
+                    showModalDialog: () => {
+                        dialogShown = true;
+                    },
+                }),
+            };
+
+            const values = [
+                ['First', 'remote-duplicate'],
+                ['Second', 'remote-other'],
+                ['Third', 'remote-duplicate'],
+            ];
+            const range = {
+                getSheet: () => ({
+                    getFrozenRows: () => 1,
+                    getSheetValues: () => [['Description', 'ID']],
+                }),
+                getColumn: () => 1,
+                getNumColumns: () => 2,
+                getBackgrounds: () => [
+                    ['#ffffff', '#ffffff'],
+                    ['#ffffff', '#ffffff'],
+                    ['#ffffff', '#ffffff'],
+                ],
+                setBackgrounds: (backgrounds: (string | null)[][]) => {
+                    backgroundWrites.push(backgrounds);
+                },
+            };
+
+            try {
+                const result = RecordTransactionsService.batchSaveTransactions(
+                    {} as Bkper.Book,
+                    range as unknown as GoogleAppsScript.Spreadsheet.Range,
+                    values,
+                    'UTC'
+                );
+
+                expect(result).to.be.false;
+                expect(backgroundWrites).to.deep.equal([
+                    [
+                        ['#ffffff', ERROR_BACKGROUND_],
+                        ['#ffffff', '#ffffff'],
+                        ['#ffffff', ERROR_BACKGROUND_],
+                    ],
+                ]);
+                expect(dialogShown).to.be.true;
+            } finally {
+                utilities.getErrorHtmlOutput = originalGetErrorHtmlOutput;
+                runtime.SpreadsheetApp = originalSpreadsheetApp;
+            }
+        });
+
         it('should highlight invalid Book IDs, show one dialog, and perform no writes', () => {
-            const backgrounds = new Map<string, string>();
+            const backgroundWrites: (string | null)[][][] = [];
             let writes = 0;
             let dialogMessage = '';
             const inaccessibleBookId = 'agtzfmJrcGVyLWhyZHI-inaccessible';
@@ -764,10 +831,14 @@ describe('RecordTransactionsService', () => {
                     ['Inaccessible', inaccessibleBookId],
                     ['Same inaccessible Book', inaccessibleBookId],
                 ],
-                getCell: (row: number, column: number) => ({
-                    getBackground: () => '#ffffff',
-                    setBackground: (color: string) => backgrounds.set(`${row}:${column}`, color),
-                }),
+                getBackgrounds: () => [
+                    ['#ffffff', '#ffffff'],
+                    ['#ffffff', '#ffffff'],
+                    ['#ffffff', '#ffffff'],
+                ],
+                setBackgrounds: (backgrounds: (string | null)[][]) => {
+                    backgroundWrites.push(backgrounds);
+                },
             };
 
             try {
@@ -780,9 +851,13 @@ describe('RecordTransactionsService', () => {
 
                 expect(result).to.be.false;
                 expect(writes).to.equal(0);
-                expect(backgrounds.get('1:2')).to.equal(ERROR_BACKGROUND_);
-                expect(backgrounds.get('2:2')).to.equal(ERROR_BACKGROUND_);
-                expect(backgrounds.get('3:2')).to.equal(ERROR_BACKGROUND_);
+                expect(backgroundWrites).to.deep.equal([
+                    [
+                        ['#ffffff', ERROR_BACKGROUND_],
+                        ['#ffffff', ERROR_BACKGROUND_],
+                        ['#ffffff', ERROR_BACKGROUND_],
+                    ],
+                ]);
                 expect(dialogMessage).to.contain('invalid-book');
                 expect(dialogMessage).to.contain(inaccessibleBookId);
             } finally {
@@ -792,8 +867,8 @@ describe('RecordTransactionsService', () => {
             }
         });
 
-        it('should highlight duplicate Transaction IDs, show a dialog, and perform no writes', () => {
-            const backgrounds = new Map<string, string>();
+        it('should highlight duplicate Transaction IDs in one batch and perform no writes', () => {
+            const backgroundWrites: (string | null)[][][] = [];
             let reads = 0;
             let writes = 0;
             let dialogShown = false;
@@ -843,10 +918,15 @@ describe('RecordTransactionsService', () => {
                     ['Third', 'tx-duplicate'],
                     ['Fourth', 'tx-other'],
                 ],
-                getCell: (row: number, column: number) => ({
-                    getBackground: () => '#ffffff',
-                    setBackground: (color: string) => backgrounds.set(`${row}:${column}`, color),
-                }),
+                getBackgrounds: () => [
+                    ['#ffffff', '#ffffff'],
+                    ['#ffffff', '#ffffff'],
+                    ['#ffffff', '#ffffff'],
+                    ['#ffffff', '#ffffff'],
+                ],
+                setBackgrounds: (backgrounds: (string | null)[][]) => {
+                    backgroundWrites.push(backgrounds);
+                },
             };
 
             try {
@@ -860,10 +940,14 @@ describe('RecordTransactionsService', () => {
                 expect(result).to.be.false;
                 expect(reads).to.equal(0);
                 expect(writes).to.equal(0);
-                expect(backgrounds.get('1:2')).to.equal(ERROR_BACKGROUND_);
-                expect(backgrounds.get('2:2')).to.equal(ERROR_BACKGROUND_);
-                expect(backgrounds.get('3:2')).to.equal(ERROR_BACKGROUND_);
-                expect(backgrounds.get('4:2')).to.equal(ERROR_BACKGROUND_);
+                expect(backgroundWrites).to.deep.equal([
+                    [
+                        ['#ffffff', ERROR_BACKGROUND_],
+                        ['#ffffff', ERROR_BACKGROUND_],
+                        ['#ffffff', ERROR_BACKGROUND_],
+                        ['#ffffff', ERROR_BACKGROUND_],
+                    ],
+                ]);
                 expect(dialogShown).to.be.true;
             } finally {
                 utilities.getErrorHtmlOutput = originalGetErrorHtmlOutput;
@@ -871,13 +955,8 @@ describe('RecordTransactionsService', () => {
             }
         });
 
-        it('should highlight created rows and only draft rows returned by batch update', () => {
-            const highlightedRanges: {
-                rowOffset: number;
-                columnOffset: number;
-                numRows: number;
-                numColumns: number;
-            }[] = [];
+        it('should highlight created rows and only draft rows in one batch', () => {
+            const backgroundWrites: (string | null)[][][] = [];
             const transaction = (id: string): Bkper.Transaction =>
                 ({
                     getId: () => id,
@@ -913,25 +992,14 @@ describe('RecordTransactionsService', () => {
                     ['Created', ''],
                 ],
                 getCell: () => ({ getBackground: () => '#ffffff', setBackground: () => {} }),
-                setBackground: () => {
-                    throw new Error('The complete selection must not be highlighted');
+                getBackgrounds: () => [
+                    ['#ffffff', '#ffffff'],
+                    ['#ffffff', '#ffffff'],
+                    ['#ffffff', '#ffffff'],
+                ],
+                setBackgrounds: (backgrounds: (string | null)[][]) => {
+                    backgroundWrites.push(backgrounds);
                 },
-                offset: (
-                    rowOffset: number,
-                    columnOffset: number,
-                    numRows: number,
-                    numColumns: number
-                ) => ({
-                    setBackground: (color: string) => {
-                        expect(color).to.equal(RECORD_BACKGROUND_);
-                        highlightedRanges.push({
-                            rowOffset: rowOffset,
-                            columnOffset: columnOffset,
-                            numRows: numRows,
-                            numColumns: numColumns,
-                        });
-                    },
-                }),
             };
             const spreadsheet = {
                 getSpreadsheetTimeZone: () => 'UTC',
@@ -945,14 +1013,17 @@ describe('RecordTransactionsService', () => {
             );
 
             expect(result).to.be.true;
-            expect(highlightedRanges).to.deep.equal([
-                { rowOffset: 0, columnOffset: 0, numRows: 1, numColumns: 2 },
-                { rowOffset: 2, columnOffset: 0, numRows: 1, numColumns: 2 },
+            expect(backgroundWrites).to.deep.equal([
+                [
+                    [RECORD_BACKGROUND_, RECORD_BACKGROUND_],
+                    ['#ffffff', '#ffffff'],
+                    [RECORD_BACKGROUND_, RECORD_BACKGROUND_],
+                ],
             ]);
         });
 
         it('should explain merged trashed transactions and list active successors', () => {
-            const backgrounds = new Map<string, string>();
+            const backgroundWrites: (string | null)[][][] = [];
             let writes = 0;
             let dialogMessage = '';
             const utilities = Utilities_ as unknown as {
@@ -1017,10 +1088,10 @@ describe('RecordTransactionsService', () => {
                 getColumn: () => 1,
                 getNumColumns: () => 2,
                 getValues: () => [['Merged transaction', 'tx-old']],
-                getCell: (row: number, column: number) => ({
-                    getBackground: () => '#ffffff',
-                    setBackground: (color: string) => backgrounds.set(`${row}:${column}`, color),
-                }),
+                getBackgrounds: () => [['#ffffff', '#ffffff']],
+                setBackgrounds: (backgrounds: (string | null)[][]) => {
+                    backgroundWrites.push(backgrounds);
+                },
             };
 
             try {
@@ -1033,7 +1104,9 @@ describe('RecordTransactionsService', () => {
 
                 expect(result).to.be.false;
                 expect(writes).to.equal(0);
-                expect(backgrounds.get('1:2')).to.equal(ERROR_BACKGROUND_);
+                expect(backgroundWrites).to.deep.equal([
+                    [['#ffffff', ERROR_BACKGROUND_]],
+                ]);
                 expect(dialogMessage).to.contain('tx-old');
                 expect(dialogMessage).to.contain('merged');
                 expect(dialogMessage).to.contain('tx-current-1');
@@ -1046,7 +1119,7 @@ describe('RecordTransactionsService', () => {
         });
 
         it('should highlight missing Transaction IDs and perform no writes', () => {
-            const backgrounds = new Map<string, string>();
+            const backgroundWrites: (string | null)[][][] = [];
             let writes = 0;
             let dialogMessage = '';
             const utilities = Utilities_ as unknown as {
@@ -1088,10 +1161,10 @@ describe('RecordTransactionsService', () => {
                 getColumn: () => 1,
                 getNumColumns: () => 2,
                 getValues: () => [['Missing transaction', 'tx-missing']],
-                getCell: (row: number, column: number) => ({
-                    getBackground: () => '#ffffff',
-                    setBackground: (color: string) => backgrounds.set(`${row}:${column}`, color),
-                }),
+                getBackgrounds: () => [['#ffffff', '#ffffff']],
+                setBackgrounds: (backgrounds: (string | null)[][]) => {
+                    backgroundWrites.push(backgrounds);
+                },
             };
 
             try {
@@ -1104,7 +1177,9 @@ describe('RecordTransactionsService', () => {
 
                 expect(result).to.be.false;
                 expect(writes).to.equal(0);
-                expect(backgrounds.get('1:2')).to.equal(ERROR_BACKGROUND_);
+                expect(backgroundWrites).to.deep.equal([
+                    [['#ffffff', ERROR_BACKGROUND_]],
+                ]);
                 expect(dialogMessage).to.contain('tx-missing');
                 expect(dialogMessage).to.contain('not found');
             } finally {
