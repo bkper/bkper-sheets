@@ -6,8 +6,13 @@ namespace RecordAccountsService {
         highlight: boolean
     ): boolean {
         const timezone = activeSS.getSpreadsheetTimeZone();
-        batchCreateAccounts(book, selectedRange, selectedRange.getValues(), highlight, timezone);
-        return true;
+        return batchCreateAccounts(
+            book,
+            selectedRange,
+            selectedRange.getValues(),
+            highlight,
+            timezone
+        );
     }
 
     export function batchCreateAccounts(
@@ -16,7 +21,7 @@ namespace RecordAccountsService {
         values: any[][],
         highlight: boolean,
         timezone: string
-    ) {
+    ): boolean {
         const header = new AccountsHeader(range);
         const bookIdHeaderColumn = header.getBookIdHeaderColumn();
 
@@ -32,22 +37,31 @@ namespace RecordAccountsService {
             backgrounds[0] = fill(new Array(header.getColumns().length), undefined);
         }
 
+        const startAt = shouldIgnoreFirstRow ? 1 : 0;
+        const bookIdValidation = BookIdValidationService.validate(
+            book,
+            range,
+            values,
+            bookIdHeaderColumn,
+            startAt
+        );
+        if (!bookIdValidation.valid) {
+            return false;
+        }
+
         if (bookIdHeaderColumn) {
             // MAP
             let accountsBatch: { [bookId: string]: RecordAccountBatch } = {};
             accountsBatch[book.getId()] = new RecordAccountBatch(book);
-            const startAt = shouldIgnoreFirstRow ? 1 : 0;
             for (let i = startAt; i < values.length; i++) {
                 const row = values[i];
-                let bookId = row[bookIdHeaderColumn.getIndex()];
-                if (bookId != null && typeof bookId == 'string' && bookId.trim() != '') {
-                    if (!Utilities_.hasBookIdPrefix(bookId)) {
-                        throw `Selected range has invalid book id: '${bookId}'`;
-                    }
+                const bookId = BookIdValidationService.normalize(
+                    row[bookIdHeaderColumn.getIndex()]
+                );
+                if (bookId != '') {
                     let batch = accountsBatch[bookId];
                     if (batch == null) {
-                        const book = BkperApp.getBook(bookId);
-                        batch = new RecordAccountBatch(book);
+                        batch = new RecordAccountBatch(bookIdValidation.booksById[bookId]);
                         accountsBatch[bookId] = batch;
                     }
                     batch = arrayToBatch_(row, batch, header, timezone, highlight, i);
@@ -72,7 +86,6 @@ namespace RecordAccountsService {
             }
         } else {
             let batch = new RecordAccountBatch(book);
-            const startAt = shouldIgnoreFirstRow ? 1 : 0;
             for (let i = startAt; i < values.length; i++) {
                 batch = arrayToBatch_(values[i], batch, header, timezone, highlight, i);
             }
@@ -92,6 +105,7 @@ namespace RecordAccountsService {
         if (highlight) {
             range.setBackgrounds(backgrounds);
         }
+        return true;
     }
 
     function updateBackgroundsArray(

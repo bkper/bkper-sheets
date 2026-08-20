@@ -661,6 +661,7 @@ describe('RecordTransactionsService', () => {
             };
             const otherBook: any = {
                 getId: () => 'agtzfmJrcGVyLWhyZHI-other',
+                getName: () => 'Other Book',
                 getTransactionsByIds: (ids: string[]) => {
                     events.push('read-other');
                     return ids.map(transaction);
@@ -702,6 +703,86 @@ describe('RecordTransactionsService', () => {
                 expect(events.slice(2)).to.deep.equal(['write-default', 'write-other']);
             } finally {
                 runtime.BkperApp = originalBkperApp;
+            }
+        });
+
+        it('should highlight invalid Book IDs, show one dialog, and perform no writes', () => {
+            const backgrounds = new Map<string, string>();
+            let writes = 0;
+            let dialogMessage = '';
+            const inaccessibleBookId = 'agtzfmJrcGVyLWhyZHI-inaccessible';
+            const utilities = Utilities_ as unknown as {
+                getErrorHtmlOutput: (message: string) => GoogleAppsScript.HTML.HtmlOutput;
+            };
+            const originalGetErrorHtmlOutput = utilities.getErrorHtmlOutput;
+            utilities.getErrorHtmlOutput = (message: string) => {
+                dialogMessage = message;
+                return {} as GoogleAppsScript.HTML.HtmlOutput;
+            };
+            const runtime = globalThis as unknown as {
+                BkperApp: { getBook: (bookId: string) => Bkper.Book };
+                SpreadsheetApp: {
+                    getUi: () => { showModalDialog: () => void };
+                };
+            };
+            const originalBkperApp = runtime.BkperApp;
+            const originalSpreadsheetApp = runtime.SpreadsheetApp;
+            runtime.BkperApp = {
+                getBook: () => {
+                    throw new Error('Book not found');
+                },
+            };
+            runtime.SpreadsheetApp = {
+                getUi: () => ({ showModalDialog: () => {} }),
+            };
+
+            const book = {
+                getId: () => 'agtzfmJrcGVyLWhyZHI-default',
+                batchCreateTransactions: () => {
+                    writes++;
+                },
+                batchUpdateTransactions: () => {
+                    writes++;
+                },
+            };
+            const sheet = {
+                getFrozenRows: () => 1,
+                getSheetValues: () => [['Description', 'BookId']],
+            };
+            const range = {
+                getSheet: () => sheet,
+                getColumn: () => 1,
+                getNumColumns: () => 2,
+                getValues: () => [
+                    ['Malformed', 'invalid-book'],
+                    ['Inaccessible', inaccessibleBookId],
+                    ['Same inaccessible Book', inaccessibleBookId],
+                ],
+                getCell: (row: number, column: number) => ({
+                    getBackground: () => '#ffffff',
+                    setBackground: (color: string) => backgrounds.set(`${row}:${column}`, color),
+                }),
+            };
+
+            try {
+                const result = RecordTransactionsService.batchSaveTransactions(
+                    book as unknown as Bkper.Book,
+                    range as unknown as GoogleAppsScript.Spreadsheet.Range,
+                    range.getValues(),
+                    'UTC'
+                );
+
+                expect(result).to.be.false;
+                expect(writes).to.equal(0);
+                expect(backgrounds.get('1:2')).to.equal(ERROR_BACKGROUND_);
+                expect(backgrounds.get('2:2')).to.equal(ERROR_BACKGROUND_);
+                expect(backgrounds.get('3:2')).to.equal(ERROR_BACKGROUND_);
+                expect(dialogMessage).to.contain('invalid-book');
+                expect(dialogMessage).to.contain(inaccessibleBookId);
+            } finally {
+                utilities.getErrorHtmlOutput = originalGetErrorHtmlOutput;
+                runtime.BkperApp = originalBkperApp;
+                runtime.SpreadsheetApp = originalSpreadsheetApp;
             }
         });
 

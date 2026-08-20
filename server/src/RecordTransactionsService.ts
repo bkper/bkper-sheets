@@ -45,6 +45,15 @@ namespace RecordTransactionsService {
 
         let bookIdHeaderColumn = header.getBookIdHeaderColumn();
         let transactionIdHeaderColumn = header.getTransactionIdHeaderColumn();
+        const bookIdValidation = BookIdValidationService.validate(
+            book,
+            range,
+            values,
+            bookIdHeaderColumn
+        );
+        if (!bookIdValidation.valid) {
+            return false;
+        }
 
         // MAP: Group rows by book before retrieving or writing transactions.
         let transactionsBatch: { [bookId: string]: RecordTransactionBatch } = {};
@@ -53,7 +62,13 @@ namespace RecordTransactionsService {
 
         for (let rowIndex = 0; rowIndex < values.length; rowIndex++) {
             const row = values[rowIndex];
-            const batch = getBatchForRow(row, book, bookIdHeaderColumn, transactionsBatch);
+            const batch = getBatchForRow(
+                row,
+                book,
+                bookIdHeaderColumn,
+                transactionsBatch,
+                bookIdValidation.booksById
+            );
             preparedRows.push({
                 row: row,
                 rowIndex: rowIndex,
@@ -267,21 +282,18 @@ namespace RecordTransactionsService {
         row: any[],
         defaultBook: Bkper.Book,
         bookIdHeaderColumn: TransactionsHeaderColumn,
-        transactionsBatch: { [bookId: string]: RecordTransactionBatch }
+        transactionsBatch: { [bookId: string]: RecordTransactionBatch },
+        booksById: { [bookId: string]: Bkper.Book }
     ): RecordTransactionBatch {
         if (!bookIdHeaderColumn) {
             return transactionsBatch[defaultBook.getId()];
         }
 
-        let bookId = row[bookIdHeaderColumn.getIndex()];
-        if (bookId != null && typeof bookId == 'string' && bookId.trim() != '') {
-            if (!Utilities_.hasBookIdPrefix(bookId)) {
-                throw `Selected range has invalid book id: '${bookId}'`;
-            }
+        const bookId = BookIdValidationService.normalize(row[bookIdHeaderColumn.getIndex()]);
+        if (bookId != '') {
             let batch = transactionsBatch[bookId];
             if (batch == null) {
-                let rowBook = BkperApp.getBook(bookId);
-                batch = new RecordTransactionBatch(rowBook);
+                batch = new RecordTransactionBatch(booksById[bookId]);
                 transactionsBatch[bookId] = batch;
             }
             return batch;
