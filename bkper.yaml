@@ -15,4 +15,6 @@ repoUrl: https://github.com/bkper/bkper-sheets
 repoPrivate: false
 deprecated: false
 
+developers: '*@bkper.com'
+
 scriptId: 1WDiSLYb67DLWs2XdnKopZcsK3HCwnhRlRYjaAXlMDdej6WFo8EMhiPk4
