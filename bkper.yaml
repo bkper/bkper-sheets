@@ -1,6 +1,9 @@
 id: bkper-sheets
 name: Google Sheets Add-on
 description: Connect Bkper books to Google Sheets for reporting, analysis, and transaction recording with Bkper Functions.
+tags:
+    - Data entry
+    - Reporting
 
 logoUrl: https://bkper.com/images/automations/logo-google-sheets.png
 
